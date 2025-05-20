@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->enum('gender',['Laki-laki','Perempuan'])->nullable();
             $table->string('phone',15)->nullable();
+            $table->boolean('is_admin')->default(false);
+            $table->integer('leave')->default(12);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
