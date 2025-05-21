@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserSalary::class,'user_id');
     }
+
+    public function leaves()
+    {
+        return $this->hasMany(UserLeave::class,'user_id');
+    }
 }

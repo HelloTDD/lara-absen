@@ -24,6 +24,6 @@ function returnProccessData($data = null)
         }
     }
     
-    lgs::info($data);
+    // lgs::info($data);
     return redirect()->back()->with($stats, $message);
 }

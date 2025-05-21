@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UserSalaryRequest;
 use App\Interfaces\UserSalaryInterface;
 use App\Models\User;
@@ -20,7 +21,8 @@ class UserSalaryController extends Controller implements UserSalaryInterface
     }
 
     public function store(UserSalaryRequest $request)
-    {
+    {   
+        $create_salary = null;
         try {
             $user = User::find($request->user_id);
             if ($user) {
