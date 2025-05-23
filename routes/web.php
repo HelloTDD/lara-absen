@@ -26,10 +26,10 @@ Route::controller(UserLeaveController::class)->group(function(){
     Route::get('/user-leave/reject/{id}', 'reject_leave')->name('user-leave.reject');
 });
 
-Route::controller(AttendanceController::class)->group(function () {
-    Route::get('/attendance', 'index')->name('attendance.index');
-    Route::post('/attendance/save', 'store')->name('attendance.store');
-    Route::get('/attendance/list', 'list')->name('attendance.list');
+Route::prefix('attendance')->controller(AttendanceController::class)->name('attendance.')->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/save', 'store')->name('store');
+    Route::get('/list', 'list')->name('list');
 });
 
 //dummy routes
