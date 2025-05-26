@@ -55,9 +55,9 @@
                                         @method('POST')
                                         @csrf
                                         <div class="form-group mb-2">
-                                            <label class="form-label" for="email">E-Mail</label>
-                                            <input type="text" class="form-control" id="email" name="email"
-                                                placeholder="Enter email" value="{{ old('email') }}">
+                                            <label class="form-label" for="username">Username</label>
+                                            <input type="text" class="form-control" id="username" name="username"
+                                                placeholder="Enter username" value="{{ old('username') }}">
                                         </div><!--end form-group-->
 
                                         <div class="form-group">
@@ -82,7 +82,7 @@
                                             </div><!--end col-->
                                         </div> <!--end form-group-->
                                     </form><!--end form-->
-                                    
+
                                 </div><!--end card-body-->
                             </div><!--end card-->
                         </div><!--end col-->

@@ -18,12 +18,12 @@ class AuthController extends Controller implements AuthInterface
 
     public function login(AuthRequest $req)
     {
-        $credentials = $req->only('email', 'password');
+        $credentials = $req->only('username', 'password');
         if (Auth::attempt($credentials)) {
-            
+
             return redirect()->to('/homes');
         } else {
-            return redirect()->back()->with('error','Invalid email or password.')->withInput($req->only('email'));
+            return redirect()->back()->with('error','Invalid username or password.')->withInput($req->only('email'));
         }
     }
 
