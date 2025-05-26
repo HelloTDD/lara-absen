@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Models\UserLeave;
 
 route::controller(AuthController::class)->group(function(){
-    Route::get('/login','index')->name('login');
+    Route::get('/','index')->name('login');
     Route::post('/ceklogin','login')->name('login.ceklogin'); 
     Route::get('/logout','logout')->name('login.logout');
 });
@@ -42,17 +42,17 @@ Route::prefix('attendance')->controller(AttendanceController::class)->name('atte
     Route::get('/list', 'list')->name('list');
 });
 
-//dummy routes
-Route::get('/home', function () {
-    return 'Login';
-})->name('home');
+// //dummy routes
+// Route::get('/home', function () {
+//     return 'Login';
+// })->name('home');
 
-Route::get('/login', function () {
-    return 'Home';
-})->name('login');
+// Route::get('/login', function () {
+//     return 'Home';
+// })->name('login');
 
 
 Route::get('/homes', function () {
-    return view('welcome');
+    return view('home.index');
 });
 

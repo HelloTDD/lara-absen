@@ -13,23 +13,23 @@ class AuthController extends Controller implements AuthInterface
 {
     public function index()
     {
-        return view('welcome');
+        return view('auth.login');
     }
 
     public function login(AuthRequest $req)
     {
         $credentials = $req->only('email', 'password');
-
         if (Auth::attempt($credentials)) {
+            
             return redirect()->to('/homes');
         } else {
-            return redirect()->route('home');
+            return redirect()->back()->with('error','Invalid email or password.')->withInput($req->only('email'));
         }
     }
 
     public function logout()
     {
         Auth::logout();
-        return view('welcome');
+        return redirect()->route('login');
     }
 }
