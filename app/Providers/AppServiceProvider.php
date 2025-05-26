@@ -8,6 +8,10 @@ use App\Interfaces\UserSalaryInterface;
 
 use App\Http\Controllers\User\UserLeaveController;
 use App\Interfaces\UserLeaveInterface;
+
+use App\Http\Controllers\Auth\AuthController;
+use App\Interfaces\AuthInterface;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(UserLeaveInterface::class, function ($app) {
             return new UserLeaveController();
+        });
+
+        $this->app->bind(AuthInterface::class, function ($app){
+            return new AuthController();
         });
 
     }

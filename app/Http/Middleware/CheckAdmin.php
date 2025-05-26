@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CheckAdmin
 {
@@ -19,11 +20,12 @@ class CheckAdmin
         if(!Auth::check()) {
             return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
         } else {
-            if(!Auth::user()->is_admin) {
+            if(Auth::user()->is_admin == 0) {
                 return redirect()->route('home')->with('error', 'You do not have permission to access this page.');
+            } else {
+                return $next($request);
             }
         }
         
-        return $next($request);
     }
 }

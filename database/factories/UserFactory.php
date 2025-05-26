@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'address' => fake()->address(),
             'gender' => fake()->randomElement(['Laki-laki', 'Perempuan']),
             'phone' => substr(preg_replace('/\D/', '', fake()->phoneNumber()), 0, 15),
+            'is_admin' => 0
         ];
     }
 }
