@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TDD Absensi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-white to-gray-100 flex items-center justify-center font-sans">
 
@@ -35,6 +42,25 @@
 
         <form action="{{ route('attendance.store') }}" method="POST" class="space-y-5">
             @csrf
+        <div>
+        <div class="-mx-3 flex flex-wrap">
+            <div class="mb-6 w-full max-w-full px-3 sm:flex-none">
+                <div class="dark:bg-slate-850 dark:shadow-dark-xl relative flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border shadow-xl">
+                    <div class="flex-auto p-4">
+                        <input type="text" name="lokasi" id="lokasi" class="input input-primary" hidden>
+                        <div id="webcam-capture" class="mx-auto"></div>
+                        <div class="flex justify-center">
+                        </div>
+                    </div>
+                </div>
+                <div class="dark:bg-slate-850 dark:shadow-dark-xl relative mt-3 flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border shadow-xl">
+                    <div class="flex-auto p-4">
+                        <div id="map" class="mx-auto h-80 w-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
             <!-- Tanggal Otomatis -->
             <div>
                 <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
@@ -80,5 +106,54 @@
         </form>
     </div>
 
+
+    <script>
+    // Lokasi kantor dari config Laravel
+    const kantor = {
+        latitude: {{ config('officeLocation.latitude') }},
+        longitude: {{ config('officeLocation.longitude') }},
+        radius: {{ config('officeLocation.radius') }}
+    };
+
+    //NOTE -  Tunggu hingga browser dapatkan lokasi pengguna
+    if (navigator.geolocation) {
+        // console.log(navigator.geolocation);
+        navigator.geolocation.getCurrentPosition(showMap, showError);
+    } else {
+        alert("Geolocation tidak didukung oleh browser Anda.");
+    }
+
+    function showMap(position) {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        const map = L.map('map').setView([userLat, userLng], 17);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        //*NOTE - Marker lokasi user
+        const userMarker = L.marker([userLat, userLng]).addTo(map)
+            .bindPopup("Anda berada di sini").openPopup();
+
+        //NOTE -  Lingkaran lokasi kantor
+        const kantorCircle = L.circle([kantor.latitude, kantor.longitude], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: kantor.radius
+        }).addTo(map).bindPopup("Radius kantor");
+
+        //NOTE -  Tambahkan marker kantor (opsional)
+        L.marker([kantor.latitude, kantor.longitude]).addTo(map)
+            .bindPopup("Lokasi Kantor");
+    }
+
+    function showError(error) {
+        alert("Gagal mendapatkan lokasi Anda.");
+    }
+</script>
 </body>
 </html>

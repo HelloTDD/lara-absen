@@ -9,7 +9,7 @@ use App\Models\UserLeave;
 
 route::controller(AuthController::class)->group(function(){
     Route::get('/','index')->name('login');
-    Route::post('/ceklogin','login')->name('login.ceklogin'); 
+    Route::post('/ceklogin','login')->name('login.ceklogin');
     Route::get('/logout','logout')->name('login.logout');
 });
 Route::controller(UserSalaryController::class)->group(function () {

@@ -25,6 +25,7 @@ class AttendanceRequest extends FormRequest
         return [
             'tanggal' => 'required|date_format:Y-m-d',
             'time'    => 'required|date_format:H:i:s',
+            // 'lokasi'  => 'required|string|max:255',
         ];
     }
 

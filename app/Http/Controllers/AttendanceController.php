@@ -36,6 +36,7 @@ class AttendanceController extends Controller
     public function store(AttendanceRequest $request, AttendanceService $service)
     {
         // $userId = Auth::id() ?? 1;
+        // dd($request->all());
         $userId = 1;
 
         $action = $request->input('action');

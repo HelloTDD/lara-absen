@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         User::create([
-            'name' => 'user',
-            'username' => 'user',
-            'email' => 'user@gmail.com',
+            'name' => 'admin',
+            'username' => 'admin',
+            'email' => 'admin@admin.com',
             'password' => bcrypt('password'),
             'phone' => '1234567890',
             'address' => '123 Main St',
@@ -36,8 +36,8 @@ class DatabaseSeeder extends Seeder
 
         Shift::create([
             'shift_name' => 'Morning Shift',
-            'check_in' => '2025-05-20 08:00:00',
-            'check_out' => '2025-05-20 16:00:00',
+            'check_in' => '08:00:00',
+            'check_out' => '16:00:00',
         ]);
 
         UserShift::create([

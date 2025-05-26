@@ -11,8 +11,24 @@ use Carbon\Carbon;
 
 class AttendanceService
 {
+
+    public function validation_radius_presensi($langtitudeKantor, $longtitudeKantor, $langtitudeUser, $longtitudeUser)
+    {
+        $theta = $longtitudeKantor - $longtitudeUser;
+        $hitungKoordinat = (sin(deg2rad($langtitudeKantor)) * sin(deg2rad($langtitudeUser))) + (cos(deg2rad($langtitudeKantor)) * cos(deg2rad($langtitudeUser)) * cos(deg2rad($theta)));
+        $miles = rad2deg(acos($hitungKoordinat)) * 60 * 1.1515;
+
+        // $feet = $miles * 5280;
+        // $yards = $feet / 3;
+
+        $kilometers = $miles * 1.609344;
+        $meters = $kilometers * 1000;
+        return $meters;
+    }
+
     public function checkIn($userId, Request $request)
     {
+        // dd($request->all());
         $today = now('Asia/Jakarta')->toDateString();
         $shift = UserShift::where('user_id', $userId)->first();
 
@@ -28,6 +44,27 @@ class AttendanceService
         if ($attendance->check_in_time) {
             throw new \Exception('Sudah absen MASUK.');
         }
+
+        $lokasi = $request->lokasi;
+        // $folderPath = "public/unggah/presensi/";
+        // $folderName = $nik . "-" . $tglPresensi . "-" . $jenisPresensi;
+
+        // $lokasiKantor = config('officeLocation');
+        // $langtitudeKantor = $lokasiKantor['latitude'];
+        // $longtitudeKantor = $lokasiKantor['longitude'];
+        // $lokasiUser = explode(",", $lokasi);
+        // $langtitudeUser = $lokasiUser[0];
+        // $longtitudeUser = $lokasiUser[1];
+
+        // $jarak = round($this->validation_radius_presensi($langtitudeKantor, $longtitudeKantor, $langtitudeUser, $longtitudeUser), 2);
+        // if ($jarak > 33) {
+        //     return response()->json([
+        //         'status' => 500,
+        //         'success' => false,
+        //         'message' => "Anda berada di luar radius kantor. Jarak Anda " . $jarak . " meter dari kantor",
+        //         'jenis_error' => "radius",
+        //     ]);
+        // }
 
         $attendance->fill([
             'shift_id'        => $shift->shift_id,
