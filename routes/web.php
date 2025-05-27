@@ -36,7 +36,7 @@ Route::controller(UserLeaveController::class)->group(function(){
     Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
 });
 
-Route::prefix('attendance')->controller(AttendanceController::class)->name('attendance.')->group(function () {
+Route::middleware(['auth'])->prefix('attendance')->controller(AttendanceController::class)->name('attendance.')->group(function () {
     Route::get('/', 'index')->name('index');
     Route::post('/save', 'store')->name('store');
     Route::get('/list', 'list')->name('list');
