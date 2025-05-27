@@ -18,7 +18,7 @@ class UserLeaveController extends Controller implements UserLeaveInterface
     public function index()
     {
         $users = User::all();
-        $leaves = UserLeave::with('user')->get();
+        $leaves = UserLeave::with('user')->orderBy('created_at', 'desc')->paginate(10);
         return view('users-leave.index', compact('users', 'leaves'));
     }
 
@@ -59,20 +59,17 @@ class UserLeaveController extends Controller implements UserLeaveInterface
     {
         $leave = null;
         try {
-            $user = User::find($request->user_id);
-            if ($user) {
-                $leave = UserLeave::find($id);
-                if ($leave) {
-                    $leave->update([
-                        'user_id' => $user_id,
-                        'leave_date_start' => $request->start_date,
-                        'leave_date_end' => $request->end_date,
-                        'desc_leave' => $request->description,
-                        'status' => $request->status,
-                    ]);
-                } else {
-                    throw new \Exception('Leave not found');
-                }
+            $leave = UserLeave::find($id);
+            if ($leave) {
+                $leave->update([
+                    'user_id' => $user_id,
+                    'leave_date_start' => $request->start_date,
+                    'leave_date_end' => $request->end_date,
+                    'desc_leave' => $request->description,
+                    'status' => $request->status,
+                ]);
+            } else {
+                throw new \Exception('Leave not found');
             }
         } catch (\Throwable $th) {
             Log::create([

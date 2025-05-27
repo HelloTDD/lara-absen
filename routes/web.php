@@ -12,34 +12,38 @@ route::controller(AuthController::class)->group(function(){
     Route::post('/ceklogin','login')->name('login.ceklogin');
     Route::get('/logout','logout')->name('login.logout');
 });
-Route::controller(UserSalaryController::class)->group(function () {
-    Route::get('/user-salaries', 'index')->name('user-salaries.index');
-});
 
-Route::middleware(['is_admin'])->group(function () {
+Route::middleware('auth')->group(function(){
+    Route::middleware(['is_admin'])->group(function () {
+        Route::controller(UserSalaryController::class)->group(function () {
+            Route::post('/user-salaries', 'store')->name('user-salaries.store');
+            Route::put('/user-salaries/update/{id}', 'update')->name('user-salaries.update');
+            Route::get('/user-salaries/delete/{id}', 'destroy')->name('user-salaries.delete');
+        });
+    
+        Route::controller(UserLeaveController::class)->group(function(){
+            Route::get('/user-leave', 'index')->name('user-leave.index');
+            Route::post('/user-leave', 'create_leave')->name('user-leave.store');
+            Route::put('/user-leave/update/{id}', 'update_leave')->name('user-leave.update');
+            Route::get('/user-leave/approve/{id}', 'approve_leave')->name('user-leave.approve');
+            Route::get('/user-leave/reject/{id}', 'reject_leave')->name('user-leave.reject');
+        });
+    });
+    
     Route::controller(UserSalaryController::class)->group(function () {
-        Route::post('/user-salaries', 'store')->name('user-salaries.store');
+        Route::get('/user-salaries', 'index')->name('user-salaries.index');
     });
-
+    
     Route::controller(UserLeaveController::class)->group(function(){
-        Route::get('/user-leave', 'index')->name('user-leave.index');
-        Route::post('/user-leave', 'create_leave')->name('user-leave.store');
-        Route::put('/user-leave/{id}', 'update_leave')->name('user-leave.update');
-        Route::get('/user-leave/approve/{id}', 'approve_leave')->name('user-leave.approve');
-        Route::get('/user-leave/reject/{id}', 'reject_leave')->name('user-leave.reject');
+        Route::get('/user-leave/user', 'index_by_user')->name('user-leave.user');
+        Route::get('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
     });
-});
-
-
-Route::controller(UserLeaveController::class)->group(function(){
-    Route::get('/user-leave/user', 'index_by_user')->name('user-leave.user');
-    Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
-});
-
-Route::prefix('attendance')->controller(AttendanceController::class)->name('attendance.')->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::post('/save', 'store')->name('store');
-    Route::get('/list', 'list')->name('list');
+    
+    Route::prefix('attendance')->controller(AttendanceController::class)->name('attendance.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/save', 'store')->name('store');
+        Route::get('/list', 'list')->name('list');
+    });
 });
 
 // //dummy routes
