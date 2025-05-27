@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\User\UserLeaveController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Models\UserLeave;
+
+// URL::forceScheme('https');
 
 route::controller(AuthController::class)->group(function(){
     Route::get('/','index')->name('login');
@@ -23,7 +25,6 @@ Route::middleware('auth')->group(function(){
     
         Route::controller(UserLeaveController::class)->group(function(){
             Route::get('/user-leave', 'index')->name('user-leave.index');
-            Route::post('/user-leave', 'create_leave')->name('user-leave.store');
             Route::put('/user-leave/update/{id}', 'update_leave')->name('user-leave.update');
             Route::get('/user-leave/approve/{id}', 'approve_leave')->name('user-leave.approve');
             Route::get('/user-leave/reject/{id}', 'reject_leave')->name('user-leave.reject');
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function(){
     
     Route::controller(UserLeaveController::class)->group(function(){
         Route::get('/user-leave/user', 'index_by_user')->name('user-leave.user');
+        Route::post('/user-leave', 'create_leave')->name('user-leave.store');
         Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
     });
 

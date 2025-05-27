@@ -28,8 +28,21 @@
                                         aria-label="Close"></button>
                                 </div><!--end modal-header-->
                                 <div class="modal-body">
-                                    <form action="" method="post">
+                                    <form action="{{ route('user-leave.store') }}" method="post">
                                         @csrf
+                                        @if (Auth::user()->is_admin == 1)
+                                        <div class="mb-3">
+                                            <label>Nama Karyawan</label>
+                                            <select class="form-select" name="user_id" required>
+                                                <option value="">Pilih Karyawan</option>
+                                                @foreach ($users as $user)
+                                                    @if ($user->is_admin == 0)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            @endif
                                         <div class="row g-3 mb-3">
                                             <div class="col-lg-6">
                                                 <label>Tanggal Mulai Cuti</label>
@@ -100,8 +113,10 @@
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
                                                 @endif
+                                                @if (Auth::user()->is_admin == 1)
                                                 <button class="dropdown-item" type="button" data-bs-toggle="modal"
                                                     onclick="openModalEdit('{{ $leave->id }}', '{{ $leave->leave_date_start }}', '{{ $leave->leave_date_end }}', '{{ $leave->desc_leave }}')">Edit</button>
+                                                @endif
                                                 {{-- <a class="dropdown-item"
                                                     href="{{ route('user-leave.edit', ['id' => $leave->id]) }}">Edit</a>
                                                 --}}

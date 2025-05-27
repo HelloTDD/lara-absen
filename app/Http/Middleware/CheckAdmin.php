@@ -21,7 +21,7 @@ class CheckAdmin
             return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
         } else {
             if(Auth::user()->is_admin == 0) {
-                return redirect()->route('home')->with('error', 'You do not have permission to access this page.');
+                return redirect()->to('homes')->with('error', 'You do not have permission to access this page.');
             } else {
                 return $next($request);
             }
