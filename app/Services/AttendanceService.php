@@ -2,28 +2,23 @@
 
 namespace App\Services;
 
-use App\Models\UserAttendance;
+use Carbon\Carbon;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
+use App\Models\UserAttendance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class AttendanceService
 {
 
-    public function validation_radius_presensi($langtitudeKantor, $longtitudeKantor, $langtitudeUser, $longtitudeUser)
+    public function validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser)
     {
-        $theta = $longtitudeKantor - $longtitudeUser;
-        $hitungKoordinat = (sin(deg2rad($langtitudeKantor)) * sin(deg2rad($langtitudeUser))) + (cos(deg2rad($langtitudeKantor)) * cos(deg2rad($langtitudeUser)) * cos(deg2rad($theta)));
-        $miles = rad2deg(acos($hitungKoordinat)) * 60 * 1.1515;
-
-        // $feet = $miles * 5280;
-        // $yards = $feet / 3;
-
-        $kilometers = $miles * 1.609344;
-        $meters = $kilometers * 1000;
-        return $meters;
+        $theta = $lngKantor - $lngUser;
+        $dist = sin(deg2rad($latKantor)) * sin(deg2rad($latUser)) +  cos(deg2rad($latKantor)) * cos(deg2rad($latUser)) * cos(deg2rad($theta));
+        $miles = rad2deg(acos($dist)) * 60 * 1.1515;
+        return $miles * 1.609344 * 1000; //*NOTE -meter
     }
 
     public function checkIn($userId, Request $request)
@@ -45,34 +40,33 @@ class AttendanceService
             throw new \Exception('Sudah absen MASUK.');
         }
 
-        $lokasi = $request->lokasi;
-        // $folderPath = "public/unggah/presensi/";
-        // $folderName = $nik . "-" . $tglPresensi . "-" . $jenisPresensi;
+        $imageData = $request->image;
+        $imageName = 'checkin_' . now()->format('YmdHis') . '.jpg';
+        Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
 
-        // $lokasiKantor = config('officeLocation');
-        // $langtitudeKantor = $lokasiKantor['latitude'];
-        // $longtitudeKantor = $lokasiKantor['longitude'];
-        // $lokasiUser = explode(",", $lokasi);
-        // $langtitudeUser = $lokasiUser[0];
-        // $longtitudeUser = $lokasiUser[1];
 
-        // $jarak = round($this->validation_radius_presensi($langtitudeKantor, $longtitudeKantor, $langtitudeUser, $longtitudeUser), 2);
-        // if ($jarak > 33) {
-        //     return response()->json([
-        //         'status' => 500,
-        //         'success' => false,
-        //         'message' => "Anda berada di luar radius kantor. Jarak Anda " . $jarak . " meter dari kantor",
-        //         'jenis_error' => "radius",
-        //     ]);
-        // }
+        $lokasiUser = explode(',', $request->lokasi);
+        $latUser = trim($lokasiUser[0]);
+        $lngUser = trim($lokasiUser[1]);
+
+        $config = config('officeLocation');
+        $latKantor = $config['latitude'];
+        $lngKantor = $config['longitude'];
+        $radiusMax = $config['radius'];
+
+        $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
+
+        if ($distance > $radiusMax) {
+            throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
+        }
 
         $attendance->fill([
-            'shift_id'        => $shift->shift_id,
-            'check_in_time'   => now('Asia/Jakarta')->toTimeString(),
-            'latitude_in'     => $request->latitude_in,
-            'longitude_in'    => $request->longitude_in,
-            'distance_in'     => $request->distance_in,
-            'check_in_photo'  => $request->check_in_photo,
+            'shift_id' => $shift->shift_id,
+            'check_in_time' => now('Asia/Jakarta')->toTimeString(),
+            'latitude_in' => $latUser,
+            'longitude_in' => $lngUser,
+            'distance_in' => $distance,
+            'check_in_photo' => $imageName,
             'desc_attendance' => 'Absen MASUK',
         ])->save();
 
@@ -94,13 +88,33 @@ class AttendanceService
             throw new \Exception('Sudah absen PULANG.');
         }
 
+        $imageData = $request->image;
+        $imageName = 'checkout_' . now()->format('YmdHis') . '.jpg';
+        Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
+
+
+        $lokasiUser = explode(',', $request->lokasi);
+        $latUser = trim($lokasiUser[0]);
+        $lngUser = trim($lokasiUser[1]);
+
+        $config = config('officeLocation');
+        $latKantor = $config['latitude'];
+        $lngKantor = $config['longitude'];
+        $radiusMax = $config['radius'];
+
+        $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
+
+        if ($distance > $radiusMax) {
+            throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
+        }
+
         $attendance->update([
             'check_out_time'  => now('Asia/Jakarta')->toTimeString(),
-            'latitude_out'    => $request->latitude_out,
-            'longitude_out'   => $request->longitude_out,
-            'distance_out'    => $request->distance_out,
-            'check_out_photo' => $request->check_out_photo,
-            'desc_attendance' => 'COMPLETED',
+            'latitude_out'    => $latUser,
+            'longitude_out'   => $lngUser,
+            'distance_out'    => $distance,
+            'check_out_photo' => $imageName,
+            'desc_attendance' => 'CHECKOUT',
         ]);
 
         Log::info('Check-out berhasil', $attendance->toArray());

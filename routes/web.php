@@ -34,17 +34,20 @@ Route::middleware('auth')->group(function(){
         Route::get('/user-salaries', 'index')->name('user-salaries.index');
     });
     
+    
     Route::controller(UserLeaveController::class)->group(function(){
         Route::get('/user-leave/user', 'index_by_user')->name('user-leave.user');
-        Route::get('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
+        Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
     });
-    
+
     Route::prefix('attendance')->controller(AttendanceController::class)->name('attendance.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/save', 'store')->name('store');
         Route::get('/list', 'list')->name('list');
     });
 });
+
+
 
 // //dummy routes
 // Route::get('/home', function () {

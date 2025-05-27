@@ -25,6 +25,7 @@ class AttendanceController extends Controller
                     ->where('date', now()->format('Y-m-d'))
                     ->where('check_in_time', '!=', null)
                     ->first();
+                    // dd($existing);
         if (empty($existing)) {
             $existing = new UserAttendance();
             $existing->check_in_time = null;
@@ -50,14 +51,36 @@ class AttendanceController extends Controller
             } elseif ($action === 'check_out') {
                 $service->checkOut($userId, $request);
             } else {
-                return back()->with('error', 'Aksi tidak valid.');
+                // return back()->with('error', 'Aksi tidak valid.');
+                return response()->json([
+                    'status' => 400,
+                    'success' => false,
+                    'message' => "Aksi tidak valid",
+                ]);
             }
 
             DB::commit();
-            return back()->with('success', 'Absen berhasil.');
+            return response()->json([
+                'status' => 200,
+                // 'data' => $data,
+                'success' => true,
+                'message' => "Berhasil presensi",
+                'jenis_presensi' => $action,
+            ]);
+            // return back()->with('success', 'Absen berhasil.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+            Log::error('Error during attendance processing: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'action' => $action,
+                'request_data' => $request->all(),
+            ]);
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => "Gagal presensi",
+            ]);
+            // return back()->with('error', $e->getMessage());
         }
     }
 
