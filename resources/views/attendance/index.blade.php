@@ -254,7 +254,8 @@
                             icon: "success",
                             confirmButtonText: "OK"
                         });
-                        setTimeout("location.href='homes'", 5000);
+                         window.location.href = "{{ url('homes') }}";
+                        // setTimeout("location.href='homes'", 5000);
 
                     } else if (res.status == 500) {
                         if (res.jenis_error == "radius") {

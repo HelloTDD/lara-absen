@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Storage;
 class AttendanceService
 {
 
+    /**
+     * Menghitung jarak antara dua titik koordinat menggunakan rumus Haversine.
+     *
+     * @param float $latKantor Latitude kantor
+     * @param float $lngKantor Longitude kantor
+     * @param float $latUser Latitude pengguna
+     * @param float $lngUser Longitude pengguna
+     * @return float Jarak dalam meter
+     */
+
     public function validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser)
     {
         $theta = $lngKantor - $lngUser;
@@ -23,9 +33,13 @@ class AttendanceService
 
     public function checkIn($userId, Request $request)
     {
-        // dd($request->all());
+
         $today = now('Asia/Jakarta')->toDateString();
-        $shift = UserShift::where('user_id', $userId)->first();
+        $shift = UserShift::where('user_id', $userId)
+            ->whereDate('start_date_shift', '<=', $today)
+            ->whereDate('end_date_shift', '>=', $today)
+            ->first();
+        // $shift = UserShift::where('user_id', $userId)->first();
 
         if (!$shift) {
             throw new \Exception('Shift tidak ditemukan.');
@@ -67,7 +81,7 @@ class AttendanceService
             'longitude_in' => $lngUser,
             'distance_in' => $distance,
             'check_in_photo' => $imageName,
-            'desc_attendance' => 'Absen MASUK',
+            'desc_attendance' => 'MASUK',
         ])->save();
 
         Log::info('Check-in berhasil', $attendance->toArray());
@@ -114,7 +128,7 @@ class AttendanceService
             'longitude_out'   => $lngUser,
             'distance_out'    => $distance,
             'check_out_photo' => $imageName,
-            'desc_attendance' => 'CHECKOUT',
+            'desc_attendance' => 'PULANG',
         ]);
 
         Log::info('Check-out berhasil', $attendance->toArray());

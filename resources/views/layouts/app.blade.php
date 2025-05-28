@@ -85,7 +85,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('attendance.list') }}">Absensi</a>
                         </li><!--end nav-item-->
-                        
+
                     </ul><!--end nav-->
                 </div><!-- end Dashboards -->
 
@@ -114,6 +114,12 @@
                                         <li class="nav-item">
                                             <a href="{{ route('attendance.list') }}" class="nav-link ">Absensi</a>
                                         </li><!--end nav-item-->
+                                        <li class="nav-item">
+                                            <a href="{{ route('user-shift.index') }}" class="nav-link ">Shift Karyawan</a>
+                                        </li><!--end nav-item-->
+                                        <li class="nav-item">
+                                            <a href="{{ route('shift.index') }}" class="nav-link ">Shift</a>
+                                        </li><!--end nav-item-->
                                     </ul><!--end nav-->
                                 </div><!--end sidebarAnalytics-->
                             </li><!--end nav-item-->
@@ -121,7 +127,7 @@
                     </div><!--end sidebarCollapse-->
                 </div><!-- end Crypto -->
 
-                
+
             </div>
             <!--end menu-body-->
         </div><!-- end main-menu-inner-->
@@ -322,7 +328,7 @@
                         <div class="d-flex align-items-center">
                             <img src="{{ asset('assets/images/users/user-4.jpg') }}" alt="profile-user" class="rounded-circle me-2 thumb-sm" />
                             <div>
-                                <small class="d-none d-md-block font-11">Admin</small>
+                                <small class="d-none d-md-block font-11">{{ Auth()->user()->name }}</small>
                                 <span class="d-none d-md-block fw-semibold font-12">Maria Gibson <i
                                         class="mdi mdi-chevron-down"></i></span>
                             </div>

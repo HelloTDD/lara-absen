@@ -32,6 +32,19 @@ class DatabaseSeeder extends Seeder
             'address' => '123 Main St',
             'gender' => 'Laki-laki',
             'birth_date' => '1990-01-01',
+            'is_admin' => true,
+        ]);
+
+         User::create([
+            'name' => 'user',
+            'username' => 'user',
+            'email' => 'user@user.com',
+            'password' => bcrypt('password'),
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'gender' => 'Laki-laki',
+            'birth_date' => '1990-01-01',
+            'is_admin' => false,
         ]);
 
         Shift::create([
