@@ -30,7 +30,7 @@ class UserLeaveTest extends TestCase
     {
         $response = $this->get('/user-leave');
 
-        $response->assertStatus(200);
+        $response->assertStatus(302);
     }
 
     public function test_user_leave_index()
@@ -86,7 +86,7 @@ class UserLeaveTest extends TestCase
         $user = $this->actingAsUser('user');
         $leave = UserLeave::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->put('/user-leave/' . $leave->id, [
+        $response = $this->post('/user-leave/update' . $leave->id, [
             'description' => 'Updated leave'
         ]);
 

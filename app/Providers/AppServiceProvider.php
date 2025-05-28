@@ -14,6 +14,9 @@ use App\Interfaces\UserLeaveInterface;
 use App\Http\Controllers\Auth\AuthController;
 use App\Interfaces\AuthInterface;
 
+use App\Http\Controllers\User\UserContractController;
+use App\Interfaces\UserContractInterface;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -31,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(AuthInterface::class, function ($app){
             return new AuthController();
+        });
+
+        $this->app->bind(UserContractInterface::class, function($app){
+            return new UserContractController();
         });
 
     }

@@ -1,5 +1,9 @@
 <?php 
 use Illuminate\Support\Facades\Log as lgs;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Validation\Rules\Date as RulesDate;
+
 function returnProccessData($data = null)
 {
     $url = request()->url();
@@ -26,4 +30,18 @@ function returnProccessData($data = null)
     
     // lgs::info($data);
     return redirect()->back()->with($stats, $message);
+}
+
+function dateTimeToday()
+{
+    return Carbon::now();
+}
+function timeNow()
+{
+    return Carbon::now()->format('H:i:s');
+}
+
+function todayNow()
+{
+    return Carbon::today()->format('Y-m-d');
 }

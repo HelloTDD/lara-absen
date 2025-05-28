@@ -34,17 +34,17 @@ class DatabaseSeeder extends Seeder
             'birth_date' => '1990-01-01',
         ]);
 
-        Shift::create([
-            'shift_name' => 'Morning Shift',
-            'check_in' => '08:00:00',
-            'check_out' => '16:00:00',
-        ]);
+        // Shift::create([
+        //     'shift_name' => 'Morning Shift',
+        //     'check_in' => '08:00:00',
+        //     'check_out' => '16:00:00',
+        // ]);
 
-        UserShift::create([
-            'user_id' => 1,
-            'shift_id' => 1,
-            'start_date_shift' => '2025-05-20',
-            'end_date_shift' => '2025-05-20',
-        ]);
+        // UserShift::create([
+        //     'user_id' => 1,
+        //     'shift_id' => 1,
+        //     'start_date_shift' => '2025-05-20',
+        //     'end_date_shift' => '2025-05-20',
+        // ]);
     }
 }
