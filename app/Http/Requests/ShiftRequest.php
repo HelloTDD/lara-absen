@@ -11,7 +11,7 @@ class ShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class ShiftRequest extends FormRequest
         return [
             'shift_name' => 'required|string|max:255',
             'check_in' => 'required|date_format:H:i',
-            'check_out' => 'required|date_format:H:i|after:start_time',
+            'check_out' => 'required|date_format:H:i',
         ];
     }
 }

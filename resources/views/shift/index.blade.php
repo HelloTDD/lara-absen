@@ -36,12 +36,12 @@
                                                 <input class="form-control" type="text" name="shift_name" required>
                                             </div>
                                             <div class="mb-3 col-lg-6">
-                                                <label for="salary_basic">Tanggal Mulai</label>
+                                                <label for="salary_basic">Waktu Mulai</label>
                                                 <input class="form-control" type="time" name="check_in" required>
                                             </div>
                                             <div class="mb-3 col-lg-6">
-                                                <label for="salary_allowance">Tanggal Selesai</label>
-                                                <input class="form-control" type="tme" name="check_out"
+                                                <label for="salary_allowance">Waktu Selesai</label>
+                                                <input class="form-control" type="time" name="check_out"
                                                     value="0" required>
                                             </div>
                                         </div>
@@ -89,7 +89,7 @@
                                                 aria-labelledby="dropdownMenuButton{{ $item->id }}">
                                                 <li>
                                                     <button class="dropdown-item" type="button" data-bs-toggle="modal"
-                                                        onclick="openModalEdit('{{ $item->id }}', '{{ $item->user_id }}', '{{ $item->shift }}', '{{ $item->start_date_shift }}', '{{ $item->end_date_shift }}', '{{ $item->salary_holiday }}')">
+                                                        onclick="openModalEdit('{{ $item->id }}', '{{ $item->shift_name }}', '{{ $item->check_in }}', '{{ $item->check_out }}')">
                                                         Edit
                                                     </button>
                                                 </li>
@@ -122,16 +122,15 @@
                                             <div class="row">
                                                 <div class="mb-3 col-lg-6">
                                                     <label for="salary_basic">Nama Shift</label>
-                                                    <input class="form-control" type="text" name="shift_name" required>
+                                                    <input class="form-control" type="text" name="shift_name" id="shift_name_edit" required>
                                                 </div>
                                                 <div class="mb-3 col-lg-6">
-                                                    <label for="salary_basic">Tanggal Mulai</label>
-                                                    <input class="form-control" type="time" name="check_in" required>
+                                                    <label for="salary_basic">Waktu Mulai</label>
+                                                    <input class="form-control" type="time" name="check_in" id="check_in_edit" required>
                                                 </div>
                                                 <div class="mb-3 col-lg-6">
-                                                    <label for="salary_allowance">Tanggal Selesai</label>
-                                                    <input class="form-control" type="tme" name="check_out"
-                                                        value="0" required>
+                                                    <label for="salary_allowance">Waktu Selesai</label>
+                                                    <input class="form-control" type="time" name="check_out" id="check_out_edit" required>
                                                 </div>
                                             </div>
                                             <button type="submit" class="btn btn-success">Update</button>
@@ -154,13 +153,12 @@
 
         @push('scripts')
             <script>
-                function openModalEdit(id, user_id, shift_id, start_date_shift, end_date_shift) {
+                function openModalEdit(id, shift_name, check_in, check_out) {
                     $('#modalEdits').modal('show');
-                    $('#user_id_edit').val(user_id);
-                    $('#shift_id_edit').val(shift_id);
-                    $('#start_date_shift_edit').val(start_date_shift);
-                    $('#end_date_shift_edit').val(end_date_shift);
-                    $('form[action]').attr('action', `/user-shift/update/${id}`);
+                    $('#shift_name_edit').val(shift_name);
+                    $('#check_in_edit').val(check_in);
+                    $('#check_out_edit').val(check_out);
+                    $('form[action]').attr('action', `/shift/update/${id}`);
                 }
             </script>
         @endpush
