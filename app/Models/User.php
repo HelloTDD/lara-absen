@@ -40,8 +40,22 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function salary()
+    {
+        return $this->hasOne(UserSalary::class,'user_id');
+    }
+
+    public function leaves()
+    {
+        return $this->hasMany(UserLeave::class,'user_id');
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(UserContract::class,'user_id');
     }
 }

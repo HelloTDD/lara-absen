@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
             $table->string('shift_name', 45);
-            $table->dateTime('check_in');
-            $table->dateTime('check_out');
+            $table->time('check_in');
+            $table->time('check_out');
             $table->timestamps();
         });
     }

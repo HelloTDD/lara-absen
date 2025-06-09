@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Shift;
+use App\Models\UserShift;
+use App\Models\UserAttendance;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,9 +18,46 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+
+        User::create([
+            'name' => 'admin',
+            'username' => 'admin',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('password'),
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'gender' => 'Laki-laki',
+            'birth_date' => '1990-01-01',
+            'is_admin' => true,
         ]);
+
+         User::create([
+            'name' => 'user',
+            'username' => 'user',
+            'email' => 'user@user.com',
+            'password' => bcrypt('password'),
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'gender' => 'Laki-laki',
+            'birth_date' => '1990-01-01',
+            'is_admin' => false,
+        ]);
+
+        // Shift::create([
+        //     'shift_name' => 'Morning Shift',
+        //     'check_in' => '08:00:00',
+        //     'check_out' => '16:00:00',
+        // ]);
+
+        // UserShift::create([
+        //     'user_id' => 1,
+        //     'shift_id' => 1,
+        //     'start_date_shift' => '2025-05-20',
+        //     'end_date_shift' => '2025-05-20',
+        // ]);
     }
 }
