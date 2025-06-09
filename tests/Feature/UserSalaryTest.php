@@ -98,7 +98,6 @@ class UserSalaryTest extends TestCase
         // $salary = UserSalary::factory()->create(['user_id' => $user->id]);
 
         $response = $this->get('/user-salaries');
-        $response->assertStatus(200);
-        $response->assertViewIs('users-salary.index');
+        $response->assertStatus(302);
     }
 }

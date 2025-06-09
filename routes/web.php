@@ -6,6 +6,7 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\User\UserLeaveController;
+use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
 
@@ -24,7 +25,12 @@ Route::middleware('auth')->group(function(){
             Route::put('/user-salaries/update/{id}', 'update')->name('user-salaries.update');
             Route::get('/user-salaries/delete/{id}', 'destroy')->name('user-salaries.delete');
         });
-
+        Route::controller(UserContractController::class)->group(function(){
+            Route::post('/user-contract','store')->name('user-contract.store');
+            Route::get('/user-contract/update/{status}/{id}','status_update')->name('user-contract.status');
+            Route::put('/user-contract/update/{id}','update')->name('user-contract.update');
+            Route::get('/user-contract/delete/{id}','delete')->name('user-contract.delete');
+        });
         Route::controller(UserLeaveController::class)->group(function(){
             Route::get('/user-leave', 'index')->name('user-leave.index');
             Route::put('/user-leave/update/{id}', 'update_leave')->name('user-leave.update');
@@ -46,6 +52,11 @@ Route::middleware('auth')->group(function(){
             Route::get('/shift/{id}/delete', 'destroy')->name('delete');
         });
 
+    });
+    
+    Route::controller(UserContractController::class)->group(function(){
+        Route::get('/user-contract','index')->name('user-contract.index');
+        Route::get('/user-contract/unduh-kontrak/{id}','download')->name('user-contract.download');
     });
 
     Route::controller(UserSalaryController::class)->group(function () {

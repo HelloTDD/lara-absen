@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserLeave::class,'user_id');
     }
+
+    public function contracts()
+    {
+        return $this->hasMany(UserContract::class,'user_id');
+    }
 }
