@@ -10,10 +10,10 @@ use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
 
-// URL::forceScheme('https');
+URL::forceScheme('https');
 
 route::controller(AuthController::class)->group(function(){
-    Route::get('/','index')->name('login');
+    Route::get('/login','index')->name('login');
     Route::post('/ceklogin','login')->name('login.ceklogin');
     Route::get('/logout','logout')->name('login.logout');
 });
@@ -77,7 +77,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/absensi/{id}/edit', 'edit')->name('edit');
         Route::put('/absensi/{id}', 'update')->name('update');
         Route::delete('/absensi/{id}/delete', 'destroy')->name('destroy');
-
+        
     });
 
 });
@@ -93,8 +93,11 @@ Route::middleware('auth')->group(function(){
 //     return 'Home';
 // })->name('login');
 
-
-Route::get('/homes', function () {
+Route::get('/homes',function () {
     return view('home.index');
+})->name('homes');
+
+Route::get('/', function () {
+    return redirect()->route('attendance.index');
 });
 

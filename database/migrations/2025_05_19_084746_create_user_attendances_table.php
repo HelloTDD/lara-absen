@@ -28,8 +28,8 @@ return new class extends Migration
             $table->string('distance_out', 150)->nullable();
             $table->text('check_out_photo')->nullable();
             $table->text('desc_attendance')->nullable();
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
 
         });
     }

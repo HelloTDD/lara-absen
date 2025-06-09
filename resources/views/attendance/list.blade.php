@@ -1,9 +1,8 @@
 @extends('layouts.app')
-
+@section('page-title', 'Absensi')
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <h1>Absensi</h1>
         <div class="card">
             <div class="card-header">
                 <div class="justify-content-between d-flex">

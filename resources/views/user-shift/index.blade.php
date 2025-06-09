@@ -1,8 +1,8 @@
 @extends('layouts.app')
+@section('page-title', 'Shift Karyawan')
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <h1>Shift Karyawan</h1>
         <div class="card">
             <div class="card-header">
                 {{-- <div class="align-self-center"> --}}
