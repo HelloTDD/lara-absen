@@ -105,7 +105,7 @@
                                         {{ $item->contracts?->end_contract_date }}
                                     </td>
                                     <td> {{ $item->contracts->approve_with ?? 'Belum Disetujui'}} </td>
-                                    <td> <a href="#tes" class="btn btn-info"> <i class="fas fa-download"></i>
+                                    <td> <a href="{{ route('user-contract.download',['id' => $item->id]) }}" class="btn btn-info"> <i class="fas fa-download"></i>
                                             Download</a> </td>
                                     <td>
                                         @if ( in_array($item->status_contract,['approved','renew']))

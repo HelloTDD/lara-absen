@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function(){
     
     Route::controller(UserContractController::class)->group(function(){
         Route::get('/user-contract','index')->name('user-contract.index');
+        Route::get('/user-contract/unduh-kontrak/{id}','download')->name('user-contract.download');
     });
 
     Route::controller(UserSalaryController::class)->group(function () {

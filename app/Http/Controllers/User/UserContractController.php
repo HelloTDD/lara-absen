@@ -154,4 +154,24 @@ class UserContractController extends Controller implements UserContractInterface
 
         return returnProccessData($result);
     }
+    public function download($id,StatusContract $statusContract)
+    {
+        try {
+            $data = $statusContract->with(['contracts.user'])->where('id',$id)->first();
+            // dd($contract);
+            $pdf = new \Dompdf\Dompdf();
+            $pdf->loadHtml(view('users-contract.contract', compact('data')));
+            $pdf->setPaper('A4', 'portrait');
+            $pdf->render();
+            return $pdf->stream('contract-' . $data->name . '.pdf');
+        } catch (\Throwable $th) {
+            Log::create([
+                'action' => 'download user contract',
+                'controller' => 'UserContractController',
+                'error_code' => $th->getCode(), 
+                'description' => $th->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to download contract');
+        }
+    }
 }
