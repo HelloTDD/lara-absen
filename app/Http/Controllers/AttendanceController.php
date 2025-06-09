@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Carbon\Carbon;
+use App\Models\Shift;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
 use App\Models\UserAttendance;
@@ -36,9 +37,7 @@ class AttendanceController extends Controller
 
     public function store(AttendanceRequest $request, AttendanceService $service)
     {
-        // $userId = Auth::id() ?? 1;
-        // dd($request->all());
-        $userId = 1;
+        $userId = Auth::id() ?? 1;
 
         $action = $request->input('action');
 
@@ -51,7 +50,6 @@ class AttendanceController extends Controller
             } elseif ($action === 'check_out') {
                 $service->checkOut($userId, $request);
             } else {
-                // return back()->with('error', 'Aksi tidak valid.');
                 return response()->json([
                     'status' => 400,
                     'success' => false,
@@ -67,7 +65,6 @@ class AttendanceController extends Controller
                 'message' => "Berhasil presensi",
                 'jenis_presensi' => $action,
             ]);
-            // return back()->with('success', 'Absen berhasil.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error during attendance processing: ' . $e->getMessage(), [
@@ -80,17 +77,95 @@ class AttendanceController extends Controller
                 'success' => false,
                 'message' => "Gagal presensi",
             ]);
-            // return back()->with('error', $e->getMessage());
         }
     }
 
     public function list()
     {
-        $data = UserAttendance::with('user', 'shift')
-                ->where('user_id',  Auth::id() ?? 1)
+        if(Auth::user()->is_admin == 1){
+            $data = UserAttendance::with('user', 'shift')
                 ->orderBy('date', 'desc')
                 ->get();
+        } else {
+            $data = UserAttendance::with('user', 'shift')
+                ->where('user_id', Auth::id())
+                ->orderBy('date', 'desc')
+                ->get();
+        }
+
         return view('attendance.list',compact('data'));
+    }
+
+    public function edit($id)
+    {
+        $absensi = UserAttendance::findOrFail($id);
+        $shifts = Shift::all();
+        return view('attendance.edit', compact('absensi', 'shifts'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $absensi = UserAttendance::findOrFail($id);
+
+
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'shift_id' => 'required|exists:shifts,id',
+            'check_in_time' => 'nullable',
+            'check_out_time' => 'nullable',
+            'check_in_photo' => 'nullable|image|max:2048',
+            'check_out_photo' => 'nullable|image|max:2048',
+            'desc_attendance' => 'required|in:MASUK,PULANG',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $absensi->update($validated);
+
+            if ($request->hasFile('check_in_photo')) {
+                $checkInFile = $request->file('check_in_photo')->store('absensi', 'public');
+                $absensi->check_in_photo = basename($checkInFile);
+
+            }
+
+            if ($request->hasFile('check_out_photo')) {
+                $checkOutFile = $request->file('check_out_photo')->store('absensi', 'public');
+                $absensi->check_out_photo = basename($checkOutFile);
+            }
+
+
+            $absensi->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating attendance: ' . $e->getMessage(), [
+                'attendance_id' => $id,
+                'user_id' => Auth::id(),
+                'request_data' => $request->all(),
+            ]);
+            return redirect()->back()->withErrors(['error' => 'Gagal memperbarui data absensi: ' . $e->getMessage()]);
+        }
+
+        return redirect()->route('attendance.list')->with('success', 'Data absensi berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $absensi = UserAttendance::findOrFail($id);
+        DB::beginTransaction();
+        try {
+            $absensi->delete();
+            DB::commit();
+            return redirect()->route('attendance.list')->with('success', 'Data absensi berhasil dihapus.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting attendance: ' . $e->getMessage(), [
+                'attendance_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
+            return redirect()->back()->withErrors(['error' => 'Gagal menghapus data absensi: ' . $e->getMessage()]);
+        }
     }
 
 }
