@@ -111,6 +111,12 @@
 
                                         @if(Auth::user()->is_admin == 1)
                                         <li class="nav-item">
+                                            <a href="{{ route('role.index') }}" class="nav-link ">Bagian</a>
+                                        </li><!--end nav-item-->
+                                        <li class="nav-item">
+                                            <a href="{{ route('user-employee.index') }}" class="nav-link ">Karyawan</a>
+                                        </li><!--end nav-item-->
+                                        <li class="nav-item">
                                             <a href="{{ route('user-shift.index') }}" class="nav-link ">Shift Karyawan</a>
                                         </li><!--end nav-item-->
                                         <li class="nav-item">
