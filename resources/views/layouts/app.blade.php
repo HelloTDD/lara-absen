@@ -100,16 +100,16 @@
                                 <div class="collapse " id="sidebarAnalytics">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                            <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
-                                        </li><!--end nav-item-->
-                                        <li class="nav-item">
-                                            <a href="{{ route('user-leave.index') }}" class="nav-link ">Cuti</a>
+                                            <a href="{{ Auth::user()->is_admin == 1 ? route('user-leave.index') : route('user-leave.user') }}" class="nav-link ">Cuti</a>
                                         </li><!--end nav-item-->
                                         <li class="nav-item">
                                             <a href="{{ route('attendance.list') }}" class="nav-link ">Absensi</a>
                                         </li><!--end nav-item-->
 
                                         @if(Auth::user()->is_admin == 1)
+                                        <li class="nav-item">
+                                            <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
+                                        </li><!--end nav-item-->
                                         <li class="nav-item">
                                             <a href="{{ route('user-shift.index') }}" class="nav-link ">Shift Karyawan</a>
                                         </li><!--end nav-item-->
@@ -154,8 +154,7 @@
                         </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="#"><i class="ti ti-user font-16 me-1 align-text-bottom"></i> Profile</a>
-                        <a class="dropdown-item" href="#"><i class="ti ti-settings font-16 me-1 align-text-bottom"></i> Settings</a>
+                        <a class="dropdown-item" href="{{ route('profile.index') }}"><i class="ti ti-user font-16 me-1 align-text-bottom"></i> Profile</a>
                         <div class="dropdown-divider mb-0"></div>
                         <a class="dropdown-item" href="{{ route('login.logout') }}"><i class="ti ti-power font-16 me-1 align-text-bottom"></i> Logout</a>
                     </div>

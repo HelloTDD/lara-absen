@@ -9,8 +9,9 @@ use App\Http\Controllers\User\UserLeaveController;
 use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
+use App\Http\Controllers\ProfileController;
 
-URL::forceScheme('https');
+URL::forceScheme('http');
 
 route::controller(AuthController::class)->group(function(){
     Route::get('/login','index')->name('login');
@@ -21,6 +22,7 @@ route::controller(AuthController::class)->group(function(){
 Route::middleware('auth')->group(function(){
     Route::middleware(['is_admin'])->group(function () {
         Route::controller(UserSalaryController::class)->group(function () {
+            Route::get('/user-salaries', 'index')->name('user-salaries.index');
             Route::post('/user-salaries', 'store')->name('user-salaries.store');
             Route::put('/user-salaries/update/{id}', 'update')->name('user-salaries.update');
             Route::get('/user-salaries/delete/{id}', 'destroy')->name('user-salaries.delete');
@@ -54,15 +56,17 @@ Route::middleware('auth')->group(function(){
 
     });
     
+    Route::controller(ProfileController::class)->group(function(){
+        Route::get('/profile','index')->name('profile.index');
+        Route::put('/profile/update','update')->name('profile.update');
+        Route::put('/change-password/update','changePassword')->name('profile.change.password');
+        Route::get('/slip-gaji','downloadSalarySlip')->name('profile.slip.gaji');
+    });
+
     Route::controller(UserContractController::class)->group(function(){
-        Route::get('/user-contract','index')->name('user-contract.index');
+        Route::get('/user-contract',action: 'index')->name('user-contract.index');
         Route::get('/user-contract/unduh-kontrak/{id}','download')->name('user-contract.download');
     });
-
-    Route::controller(UserSalaryController::class)->group(function () {
-        Route::get('/user-salaries', 'index')->name('user-salaries.index');
-    });
-
 
     Route::controller(UserLeaveController::class)->group(function(){
         Route::get('/user-leave/user', 'index_by_user')->name('user-leave.user');

@@ -11,71 +11,100 @@
                             <div>
                                 <h3 class="card-title">Daftar Gaji Karyawan</h3>
                             </div>
-                            <div>
-                                <button type="button" class="btn btn-primary btn-md" data-bs-toggle="modal"
-                                    data-bs-target="#exampleModalLarge"><i data-feather="plus-square"
-                                        class="align-self-center icon-xs me-2"></i>Tambah Data Gaji</button>
-                            </div>
+
+                            @if(Auth::user()->is_admin == 1)
+                                <div>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#dataTunjangan"><i data-feather="plus-square"
+                                            class="align-self-center icon-xs me-2"></i>Lihat Data Tunjangan</button>
+
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModalLarge"><i data-feather="plus-square"
+                                            class="align-self-center icon-xs me-2"></i>Tambah Data Gaji</button>
+                                </div>
+                            @endif
+
                         </div>
                         {{-- </div> --}}
-                    <div class="modal fade bd-example-modal-lg" id="exampleModalLarge" tabindex="-1" role="dialog"
-                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h6 class="modal-title m-0" id="myLargeModalLabel">Form Gaji</h6>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div><!--end modal-header-->
-                                <div class="modal-body">
-                                    <form action="{{ route('user-salaries.store') }}" method="post">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="mb-3">
-                                                <label for="user_id">User</label>
-                                                <select class="form-control" name="user_id" required>
-                                                    @if (count($users) == 0)
-                                                        <option value="">No users available</option>
-                                                    @else
-                                                        @foreach($users as $user)
-                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_basic">Basic Salary</label>
-                                                <input class="form-control" type="number" name="salary_basic" value="0"
-                                                    required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_allowance">Allowance</label>
-                                                <input class="form-control" type="number" name="salary_allowance"
-                                                    value="0" required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_bonus">Bonus</label>
-                                                <input class="form-control" type="number" name="salary_bonus" value="0"
-                                                    required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_holiday">Holiday</label>
-                                                <input class="form-control" type="number" name="salary_holiday"
-                                                    value="0" required>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-success">Submit</button>
-                                    </form>
+                    @if(Auth::user()->is_admin == 1)
 
-                                </div><!--end modal-body-->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-de-secondary btn-sm"
-                                        data-bs-dismiss="modal">Close</button>
-                                </div><!--end modal-footer-->
-                            </div><!--end modal-content-->
-                        </div><!--end modal-dialog-->
-                    </div><!--end modal-->
+                        <x-modal id="dataTunjangan" title="Data Tunjangan Karyawan">
+                            <div class="row">
+                                <form action="" method="post" class="d-flex flex-row">
+                                    @csrf
+                                    <div class="col-lg-9 col-md-9 col-sm-9">
+                                        <div class="mb-3">
+                                            <input type="text" class="form-control" name="name"
+                                                placeholder="Masukkan nama tunjangan" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-auto">
+                                        <button type="submit" class="btn btn-success mb-3 ms-2">Tambah</button>
+                                    </div>
+                                    </form>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama Tunjangan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php($no = 1)
+                                        @foreach($type_allowance as $allowance)
+                                        <tr>
+                                            <td>{{ $no }}</td>
+                                            <td>{{ $allowance->name }}</td>
+                                        </tr>
+                                        @php($no++)
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </x-modal>
+
+                        <x-modal id="exampleModalLarge" title="Form Gaji">
+                            <form action="{{ route('user-salaries.store') }}" method="post">
+                                @csrf
+                                <div class="row">
+                                    <div class="mb-3">
+                                        <label for="user_id">User</label>
+                                        <select class="form-control" name="user_id" required>
+                                            @if (count($users) == 0)
+                                                <option value="">No users available</option>
+                                            @else
+                                                @foreach($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_basic">Basic Salary</label>
+                                        <input class="form-control" type="number" name="salary_basic" value="0" required>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_allowance">Allowance</label>
+                                        <input class="form-control" type="number" name="salary_allowance" value="0"
+                                            required>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_bonus">Bonus</label>
+                                        <input class="form-control" type="number" name="salary_bonus" value="0" required>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_holiday">Holiday</label>
+                                        <input class="form-control" type="number" name="salary_holiday" value="0" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </form>
+                        </x-modal>
+                    @endif
                 </div>
+
                 <div class="card-body">
                     <div class="table-responsive">
 
@@ -131,60 +160,49 @@
                             </tbody>
                         </table>
 
-                        <div class="modal fade bd-example-modal-lg" id="modalEdits" tabindex="-1" role="dialog"
-                            aria-labelledby="myModalEditsLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg dialog-center" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title m-0" id="myModalEditsLabel">Form Gaji</h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div><!--end modal-header-->
-                                    <div class="modal-body">
-                                        <form action="" method="post">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="row">
-                                                <div class="mb-3">
-                                                    <label for="user_id_edit">User</label>
-                                                    <select class="form-control" name="user_id" id="user_id_edit" required>
-                                                        @if (count($users) == 0)
-                                                            <option value="">No users available</option>
-                                                        @else
-                                                            @foreach($users as $user)
-                                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                            @endforeach
-                                                        @endif
-                                                    </select>
-                                                </div>
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_basic_edit">Basic Salary</label>
-                                                    <input class="form-control" type="number" name="salary_basic" id="salary_basic_edit" value="0" required>
-                                                </div>
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_allowance_edit">Allowance</label>
-                                                    <input class="form-control" type="number" name="salary_allowance" id="salary_allowance_edit" value="0" required>
-                                                </div>
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_bonus_edit">Bonus</label>
-                                                    <input class="form-control" type="number" name="salary_bonus" id="salary_bonus_edit" value="0" required>
-                                                </div>
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_holiday_edit">Holiday</label>
-                                                    <input class="form-control" type="number" name="salary_holiday" id="salary_holiday_edit" value="0" required>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-success">Update</button>
-                                        </form>
-
-                                    </div><!--end modal-body-->
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-de-secondary btn-sm"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div><!--end modal-footer-->
-                                </div><!--end modal-content-->
-                            </div><!--end modal-dialog-->
-                        </div><!--end modal-->
+                        @if(Auth::user()->is_admin == 1)
+                            <x-modal id="modalEdits" title="Edit Form Gaji">
+                                <form action="" method="post">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <label for="user_id_edit">User</label>
+                                            <select class="form-control" name="user_id" id="user_id_edit" required>
+                                                @if (count($users) == 0)
+                                                    <option value="">No users available</option>
+                                                @else
+                                                    @foreach($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_basic_edit">Basic Salary</label>
+                                            <input class="form-control" type="number" name="salary_basic"
+                                                id="salary_basic_edit" value="0" required>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_allowance_edit">Allowance</label>
+                                            <input class="form-control" type="number" name="salary_allowance"
+                                                id="salary_allowance_edit" value="0" required>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_bonus_edit">Bonus</label>
+                                            <input class="form-control" type="number" name="salary_bonus"
+                                                id="salary_bonus_edit" value="0" required>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_holiday_edit">Holiday</label>
+                                            <input class="form-control" type="number" name="salary_holiday"
+                                                id="salary_holiday_edit" value="0" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Update</button>
+                                </form>
+                            </x-modal>
+                        @endif
                     </div>
                 </div>
             </div>

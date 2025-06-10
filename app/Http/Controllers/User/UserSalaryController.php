@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserSalaryRequest;
 use App\Interfaces\UserSalaryInterface;
 use App\Models\User;
+use App\Models\TypeAllowance;
 use App\Models\UserSalary;
 use App\Models\Log;
 use Illuminate\Support\Facades\Log as lgs;
@@ -15,9 +16,10 @@ class UserSalaryController extends Controller implements UserSalaryInterface
     
     public function index()
     {
+        $type_allowance = TypeAllowance::all();
         $users = User::all();
         $salary = UserSalary::with('user')->get();
-        return view('users-salary.index', compact('users', 'salary'));
+        return view('users-salary.index', compact('users', 'salary','type_allowance'));
     }
 
     public function store(UserSalaryRequest $request)
