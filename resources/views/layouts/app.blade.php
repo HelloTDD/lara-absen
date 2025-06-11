@@ -86,7 +86,7 @@
                 <div id="MetricaApps" class="main-icon-menu-pane tab-pane {{ request()->is(['user-leave*','user-salaries*']) ? 'active show' : '' }}" role="tabpanel"
                     aria-labelledby="apps-tab">
                     <div class="title-box">
-                        <h6 class="menu-title">Managemen Karyawan</h6>
+                        <h6 class="menu-title">Menu User</h6>
                     </div>
 
                     <div class="collapse navbar-collapse" id="sidebarCollapse">
@@ -95,7 +95,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="#sidebarAnalytics" data-bs-toggle="collapse" role="button"
                                     aria-expanded="false" aria-controls="sidebarAnalytics">
-                                    Managemen Karyawan
+                                    Menu User
                                 </a>
                                 <div class="collapse " id="sidebarAnalytics">
                                     <ul class="nav flex-column">

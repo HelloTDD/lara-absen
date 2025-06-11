@@ -25,25 +25,24 @@ class UserSalaryRequest extends FormRequest
         return [
             'user_id'=>'required|exists:users,id',
             'salary_basic'=>'required|numeric',
-            'salary_allowance'=>'required|numeric',
+            'salary_allowance'=>'required|array',
             'salary_bonus'=>'required|numeric',
             'salary_holiday'=>'required|numeric',
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'user_id.required' => 'User ID is required',
-            'user_id.exists' => 'User ID does not exist',
-            'salary_basic.required' => 'Basic salary is required',
-            'salary_basic.numeric' => 'Basic salary must be a number',
-            'salary_allowance.required' => 'Allowance is required',
-            'salary_allowance.numeric' => 'Allowance must be a number',
-            'salary_bonus.required' => 'Bonus is required',
-            'salary_bonus.numeric' => 'Bonus must be a number',
-            'salary_holiday.required' => 'Holiday salary is required',
-            'salary_holiday.numeric' => 'Holiday salary must be a number',
-        ];
-    }
+    // public function messages(): array
+    // {
+    //     return [
+    //         'user_id.required' => 'User ID is required',
+    //         'user_id.exists' => 'User ID does not exist',
+    //         'salary_basic.required' => 'Basic salary is required',
+    //         'salary_basic.numeric' => 'Basic salary must be a number',
+    //         'salary_allowance.required' => 'Allowance is required',
+    //         'salary_bonus.required' => 'Bonus is required',
+    //         'salary_bonus.numeric' => 'Bonus must be a number',
+    //         'salary_holiday.required' => 'Holiday salary is required',
+    //         'salary_holiday.numeric' => 'Holiday salary must be a number',
+    //     ];
+    // }
 }

@@ -16,7 +16,8 @@ class ProfileController extends Controller implements ProfileInterface
      */
     public function index()
     {
-        return view('profile.index');
+        $data = UserSalary::where('user_id', Auth::user()->id)->first();
+        return view('profile.index', compact('data'));
     }
 
     /**

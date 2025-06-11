@@ -18,7 +18,8 @@
                                                 </div>
                                                 <div class="met-profile_user-detail">
                                                     <h5 class="met-user-name">{{ Auth::user()->name }}</h5>                                                        
-                                                    <p class="mb-0 met-user-name-post">UI/UX Designer, India</p>                                                        
+                                                    <p class="mb-0 met-user-name-post">Demo</p>                                                        
+                                                    <p class="mb-0 met-user-name-post">Salary : Rp {{ number_format($data->salary_basic) }} </p>                                                        
                                                 </div>
                                             </div>                                                
                                         </div><!--end col-->

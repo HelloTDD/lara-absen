@@ -30,7 +30,7 @@
 
                         <x-modal id="dataTunjangan" title="Data Tunjangan Karyawan">
                             <div class="row">
-                                <form action="" method="post" class="d-flex flex-row">
+                                <form action="{{ route('allowance.store') }}" method="post" class="d-flex flex-row">
                                     @csrf
                                     <div class="col-lg-9 col-md-9 col-sm-9">
                                         <div class="mb-3">
@@ -41,7 +41,7 @@
                                     <div class="col-lg-auto">
                                         <button type="submit" class="btn btn-success mb-3 ms-2">Tambah</button>
                                     </div>
-                                    </form>
+                                </form>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
@@ -49,6 +49,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama Tunjangan</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -56,7 +57,8 @@
                                         @foreach($type_allowance as $allowance)
                                         <tr>
                                             <td>{{ $no }}</td>
-                                            <td>{{ $allowance->name }}</td>
+                                            <td>{{ $allowance->name_allowance }}</td>
+                                            <td><a class="btn btn-danger btn-sm text-white" href="{{ route('allowance.delete',['id' => $allowance->id]) }}"> <i class="fas fa-times"></i> </a></td>
                                         </tr>
                                         @php($no++)
                                         @endforeach
@@ -85,11 +87,11 @@
                                         <label for="salary_basic">Basic Salary</label>
                                         <input class="form-control" type="number" name="salary_basic" value="0" required>
                                     </div>
-                                    <div class="mb-3 col-lg-6">
+                                    {{-- <div class="mb-3 col-lg-6">
                                         <label for="salary_allowance">Allowance</label>
                                         <input class="form-control" type="number" name="salary_allowance" value="0"
                                             required>
-                                    </div>
+                                    </div> --}}
                                     <div class="mb-3 col-lg-6">
                                         <label for="salary_bonus">Bonus</label>
                                         <input class="form-control" type="number" name="salary_bonus" value="0" required>
@@ -97,6 +99,20 @@
                                     <div class="mb-3 col-lg-6">
                                         <label for="salary_holiday">Holiday</label>
                                         <input class="form-control" type="number" name="salary_holiday" value="0" required>
+                                    </div>
+                                    <div class="mb-3 col-lg-12">
+                                        <label for="salary_allowance">Allowance</label>
+                                        <div class="form-check">
+                                            @foreach($type_allowance as $allowance)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="salary_allowance[]" value="{{ $allowance->id }}"
+                                                        id="allowance_{{ $allowance->id }}">
+                                                    <label class="form-check-label"
+                                                        for="allowance_{{ $allowance->id }}">{{ $allowance->name_allowance }}</label>   
+                                                </div>
+                                                <input type="number" name="allowances[{{ $allowance->id }}]" value="" class="form-control" id="">
+                                            @endforeach
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-success">Submit</button>
@@ -106,8 +122,17 @@
                 </div>
 
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <div class="table-responsive">
-
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -142,8 +167,8 @@
                                             <ul class="dropdown-menu dropdown-menu-end"
                                                 aria-labelledby="dropdownMenuButton{{ $item->id }}">
                                                 <li>
-                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal"
-                                                        onclick="openModalEdit('{{ $item->id }}', '{{ $item->user_id }}', '{{ $item->salary_basic }}', '{{ $item->salary_allowance }}', '{{ $item->salary_bonus }}', '{{ $item->salary_holiday }}')">
+                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal" modal-bs-target="#modalEdits"
+                                                        onclick='openModalEdit(@json($item->id), @json($item->user_id), @json($item->salary_basic), @json($item->salary_bonus), @json($item->salary_holiday), @json($item->user->allowances), @json($type_allowance))'>
                                                         Edit
                                                     </button>
                                                 </li>
@@ -184,11 +209,6 @@
                                                 id="salary_basic_edit" value="0" required>
                                         </div>
                                         <div class="mb-3 col-lg-6">
-                                            <label for="salary_allowance_edit">Allowance</label>
-                                            <input class="form-control" type="number" name="salary_allowance"
-                                                id="salary_allowance_edit" value="0" required>
-                                        </div>
-                                        <div class="mb-3 col-lg-6">
                                             <label for="salary_bonus_edit">Bonus</label>
                                             <input class="form-control" type="number" name="salary_bonus"
                                                 id="salary_bonus_edit" value="0" required>
@@ -197,6 +217,12 @@
                                             <label for="salary_holiday_edit">Holiday</label>
                                             <input class="form-control" type="number" name="salary_holiday"
                                                 id="salary_holiday_edit" value="0" required>
+                                        </div>
+                                        <div class="mb-3 col-lg-12">
+                                            <label>Allowance</label>
+                                            <div id="allowance-container">
+                                                <!-- Allowance inputs will be dynamically added here -->
+                                            </div>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-success">Update</button>
@@ -212,14 +238,45 @@
 
         @push('scripts')
             <script>
-                function openModalEdit(id, user_id, salary_basic, salary_allowance, salary_bonus, salary_holiday) {
+                function openModalEdit(id, user_id, salary_basic, salary_bonus, salary_holiday, salary_allowances,type_allowance) {
                     $('#modalEdits').modal('show');
+
                     $('#user_id_edit').val(user_id);
                     $('#salary_basic_edit').val(salary_basic);
-                    $('#salary_allowance_edit').val(salary_allowance);
                     $('#salary_bonus_edit').val(salary_bonus);
                     $('#salary_holiday_edit').val(salary_holiday);
                     $('form[action]').attr('action', `/user-salaries/update/${id}`);
+
+                    // Kosongkan allowance container dulu
+                    const $container = $('#allowance-container');
+                    $container.empty();
+
+                    // Loop allowance dinamis
+                    let isChecked = '';
+                    
+                    type_allowance.forEach((allowanceType) => {
+                        const existingAllowance = salary_allowances.find(sa => sa.id === allowanceType.id);
+                        const isChecked = existingAllowance?.pivot?.type_allowance_id === allowanceType.id ? 'checked' : '';
+                        const $wrapper = $('<div>', { class: 'mb-2' });
+                        
+                        const checkboxHtml = `
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                    name="salary_allowance[]" value="${allowanceType.id}"
+                                    id="allowance_${allowanceType.id}" ${isChecked}>
+                                <label class="form-check-label"
+                                    for="allowance_${allowanceType.id}">${allowanceType.name_allowance}</label>   
+                            </div>
+                        `;
+
+                        const inputHtml = `
+                            <input type="number" name="allowances[${allowanceType.id}]" value="${existingAllowance?.pivot?.amount || ''}" class="form-control">
+                        `;
+
+                        $wrapper.append(checkboxHtml);
+                        $wrapper.append(inputHtml);
+                        $container.append($wrapper);
+                    })
                 }
             </script>
         @endpush

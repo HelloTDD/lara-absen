@@ -10,6 +10,7 @@ use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AllowanceController;
 
 URL::forceScheme('http');
 
@@ -52,6 +53,12 @@ Route::middleware('auth')->group(function(){
             Route::post('/save', 'store')->name('store');
             Route::put('/update/{id}', 'update')->name('update');
             Route::get('/shift/{id}/delete', 'destroy')->name('delete');
+        });
+
+        Route::controller(AllowanceController::class)->group(function () {
+            Route::post('/allowance', 'store')->name('allowance.store');
+            Route::put('/allowance/update/{id}', 'update')->name('allowance.update');
+            Route::get('/allowance/delete/{id}', 'destroy')->name('allowance.delete');
         });
 
     });

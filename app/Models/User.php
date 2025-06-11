@@ -58,4 +58,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserContract::class,'user_id');
     }
+
+    public function allowances()
+    {
+        return $this->belongsToMany(TypeAllowance::class, 'detail_allowance_users', 'user_id', 'type_allowance_id')
+                    ->withPivot('amount')
+                    ->withTimestamps();
+    }
 }
