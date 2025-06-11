@@ -17,65 +17,49 @@
                                     <button type="button" class="btn btn-primary btn-md" data-bs-toggle="modal"
                                         data-bs-target="#exampleModalLarge"><i data-feather="plus-square"
                                             class="align-self-center icon-xs me-2"></i>Tambah Data Contract</button>
-                                    <div class="modal fade bd-example-modal-lg" id="exampleModalLarge" tabindex="-1"
-                                        role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg dialog-center" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h6 class="modal-title m-0" id="myLargeModalLabel">Form Contract</h6>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div><!--end modal-header-->
-                                                <div class="modal-body">
-                                                    <form action="{{ route('user-contract.store') }}" method="post"
-                                                        enctype="multipart/form-data">
-                                                        @csrf
-                                                        @if (Auth::user()->is_admin == 1)
-                                                            <div class="mb-3">
-                                                                <label>Nama Karyawan</label>
-                                                                <select class="form-select" name="user_id" required>
-                                                                    <option value="">Pilih Karyawan</option>
-                                                                    @foreach ($users as $user)
-                                                                        @if ($user->is_admin == 0)
-                                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                                        @endif
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        @endif
-                                                        <div class="row g-3 mb-3">
-                                                            <div class="col-lg-6">
-                                                                <label>Tanggal Mulai Contract</label>
-                                                                <input class="form-control" type="date"
-                                                                    name="start_contract_date" required>
-                                                            </div>
-                                                            <div class="col-lg-6">
-                                                                <label>Tanggal Selesai Contract</label>
-                                                                <input class="form-control" type="date"
-                                                                    name="end_contract_date" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Keterangan Contract</label>
-                                                            <textarea class="form-control" name="desc_constract" required
-                                                                rows="10" maxlength="1000"></textarea>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>File Contract</label>
-                                                            <input class="form-control" type="file" name="file"
-                                                                accept=".jpg,.jpeg,.png,.pdf,.docx,.doc" required>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-success">Submit</button>
-                                                    </form>
 
-                                                </div><!--end modal-body-->
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-de-secondary btn-sm"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                </div><!--end modal-footer-->
-                                            </div><!--end modal-content-->
-                                        </div><!--end modal-dialog-->
-                                    </div><!--end modal-->
+                                    <x-modal id="exampleModalLarge" title="Form Contract" size="lg">
+                                        <form action="{{ route('user-contract.store') }}" method="post"
+                                            enctype="multipart/form-data">
+                                            @csrf
+                                            @if (Auth::user()->is_admin == 1)
+                                                <div class="mb-3">
+                                                    <label>Nama Karyawan</label>
+                                                    <select class="form-select" name="user_id" required>
+                                                        <option value="">Pilih Karyawan</option>
+                                                        @foreach ($users as $user)
+                                                            @if ($user->is_admin == 0)
+                                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            @endif
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-lg-6">
+                                                    <label>Tanggal Mulai Contract</label>
+                                                    <input class="form-control" type="date" name="start_contract_date"
+                                                        required>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <label>Tanggal Selesai Contract</label>
+                                                    <input class="form-control" type="date" name="end_contract_date"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Keterangan Contract</label>
+                                                <textarea class="form-control" name="desc_constract" required rows="10"
+                                                    maxlength="1000"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>File Contract</label>
+                                                <input class="form-control" type="file" name="file"
+                                                    accept=".jpg,.jpeg,.png,.pdf,.docx,.doc" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Submit</button>
+                                        </form>
+                                    </x-modal>
                                 @endif
                             </div>
                         </div>
@@ -105,11 +89,13 @@
                                         {{ $item->contracts?->end_contract_date }}
                                     </td>
                                     <td> {{ $item->contracts->approve_with ?? 'Belum Disetujui'}} </td>
-                                    <td> <a href="{{ route('user-contract.download',['id' => $item->id]) }}" class="btn btn-info"> <i class="fas fa-download"></i>
+                                    <td> <a href="{{ route('user-contract.download', ['id' => $item->id]) }}"
+                                            class="btn btn-info"> <i class="fas fa-download"></i>
                                             Download</a> </td>
                                     <td>
-                                        @if ( in_array($item->status_contract,['approved','renew']))
-                                            <span class="badge rounded-4 bg-success fs-6 m-1">{{ $item->status_contract }}</span>
+                                        @if (in_array($item->status_contract, ['approved', 'renew']))
+                                            <span
+                                                class="badge rounded-4 bg-success fs-6 m-1">{{ $item->status_contract }}</span>
                                         @elseif ($item->status_contract == 'cancel')
                                             <span class="badge rounded-4 bg-danger fs-6 m-1">Reject</span>
                                         @elseif ($item->status_contract == 'REVISION')
@@ -132,10 +118,10 @@
                                                         href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'approve']) }}">Approve</a>
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'cancel']) }}">Reject</a>
-                                                        
+
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'revision']) }}">Revisi</a>
-                                                
+
                                                 @elseif($item->status_contract == 'APPROVE' && todayNow() < $item->contracts?->end_contract_date)
 
                                                     <a class="dropdown-item"
@@ -148,7 +134,7 @@
 
                                                     <button class="dropdown-item" type="button" data-bs-toggle="modal"
                                                         onclick="openModalEdit('{{ $item->contracts?->id }}', '{{ $item->contracts?->start_contract_date }}', '{{ $item->contracts?->end_contract_date }}', '{{ $item->contracts?->desc_contract }}')">Edit</button>
-                                                
+
                                                 @endif
 
                                                 <a class="dropdown-item"
@@ -162,53 +148,38 @@
                             </tbody>
                         </table>
 
-                        <div class="modal fade bd-example-modal-lg" id="modalEdits" tabindex="-1" role="dialog"
-                            aria-labelledby="myModalEditsLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg dialog-center" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title m-0" id="myModalEditsLabel">Form Contract</h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div><!--end modal-header-->
-                                    <div class="modal-body">
-                                        <form action="" method="post">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-lg-6">
-                                                    <label>Tanggal Mulai Contract</label>
-                                                    <input class="form-control" type="date" name="start_contract_date"
-                                                        id="start_date" required>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <label>Tanggal Selesai Contract</label>
-                                                    <input class="form-control" type="date" name="end_contract_date"
-                                                        id="end_date" required>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label>Keterangan Contract</label>
-                                                <textarea class="form-control" name="desc_constract" id="description"
-                                                    required rows="10" maxlength="1000"></textarea>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label>File Contract</label>
-                                                <input class="form-control" type="file" name="file"
-                                                    accept=".jpg,.jpeg,.png,.pdf,.docx,.doc">
-                                                <span class="text-danger">*kosongkan jika tidak perlu upload file</span>
-                                            </div>
-                                            <button type="submit" class="btn btn-success">Submit</button>
-                                        </form>
+                        <x-modal id="modalEdits" title="Form Edit Contract" size="lg">
+                            <form action="" method="post">
+                                @csrf
+                                @method('PUT')
+                                <div class="row g-3 mb-3">
+                                    <div class="col-lg-6">
+                                        <label>Tanggal Mulai Contract</label>
+                                        <input class="form-control" type="date" name="start_contract_date"
+                                            id="start_date" required>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>Tanggal Selesai Contract</label>
+                                        <input class="form-control" type="date" name="end_contract_date" id="end_date"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Keterangan Contract</label>
+                                    <textarea class="form-control" name="desc_constract" id="description" required
+                                        rows="10" maxlength="1000"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label>File Contract</label>
+                                    <input class="form-control" type="file" name="file"
+                                        accept=".jpg,.jpeg,.png,.pdf,.docx,.doc">
+                                    <span class="text-danger">*kosongkan jika tidak perlu upload file</span>
+                                </div>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </form>
 
-                                    </div><!--end modal-body-->
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-de-secondary btn-sm"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div><!--end modal-footer-->
-                                </div><!--end modal-content-->
-                            </div><!--end modal-dialog-->
-                        </div><!--end modal-->
+                        </x-modal>
+
                     </div>
                 </div>
             </div>

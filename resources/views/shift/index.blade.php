@@ -41,8 +41,8 @@
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label for="salary_allowance">Waktu Selesai</label>
-                                                <input class="form-control" type="time" name="check_out"
-                                                    value="0" required>
+                                                <input class="form-control" type="time" name="check_out" value="0"
+                                                    required>
                                             </div>
                                         </div>
                                         <button type="submit" class="btn btn-success">Submit</button>
@@ -106,44 +106,31 @@
                             </tbody>
                         </table>
 
-                        <div class="modal fade bd-example-modal-lg" id="modalEdits" tabindex="-1" role="dialog"
-                            aria-labelledby="myModalEditsLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg dialog-center" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title m-0" id="myModalEditsLabel">Form Edit</h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div><!--end modal-header-->
-                                    <div class="modal-body">
-                                        <form action="" method="post">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="row">
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_basic">Nama Shift</label>
-                                                    <input class="form-control" type="text" name="shift_name" id="shift_name_edit" required>
-                                                </div>
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_basic">Waktu Mulai</label>
-                                                    <input class="form-control" type="time" name="check_in" id="check_in_edit" required>
-                                                </div>
-                                                <div class="mb-3 col-lg-6">
-                                                    <label for="salary_allowance">Waktu Selesai</label>
-                                                    <input class="form-control" type="time" name="check_out" id="check_out_edit" required>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-success">Update</button>
-                                        </form>
+                        <x-modal id="modalEdits" title="Form Edit Shift">
+                            <form action="" method="post">
+                                @csrf
+                                @method('PUT')
+                                <div class="row">
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_basic">Nama Shift</label>
+                                        <input class="form-control" type="text" name="shift_name" id="shift_name_edit"
+                                            required>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_basic">Waktu Mulai</label>
+                                        <input class="form-control" type="time" name="check_in" id="check_in_edit"
+                                            required>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_allowance">Waktu Selesai</label>
+                                        <input class="form-control" type="time" name="check_out" id="check_out_edit"
+                                            required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success">Update</button>
+                            </form>
+                        </x-modal>
 
-                                    </div><!--end modal-body-->
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-de-secondary btn-sm"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div><!--end modal-footer-->
-                                </div><!--end modal-content-->
-                            </div><!--end modal-dialog-->
-                        </div><!--end modal-->
                     </div>
                 </div>
             </div>

@@ -18,57 +18,42 @@
                             </div>
                         </div>
                         {{-- </div> --}}
-                    <div class="modal fade bd-example-modal-lg" id="exampleModalLarge" tabindex="-1" role="dialog"
-                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg dialog-center" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h6 class="modal-title m-0" id="myLargeModalLabel">Form Cuti</h6>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div><!--end modal-header-->
-                                <div class="modal-body">
-                                    <form action="{{ route('user-leave.store') }}" method="post">
-                                        @csrf
-                                        @if (Auth::user()->is_admin == 1)
-                                        <div class="mb-3">
-                                            <label>Nama Karyawan</label>
-                                            <select class="form-select" name="user_id" required>
-                                                <option value="">Pilih Karyawan</option>
-                                                @foreach ($users as $user)
-                                                    @if ($user->is_admin == 0)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                    @endif
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                    <x-modal id="exampleModalLarge" title="Form Cuti" size="lg">
+                        <form action="{{ route('user-leave.store') }}" method="post">
+                            @csrf
+                            @if (Auth::user()->is_admin == 1)
+                                <div class="mb-3">
+                                    <label>Nama Karyawan</label>
+                                    <select class="form-select" name="user_id" required>
+                                        <option value="">Pilih Karyawan</option>
+                                        @foreach ($users as $user)
+                                            @if ($user->is_admin == 0)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
                                             @endif
-                                        <div class="row g-3 mb-3">
-                                            <div class="col-lg-6">
-                                                <label>Tanggal Mulai Cuti</label>
-                                                <input class="form-control" type="date" name="start_date" required>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <label>Tanggal Selesai Cuti</label>
-                                                <input class="form-control" type="date" name="end_date" required>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label>Keterangan Cuti</label>
-                                            <textarea class="form-control" name="description" required rows="10"
-                                                maxlength="1000"></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-success">Submit</button>
-                                    </form>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-6">
+                                    <label>Tanggal Mulai Cuti</label>
+                                    <input class="form-control" type="date" name="start_date" required>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Tanggal Selesai Cuti</label>
+                                    <input class="form-control" type="date" name="end_date" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label>Keterangan Cuti</label>
+                                <textarea class="form-control" name="description" required rows="10"
+                                    maxlength="1000"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
 
-                                </div><!--end modal-body-->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-de-secondary btn-sm"
-                                        data-bs-dismiss="modal">Close</button>
-                                </div><!--end modal-footer-->
-                            </div><!--end modal-content-->
-                        </div><!--end modal-dialog-->
-                    </div><!--end modal-->
+                    </x-modal>
+
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -114,8 +99,8 @@
                                                         href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
                                                 @endif
                                                 @if (Auth::user()->is_admin == 1)
-                                                <button class="dropdown-item" type="button" data-bs-toggle="modal"
-                                                    onclick="openModalEdit('{{ $leave->id }}', '{{ $leave->leave_date_start }}', '{{ $leave->leave_date_end }}', '{{ $leave->desc_leave }}')">Edit</button>
+                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                                                        onclick="openModalEdit('{{ $leave->id }}', '{{ $leave->leave_date_start }}', '{{ $leave->leave_date_end }}', '{{ $leave->desc_leave }}')">Edit</button>
                                                 @endif
                                                 {{-- <a class="dropdown-item"
                                                     href="{{ route('user-leave.edit', ['id' => $leave->id]) }}">Edit</a>
@@ -131,47 +116,30 @@
                             </tbody>
                         </table>
 
-                        <div class="modal fade bd-example-modal-lg" id="modalEdits" tabindex="-1" role="dialog"
-                            aria-labelledby="myModalEditsLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg dialog-center" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title m-0" id="myModalEditsLabel">Form Cuti</h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div><!--end modal-header-->
-                                    <div class="modal-body">
-                                        <form action="" method="post">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-lg-6">
-                                                    <label>Tanggal Mulai Cuti</label>
-                                                    <input class="form-control" type="date" name="start_date"
-                                                        id="start_date" required>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <label>Tanggal Selesai Cuti</label>
-                                                    <input class="form-control" type="date" name="end_date"
-                                                        id="end_date" required>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label>Keterangan Cuti</label>
-                                                <textarea class="form-control" name="description" id="description"
-                                                    required rows="10" maxlength="1000"></textarea>
-                                            </div>
-                                            <button type="submit" class="btn btn-success">Submit</button>
-                                        </form>
+                        <x-modal id="modalEdits" title="Form Cuti" size="lg">
+                            <form action="" method="post">
+                                @csrf
+                                @method('PUT')
+                                <div class="row g-3 mb-3">
+                                    <div class="col-lg-6">
+                                        <label>Tanggal Mulai Cuti</label>
+                                        <input class="form-control" type="date" name="start_date" id="start_date"
+                                            required>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label>Tanggal Selesai Cuti</label>
+                                        <input class="form-control" type="date" name="end_date" id="end_date" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Keterangan Cuti</label>
+                                    <textarea class="form-control" name="description" id="description" required
+                                        rows="10" maxlength="1000"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </form>
+                        </x-modal>
 
-                                    </div><!--end modal-body-->
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-de-secondary btn-sm"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div><!--end modal-footer-->
-                                </div><!--end modal-content-->
-                            </div><!--end modal-dialog-->
-                        </div><!--end modal-->
                     </div>
                     {{ $leaves->links() }}
                 </div>

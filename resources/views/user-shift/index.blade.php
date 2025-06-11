@@ -18,64 +18,47 @@
                             </div>
                         </div>
                         {{-- </div> --}}
-                    <div class="modal fade bd-example-modal-lg" id="exampleModalLarge" tabindex="-1" role="dialog"
-                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h6 class="modal-title m-0" id="myLargeModalLabel">Form Tambah</h6>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div><!--end modal-header-->
-                                <div class="modal-body">
-                                    <form action="{{ route('user-shift.store') }}" method="post">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="mb-3">
-                                                <label for="user_id">User</label>
-                                                <select class="form-control" name="user_id" required>
-                                                    @if (count($users) == 0)
-                                                        <option value="">No users available</option>
-                                                    @else
-                                                        @foreach($users as $user)
-                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_id">Shift</label>
-                                                <select class="form-control" name="shift_id" required>
-                                                    @if (count($shift) == 0)
-                                                        <option value="">No shift available</option>
-                                                    @else
-                                                        @foreach($shift as $row)
-                                                            <option value="{{ $row->id }}">{{ $row->shift_name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_basic">Tanggal Mulai</label>
-                                                <input class="form-control" type="date" name="start_date_shift" required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_allowance">Tanggal Selesai</label>
-                                                <input class="form-control" type="date" name="end_date_shift"
-                                                    value="0" required>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-success">Submit</button>
-                                    </form>
+                    <x-modal id="exampleModalLarge" title="Form Shift">
+                        <form action="{{ route('user-shift.store') }}" method="post">
+                            @csrf
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label for="user_id">User</label>
+                                    <select class="form-control" name="user_id" required>
+                                        @if (count($users) == 0)
+                                            <option value="">No users available</option>
+                                        @else
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="user_id">Shift</label>
+                                    <select class="form-control" name="shift_id" required>
+                                        @if (count($shift) == 0)
+                                            <option value="">No shift available</option>
+                                        @else
+                                            @foreach($shift as $row)
+                                                <option value="{{ $row->id }}">{{ $row->shift_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_basic">Tanggal Mulai</label>
+                                    <input class="form-control" type="date" name="start_date_shift" required>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_allowance">Tanggal Selesai</label>
+                                    <input class="form-control" type="date" name="end_date_shift" value="0" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
 
-                                </div><!--end modal-body-->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-de-secondary btn-sm"
-                                        data-bs-dismiss="modal">Close</button>
-                                </div><!--end modal-footer-->
-                            </div><!--end modal-content-->
-                        </div><!--end modal-dialog-->
-                    </div><!--end modal-->
+                    </x-modal>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -132,6 +115,49 @@
                             </tbody>
                         </table>
 
+                        <x-modal id="modalEdits" title="Form Edit Shift Karyawan">
+                            <form action="" method="post">
+                                @csrf
+                                @method('PUT')
+                                <div class="row">
+                                    <div class="mb-3">
+                                        <label for="user_id">User</label>
+                                        <select class="form-control" name="user_id" id="user_id_edit" required>
+                                            @if (count($users) == 0)
+                                                <option value="">No users available</option>
+                                            @else
+                                                @foreach($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="user_id">Shift</label>
+                                        <select class="form-control" name="shift_id" name="shift_id_edit" required>
+                                            @if (count($shift) == 0)
+                                                <option value="">No shift available</option>
+                                            @else
+                                                @foreach($shift as $row)
+                                                    <option value="{{ $row->id }}">{{ $row->shift_name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_basic">Tanggal Mulai</label>
+                                        <input class="form-control" type="date" name="start_date_shift"
+                                            id="start_date_shift_edit" required>
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label for="salary_allowance">Tanggal Selesai</label>
+                                        <input class="form-control" type="date" name="end_date_shift"
+                                            id="end_date_shift_edit" value="0" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success">Update</button>
+                            </form>
+                        </x-modal>
                         <div class="modal fade bd-example-modal-lg" id="modalEdits" tabindex="-1" role="dialog"
                             aria-labelledby="myModalEditsLabel" aria-hidden="true">
                             <div class="modal-dialog modal-lg dialog-center" role="document">
@@ -142,46 +168,7 @@
                                             aria-label="Close"></button>
                                     </div><!--end modal-header-->
                                     <div class="modal-body">
-                                        <form action="" method="post">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="row">
-                                            <div class="mb-3">
-                                                <label for="user_id">User</label>
-                                                <select class="form-control" name="user_id" id="user_id_edit" required>
-                                                    @if (count($users) == 0)
-                                                        <option value="">No users available</option>
-                                                    @else
-                                                        @foreach($users as $user)
-                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_id">Shift</label>
-                                                <select class="form-control" name="shift_id" name="shift_id_edit" required>
-                                                    @if (count($shift) == 0)
-                                                        <option value="">No shift available</option>
-                                                    @else
-                                                        @foreach($shift as $row)
-                                                            <option value="{{ $row->id }}">{{ $row->shift_name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_basic">Tanggal Mulai</label>
-                                                <input class="form-control" type="date" name="start_date_shift" id="start_date_shift_edit" required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_allowance">Tanggal Selesai</label>
-                                                <input class="form-control" type="date" name="end_date_shift" id="end_date_shift_edit"
-                                                    value="0" required>
-                                            </div>
-                                        </div>
-                                            <button type="submit" class="btn btn-success">Update</button>
-                                        </form>
+
 
                                     </div><!--end modal-body-->
                                     <div class="modal-footer">
