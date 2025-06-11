@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Role;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use App\Models\Shift;
 use App\Models\UserShift;
 use App\Models\UserAttendance;
@@ -23,6 +24,24 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        Role::create([
+            'role_name' => 'Staff',
+            'description' => 'Staff',
+            'job_description' => 'Melaksanakan tugas sehari-hari sesuai dengan job description yang telah ditetapkan.',
+        ]);
+
+        Role::create([
+            'role_name' => 'IT Support',
+            'description' => 'IT Support',
+            'job_description' => 'Melaksanakan tugas sehari-hari sesuai dengan job description yang telah ditetapkan.',
+        ]);
+
+        Role::create([
+            'role_name' => 'Programmer',
+            'description' => 'Programmer',
+            'job_description' => 'Melaksanakan tugas sehari-hari sesuai dengan job description yang telah ditetapkan.',
+        ]);
+
         User::create([
             'name' => 'admin',
             'username' => 'admin',
@@ -33,6 +52,8 @@ class DatabaseSeeder extends Seeder
             'gender' => 'Laki-laki',
             'birth_date' => '1990-01-01',
             'is_admin' => true,
+            'leave' => 12,
+            'role_id' => 1, // Assuming the role_id for 'karyawan' is 1
         ]);
 
          User::create([
@@ -45,7 +66,10 @@ class DatabaseSeeder extends Seeder
             'gender' => 'Laki-laki',
             'birth_date' => '1990-01-01',
             'is_admin' => false,
+            'leave' => 12,
+            'role_id' => 1, // Assuming the role_id for 'karyawan' is 1
         ]);
+
 
         // Shift::create([
         //     'shift_name' => 'Morning Shift',

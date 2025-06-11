@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Role;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable,SoftDeletes;
@@ -64,5 +66,9 @@ class User extends Authenticatable
         return $this->belongsToMany(TypeAllowance::class, 'detail_allowance_users', 'user_id', 'type_allowance_id')
                     ->withPivot('amount')
                     ->withTimestamps();
+    } 
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

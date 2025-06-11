@@ -2,15 +2,17 @@
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\User\UserLeaveController;
-use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AllowanceController;
+use App\Http\Controllers\User\UserContractController;
+use App\Http\Controllers\User\UserEmployeeController;
 
 URL::forceScheme('http');
 
@@ -70,6 +72,21 @@ Route::middleware('auth')->group(function(){
         Route::get('/slip-gaji','downloadSalarySlip')->name('profile.slip.gaji');
     });
 
+    Route::prefix('role')->controller(RoleController::class)->name('role.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/save', 'store')->name('store');
+        Route::put('/update/{id}', 'update')->name('update');
+        Route::get('/role/{id}/delete', 'destroy')->name('delete');
+    });
+    
+    Route::prefix('user-employee')->controller(UserEmployeeController::class)->name('user-employee.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/save', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::put('/update/{id}', 'update')->name('update');
+        Route::get('/user-employee/{id}/delete', 'destroy')->name('delete');
+    });
+
     Route::controller(UserContractController::class)->group(function(){
         Route::get('/user-contract',action: 'index')->name('user-contract.index');
         Route::get('/user-contract/unduh-kontrak/{id}','download')->name('user-contract.download');
@@ -88,7 +105,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/absensi/{id}/edit', 'edit')->name('edit');
         Route::put('/absensi/{id}', 'update')->name('update');
         Route::delete('/absensi/{id}/delete', 'destroy')->name('destroy');
-        
+
     });
 
 });
