@@ -14,7 +14,7 @@ use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
 
-URL::forceScheme('http');
+URL::forceScheme('https');
 
 route::controller(AuthController::class)->group(function(){
     Route::get('/login','index')->name('login');
@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function(){
         });
 
     });
-    
+
     Route::controller(ProfileController::class)->group(function(){
         Route::get('/profile','index')->name('profile.index');
         Route::put('/profile/update','update')->name('profile.update');
@@ -75,10 +75,11 @@ Route::middleware('auth')->group(function(){
     Route::prefix('role')->controller(RoleController::class)->name('role.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/save', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
         Route::put('/update/{id}', 'update')->name('update');
         Route::get('/role/{id}/delete', 'destroy')->name('delete');
     });
-    
+
     Route::prefix('user-employee')->controller(UserEmployeeController::class)->name('user-employee.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/save', 'store')->name('store');

@@ -27,19 +27,19 @@ class DatabaseSeeder extends Seeder
         Role::create([
             'role_name' => 'Staff',
             'description' => 'Staff',
-            'job_description' => 'Melaksanakan tugas sehari-hari sesuai dengan job description yang telah ditetapkan.',
+            'job_description' => '["test","tes3","test2"]',
         ]);
 
         Role::create([
             'role_name' => 'IT Support',
             'description' => 'IT Support',
-            'job_description' => 'Melaksanakan tugas sehari-hari sesuai dengan job description yang telah ditetapkan.',
+            'job_description' => '["test","tes3","test2"]',
         ]);
 
         Role::create([
             'role_name' => 'Programmer',
             'description' => 'Programmer',
-            'job_description' => 'Melaksanakan tugas sehari-hari sesuai dengan job description yang telah ditetapkan.',
+            'job_description' => '["test","tes3","test2"]',
         ]);
 
         User::create([

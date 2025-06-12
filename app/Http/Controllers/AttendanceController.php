@@ -75,7 +75,7 @@ class AttendanceController extends Controller
             return response()->json([
                 'status' => 500,
                 'success' => false,
-                'message' => "Gagal presensi",
+                'message' => "Gagal presensi - " . $e->getMessage(),
             ]);
         }
     }

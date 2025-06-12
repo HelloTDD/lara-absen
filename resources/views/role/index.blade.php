@@ -41,7 +41,29 @@
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label for="job_description">Job deskripsi</label>
-                                                <textarea name="job_description" id="job_description" cols="30" rows="10" required></textarea>
+                                                {{-- <textarea name="job_description" id="job_description" cols="30" rows="10" required></textarea> --}}
+                                            </div>
+                                            <button id="rowAdder" type="button"
+                                                class="btn btn-dark">
+                                                <span class="bi bi-plus-square-dotted">
+                                                </span> ADD
+                                            </button>
+                                            <div class="col-lg-12">
+                                                <div id="row">
+                                                    <div class="input-group m-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-danger"
+                                                                id="DeleteRow" type="button">
+                                                                <i class="bi bi-trash"></i>
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                        <input type="text"
+                                                            class="form-control m-input" name="job_description[]" placeholder="description">
+                                                    </div>
+                                                </div>
+
+                                                <div id="newinput"></div>
                                             </div>
                                         </div>
                                         <button type="submit" class="btn btn-success">Submit</button>
@@ -87,10 +109,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end"
                                                 aria-labelledby="dropdownMenuButton{{ $item->id }}">
                                                 <li>
-                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal"
-                                                        onclick="openModalEdit('{{ $item->id }}', '{{ $item->role_name }}', '{{ $item->description }}', '{{ $item->job_description }}')">
-                                                        Edit
-                                                    </button>
+                                                    <a class="dropdown-item" href="{{ url('/role/edit') }}/{{ $item->id }}" >Edit</a>
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item"
@@ -129,7 +148,29 @@
                                                 </div>
                                                 <div class="mb-3 col-lg-6">
                                                     <label for="job_description">Job Deskripsi</label>
-                                                    <textarea name="job_description" id="job_description_edit" cols="30" rows="10" required></textarea>
+
+                                                    <button id="rowAdder" type="button"
+                                                        class="btn btn-dark">
+                                                        <span class="bi bi-plus-square-dotted">
+                                                        </span> ADD
+                                                    </button>
+                                                    <div class="col-lg-12">
+                                                        <div id="row">
+                                                            <div class="input-group m-3">
+                                                                <div class="input-group-prepend">
+                                                                    <button class="btn btn-danger"
+                                                                        id="DeleteRow" type="button">
+                                                                        <i class="bi bi-trash"></i>
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                                <input type="text"
+                                                                    class="form-control m-input" name="job_description[]" placeholder="description">
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="newinput"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <button type="submit" class="btn btn-success">Update</button>
@@ -151,7 +192,23 @@
         @endsection
 
         @push('scripts')
-            <script>
+        <script type="text/javascript">
+            $("#rowAdder").click(function() {
+                newRowAdd =
+                    '<div id="row"> <div class="input-group m-3">' +
+                    '<div class="input-group-prepend">' +
+                    '<button class="btn btn-danger" id="DeleteRow" type="button">' +
+                    '<i class="bi bi-trash"></i> Delete</button> </div>' +
+                    '<input type="text" class="form-control m-input" name="job_description[]" placeholder="description"> </div> </div>';
+
+                $('#newinput').append(newRowAdd);
+            });
+
+            $("body").on("click", "#DeleteRow", function() {
+                $(this).parents("#row").remove();
+            })
+        </script>
+            {{-- <script>
                 function openModalEdit(id, role_name, description, job_description) {
                     $('#modalEdits').modal('show');
                     $('#role_name_edit').val(role_name);
@@ -159,5 +216,5 @@
                     $('#job_description_edit').val(job_description);
                     $('form[action]').attr('action', `/role/update/${id}`);
                 }
-            </script>
+            </script> --}}
         @endpush

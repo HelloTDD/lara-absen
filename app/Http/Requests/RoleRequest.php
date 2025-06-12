@@ -23,8 +23,8 @@ class RoleRequest extends FormRequest
     {
         return [
             'role_name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',    
-            'job_description' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:500',
+            // 'job_description' => 'nullable|string|max:1000',
         ];
     }
 }

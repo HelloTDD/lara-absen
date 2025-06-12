@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -66,7 +66,7 @@ class User extends Authenticatable
         return $this->belongsToMany(TypeAllowance::class, 'detail_allowance_users', 'user_id', 'type_allowance_id')
                     ->withPivot('amount')
                     ->withTimestamps();
-    } 
+    }
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');

@@ -12,7 +12,7 @@ class RoleService
 {
     /**
      * Create a new role.
-     *  
+     *
      * @param \Illuminate\Http\Request $request
      * @return \App\Models\Role
      */
@@ -23,7 +23,7 @@ class RoleService
             Role::create([
                 'role_name' => $request->role_name,
                 'description' => $request->description,
-                'job_description' => $request->job_description,
+                'job_description' => json_encode($request->job_description, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             ]);
             DB::commit();
         }catch (\Exception $e) {
@@ -34,5 +34,5 @@ class RoleService
             throw new \Exception('Failed to create role: ' . $e->getMessage());
         }
     }
-        
+
 }

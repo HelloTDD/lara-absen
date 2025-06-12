@@ -19,6 +19,7 @@ class RoleController extends Controller
 
     public function store(RoleRequest $request, RoleService $roleService)
     {
+        // dd($request->all());
         DB::beginTransaction();
         try {
             $roleService->createRole($request);
@@ -33,6 +34,16 @@ class RoleController extends Controller
         return redirect()->route('role.index')->with('success', 'Role created successfully.');
     }
 
+    public function edit($id)
+    {
+        $role = Role::find($id);
+        if (!$role) {
+            Log::error('Role not found', ['id' => $id]);
+            return redirect()->route('role.index')->with('error', 'role not found.');
+        }
+        return view('role.edit', compact('role'));
+    }
+
     public function update(Request $request, $id)
     {
         $role = Role::find($id);
@@ -45,7 +56,7 @@ class RoleController extends Controller
         try {
             $role->role_name = $request->role_name;
             $role->description = $request->description;
-            $role->job_description = $request->job_description;
+            $role->job_description = json_encode($request->job_description, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             $role->save();
             DB::commit();
         } catch (\Exception $e) {

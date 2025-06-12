@@ -44,7 +44,7 @@ class UserEmployeeController extends Controller
             Log::error('Failed to create user employee', [
                 'error' => $e->getMessage(),
             ]);
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            return redirect()->route('user-employee.index')->with('error' , 'Gagal menambah data. Pesan : ' . $e->getMessage());
         }
         return redirect()->route('user-employee.index')->with('success', 'User created successfully.');
     }
