@@ -13,8 +13,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
+use App\Http\Controllers\CalendarController;
 
 URL::forceScheme('https');
+
+Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
+Route::delete('/calendar/delete/{id}', [CalendarController::class, 'destroy'])->name('calendar.delete');
 
 route::controller(AuthController::class)->group(function(){
     Route::get('/login','index')->name('login');
@@ -123,7 +128,7 @@ Route::middleware('auth')->group(function(){
 // })->name('login');
 
 Route::get('/homes',function () {
-    return view('home.index');
+    return view('user.home.index');
 })->name('homes');
 
 Route::get('/', function () {

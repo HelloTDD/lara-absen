@@ -20,7 +20,15 @@ class UserContractController extends Controller implements UserContractInterface
     public function index()
     {
         $users = User::where('id', '!=', Auth::id())->get();
-        $userContracts = StatusContract::with('contracts.user')->get();
+        if(Auth::user()->is_admin == 1){
+            $userContracts = StatusContract::with('contracts.user')->get();
+        } else {
+            $userContracts = StatusContract::with('contracts.user')
+                ->whereHas('contracts.user', function ($query) {
+                    $query->where('id', Auth::id());
+                })->get();
+        }
+        
         return view('user.users-contract.index', compact('userContracts','users'));
     }
 

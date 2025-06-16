@@ -58,7 +58,8 @@
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label for="phone">Telepon</label>
-                                                <input class="form-control" type="text" name="phone" placeholder="62xxxxx" required>
+                                                <input class="form-control" type="text" name="phone"
+                                                    placeholder="62xxxxx" required>
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label for="birth_date">Tanggal Lahir</label>
@@ -74,7 +75,8 @@
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label for="address">Alamat</label>
-                                                <textarea name="address" class="form-control" cols="30" rows="10" required></textarea>
+                                                <textarea name="address" class="form-control" cols="30" rows="10"
+                                                    required></textarea>
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label for="date_joined">Tanggal Masuk</label>
@@ -102,6 +104,16 @@
                     </div><!--end modal-->
                 </div>
                 <div class="card-body">
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="table-responsive">
 
                         <table class="table table-bordered table-striped">
@@ -146,7 +158,8 @@
                                             <ul class="dropdown-menu dropdown-menu-end"
                                                 aria-labelledby="dropdownMenuButton{{ $item->id }}">
                                                 <li>
-                                                    <a class="dropdown-item" href="{{ url('/user-employee/edit') }}/{{ $item->id }}" >Edit</a>
+                                                    <a class="dropdown-item"
+                                                        href="{{ url('/user-employee/edit') }}/{{ $item->id }}">Edit</a>
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item"
