@@ -21,7 +21,7 @@ class UserContractController extends Controller implements UserContractInterface
     {
         $users = User::where('id', '!=', Auth::id())->get();
         $userContracts = StatusContract::with('contracts.user')->get();
-        return view('users-contract.index', compact('userContracts','users'));
+        return view('user.users-contract.index', compact('userContracts','users'));
     }
 
     public function store(UserContractRequest $req,UserContract $userContract)
@@ -160,7 +160,7 @@ class UserContractController extends Controller implements UserContractInterface
             $data = $statusContract->with(['contracts.user'])->where('id',$id)->first();
             // dd($contract);
             $pdf = new \Dompdf\Dompdf();
-            $pdf->loadHtml(view('users-contract.contract', compact('data')));
+            $pdf->loadHtml(view('user.users-contract.contract', compact('data')));
             $pdf->setPaper('A4', 'portrait');
             $pdf->render();
             return $pdf->stream('contract-' . $data->name . '.pdf');

@@ -17,7 +17,7 @@ class ShiftController extends Controller
     {
         // Logic to display a list of shifts
         $shift = Shift::all();
-        return view('shift.index', compact('shift'));
+        return view('user.shift.index', compact('shift'));
     }
 
     /**

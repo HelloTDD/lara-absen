@@ -20,7 +20,7 @@ class UserShiftController extends Controller
         $users = User::all();
         $shift = Shift::all();
         $usershift = UserShift::all();
-        return view('user-shift.index', compact('users', 'shift', 'usershift'));
+        return view('user.user-shift.index', compact('users', 'shift', 'usershift'));
     }
 
     public function store(UserShiftRequest $request, UserShiftService $service)

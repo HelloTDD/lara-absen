@@ -14,7 +14,7 @@ class RoleController extends Controller
     public function index()
     {
         $role = Role::all();
-        return view('role.index', compact('role'));
+        return view('user.role.index', compact('role'));
     }
 
     public function store(RoleRequest $request, RoleService $roleService)
@@ -41,7 +41,7 @@ class RoleController extends Controller
             Log::error('Role not found', ['id' => $id]);
             return redirect()->route('role.index')->with('error', 'role not found.');
         }
-        return view('role.edit', compact('role'));
+        return view('user.role.edit', compact('role'));
     }
 
     public function update(Request $request, $id)

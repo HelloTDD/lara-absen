@@ -17,7 +17,7 @@ class ProfileController extends Controller implements ProfileInterface
     public function index()
     {
         $data = UserSalary::where('user_id', Auth::user()->id)->first();
-        return view('profile.index', compact('data'));
+        return view('user.profile.index', compact('data'));
     }
 
     /**
@@ -88,7 +88,7 @@ class ProfileController extends Controller implements ProfileInterface
         try {
             $data = UserSalary::with('user')->where('user_id',Auth::user()->id)->first();
             $pdf = new \Dompdf\Dompdf();
-            $pdf->loadHtml(view('pdf.salary-slip', compact('data')));
+            $pdf->loadHtml(view('user.pdf.salary-slip', compact('data')));
             $pdf->setPaper('A4', 'portrait');
             $pdf->render();
             return $pdf->stream('salary-slip-' . Auth::user()->name . '.pdf');

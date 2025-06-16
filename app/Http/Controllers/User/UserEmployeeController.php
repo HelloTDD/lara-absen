@@ -19,7 +19,7 @@ class UserEmployeeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         $roles = Role::all();
-        return view('user-employee.index', compact('users','roles'));
+        return view('user.user-employee.index', compact('users','roles'));
     }
 
     public function store(UserEmployeeRequest $request, UserEmployeeService $userEmployeeService)
@@ -57,7 +57,7 @@ class UserEmployeeController extends Controller
             return redirect()->route('user-employee.index')->with('error', 'User not found.');
         }
         $roles = Role::all();
-        return view('user-employee.edit', compact('user', 'roles'));
+        return view('user.user-employee.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)

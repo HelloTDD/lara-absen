@@ -32,7 +32,7 @@ class AttendanceController extends Controller
             $existing->check_in_time = null;
             $existing->check_out_time = null;
         }
-        return view('attendance.index',compact('date', 'time', 'existing'));
+        return view('user.attendance.index',compact('date', 'time', 'existing'));
     }
 
     public function store(AttendanceRequest $request, AttendanceService $service)
@@ -93,14 +93,14 @@ class AttendanceController extends Controller
                 ->get();
         }
 
-        return view('attendance.list',compact('data'));
+        return view('user.attendance.list',compact('data'));
     }
 
     public function edit($id)
     {
         $absensi = UserAttendance::findOrFail($id);
         $shifts = Shift::all();
-        return view('attendance.edit', compact('absensi', 'shifts'));
+        return view('user.attendance.edit', compact('absensi', 'shifts'));
     }
 
     public function update(Request $request, $id)

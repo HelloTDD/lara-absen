@@ -26,7 +26,7 @@ class UserSalaryController extends Controller implements UserSalaryInterface
         //         // endforeach;
         // endforeach;
 
-        return view('users-salary.index', compact('users', 'salary','type_allowance'));
+        return view('user.users-salary.index', compact('users', 'salary','type_allowance'));
     }
 
     public function store(UserSalaryRequest $request)

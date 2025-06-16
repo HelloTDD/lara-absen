@@ -19,14 +19,14 @@ class UserLeaveController extends Controller implements UserLeaveInterface
     {
         $users = User::all();
         $leaves = UserLeave::with('user')->orderBy('created_at', 'desc')->paginate(10);
-        return view('users-leave.index', compact('users', 'leaves'));
+        return view('user.users-leave.index', compact('users', 'leaves'));
     }
 
     public function index_by_user()
     {
         $user_id = Auth::user()->id;
         $leaves = UserLeave::where('user_id', $user_id)->with('user')->paginate(10);
-        return view('users-leave.index', compact('leaves'));
+        return view('user.users-leave.index', compact('leaves'));
     }
 
     public function create_leave(UserLeaveRequest $request)
