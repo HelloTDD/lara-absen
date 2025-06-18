@@ -96,7 +96,7 @@
                                         @if (in_array($item->status_contract, ['approved', 'renew']))
                                             <span
                                                 class="badge rounded-4 bg-success fs-6 m-1">{{ $item->status_contract }}</span>
-                                        @elseif ($item->status_contract == 'cancel')
+                                        @elseif ($item->status_contract == 'CANCEL')
                                             <span class="badge rounded-4 bg-danger fs-6 m-1">Reject</span>
                                         @elseif ($item->status_contract == 'REVISION')
                                             <span class="badge rounded-4 bg-info fs-6 m-1">Revision</span>
@@ -121,6 +121,9 @@
 
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'revision']) }}">Revisi</a>
+                                                        
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user-contract.delete', ['id' => $item->contracts?->id]) }}">Delete</a>
 
                                                 @elseif($item->status_contract == 'APPROVE' && todayNow() < $item->contracts?->end_contract_date)
 
@@ -136,9 +139,6 @@
                                                         onclick="openModalEdit('{{ $item->contracts?->id }}', '{{ $item->contracts?->start_contract_date }}', '{{ $item->contracts?->end_contract_date }}', '{{ $item->contracts?->desc_contract }}')">Edit</button>
 
                                                 @endif
-
-                                                <a class="dropdown-item"
-                                                    href="{{ route('user-contract.delete', ['id' => $item->contracts?->id]) }}">Delete</a>
                                             </div>
                                         </div>
                                     </td>

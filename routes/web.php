@@ -15,7 +15,7 @@ use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\CalendarController;
 
-URL::forceScheme('https');
+URL::forceScheme('http');
 
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
@@ -113,6 +113,9 @@ Route::middleware('auth')->group(function(){
         Route::delete('/absensi/{id}/delete', 'destroy')->name('destroy');
 
     });
+
+    
+    Route::put('/ajax/update-shift/{id}',[UserShiftController::class,'update'])->name('user-shift.ajax.update');
 
 });
 

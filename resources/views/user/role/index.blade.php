@@ -98,7 +98,7 @@
                                     <td>{{ $no }}</td>
                                     <td>{{ $item->role_name }}</td>
                                     <td>{{ $item->description }}</td>
-                                    <td>{{ $item->job_description }}</td>
+                                    <td>{{ $item->job_description ?? 'Deskripsi belum dibuat' }}</td>
                                     <td class="text-end">
                                         <div class="dropstart d-inline-block">
                                             <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"

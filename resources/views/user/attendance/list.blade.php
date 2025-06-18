@@ -46,8 +46,17 @@
                                         $checkInTime = \Carbon\Carbon::parse($item->date . ' ' . $item->check_in_time, 'Asia/Jakarta');
 
                                         if ($checkInTime->gt($shiftStart)) {
-                                            $lateDuration = ceil($shiftStart->floatDiffInMinutes($checkInTime));
-                                            $item->late_reason = 'Terlambat ' . $lateDuration . ' menit';
+                                            $lateMinutes = $shiftStart->diffInMinutes($checkInTime);
+                                            $hours = floor($lateMinutes / 60);
+                                            $minutes = $lateMinutes % 60;
+                                            
+                                            if ($hours > 0 && $minutes > 0) {
+                                                $item->late_reason = "Terlambat {$hours} jam {$minutes} menit";
+                                            } elseif ($hours > 0) {
+                                                $item->late_reason = "Terlambat {$hours} jam";
+                                            } else {
+                                                $item->late_reason = "Terlambat {$minutes} menit";
+                                            }
                                         } else {
                                             $item->late_reason = null;
                                         }

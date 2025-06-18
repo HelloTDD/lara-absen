@@ -36,13 +36,17 @@
             <div class="main-icon-menu-body">
                 <div class="position-reletive h-100" data-simplebar style="overflow-x: hidden;">
                     <ul class="nav nav-tabs" role="tablist" id="tab-menu">
-                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard" data-bs-trigger="hover">
-                            <a href="#MetricaDashboard" id="dashboard-tab" class="nav-link" data-bs-toggle="tab" role="tab" aria-selected="true">
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard"
+                            data-bs-trigger="hover">
+                            <a href="#MetricaDashboard" id="dashboard-tab" class="nav-link" data-bs-toggle="tab"
+                                role="tab" aria-selected="true">
                                 <i class="ti ti-smart-home menu-icon"></i>
                             </a><!--end nav-link-->
                         </li><!--end nav-item-->
-                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Apps" data-bs-trigger="hover">
-                            <a href="#MetricaApps" id="apps-tab" class="nav-link  {{ request()->is(['user-leave*','user-salar*']) ? 'active' : '' }}">
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Apps"
+                            data-bs-trigger="hover">
+                            <a href="#MetricaApps" id="apps-tab"
+                                class="nav-link  {{ request()->is(['user-leave*', 'user-salar*']) ? 'active' : '' }}">
                                 <i class="ti ti-users menu-icon"></i>
                             </a><!--end nav-link-->
                         </li><!--end nav-item-->
@@ -51,7 +55,8 @@
             </div><!--end main-icon-menu-body-->
             <div class="pro-metrica-end">
                 <a href="" class="profile">
-                    <img src="{{ asset('assets/images/users/user-4.jpg') }}" alt="profile-user" class="rounded-circle thumb-sm">
+                    <img src="{{ asset('assets/images/users/user-4.jpg') }}" alt="profile-user"
+                        class="rounded-circle thumb-sm">
                 </a>
             </div><!--end pro-metrica-end-->
         </div>
@@ -62,7 +67,8 @@
             <div class="topbar-left">
                 <a href="index.html" class="logo">
                     <span>
-                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large" class="logo-lg logo-dark">
+                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large"
+                            class="logo-lg logo-dark">
                         <img src="{{ asset('assets/images/logo.png') }}" alt="logo-large" class="logo-lg logo-light">
                     </span>
                 </a><!--end logo-->
@@ -86,8 +92,9 @@
                     </ul><!--end nav-->
                 </div><!-- end Dashboards -->
 
-                <div id="MetricaApps" class="main-icon-menu-pane tab-pane {{ request()->is(['user-leave*','user-salaries*']) ? 'active show' : '' }}" role="tabpanel"
-                    aria-labelledby="apps-tab">
+                <div id="MetricaApps"
+                    class="main-icon-menu-pane tab-pane {{ request()->is(['user-leave*', 'user-salaries*']) ? 'active show' : '' }}"
+                    role="tabpanel" aria-labelledby="apps-tab">
                     <div class="title-box">
                         <h6 class="menu-title">Menu User</h6>
                     </div>
@@ -96,42 +103,33 @@
                         <!-- Navigation -->
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" href="#sidebarAnalytics" data-bs-toggle="collapse" role="button"
-                                    aria-expanded="false" aria-controls="sidebarAnalytics">
-                                    Menu User
-                                </a>
-                                <div class="collapse " id="sidebarAnalytics">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a href="{{ Auth::user()->is_admin == 1 ? route('user-leave.index') : route('user-leave.user') }}" class="nav-link ">Cuti</a>
-                                        </li><!--end nav-item-->
-                                        <li class="nav-item">
-                                            <a href="{{ route('attendance.list') }}" class="nav-link ">Absensi</a>
-                                        </li><!--end nav-item-->
+                                <a href="{{ Auth::user()->is_admin == 1 ? route('user-leave.index') : route('user-leave.user') }}"
+                                    class="nav-link ">Cuti</a>
+                            </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a href="{{ route('attendance.list') }}" class="nav-link ">Absensi</a>
+                            </li><!--end nav-item-->
 
-                                        @if(Auth::user()->is_admin == 1)
-                                        <li class="nav-item">
-                                            <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
-                                        </li><!--end nav-item-->
-                                        <li class="nav-item">
-                                            <a href="{{ route('role.index') }}" class="nav-link ">Bagian</a>
-                                        </li><!--end nav-item-->
-                                        <li class="nav-item">
-                                            <a href="{{ route('user-employee.index') }}" class="nav-link ">Karyawan</a>
-                                        </li><!--end nav-item-->
-                                        <li class="nav-item">
-                                            <a href="{{ route('user-shift.index') }}" class="nav-link ">Shift Karyawan</a>
-                                        </li><!--end nav-item-->
-                                        <li class="nav-item">
-                                            <a href="{{ route('shift.index') }}" class="nav-link ">Shift</a>
-                                        </li><!--end nav-item-->
-                                        @endif
+                            @if(Auth::user()->is_admin == 1)
+                                <li class="nav-item">
+                                    <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('role.index') }}" class="nav-link ">Bagian</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('user-employee.index') }}" class="nav-link ">Karyawan</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('user-shift.index') }}" class="nav-link ">Shift Karyawan</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('shift.index') }}" class="nav-link ">Shift</a>
+                                </li><!--end nav-item-->
+                            @endif
 
-                                        <li class="nav-item">
-                                            <a href="{{ route('user-contract.index') }}" class="nav-link ">Kontrak</a>
-                                        </li><!--end nav-item-->
-                                    </ul><!--end nav-->
-                                </div><!--end sidebarAnalytics-->
+                            <li class="nav-item">
+                                <a href="{{ route('user-contract.index') }}" class="nav-link ">Kontrak</a>
                             </li><!--end nav-item-->
                         </ul><!--end navbar-nav--->
                     </div><!--end sidebarCollapse-->
@@ -155,7 +153,8 @@
                     <a class="nav-link dropdown-toggle nav-user" data-bs-toggle="dropdown" href="#" role="button"
                         aria-haspopup="false" aria-expanded="false">
                         <div class="d-flex align-items-center">
-                            <img src="{{ asset('assets/images/users/user-4.jpg') }}" alt="profile-user" class="rounded-circle me-2 thumb-sm" />
+                            <img src="{{ asset('assets/images/users/user-4.jpg') }}" alt="profile-user"
+                                class="rounded-circle me-2 thumb-sm" />
                             <div>
                                 <span class="d-none d-md-block fw-semibold font-12">{{ Auth::user()->name }} <i
                                         class="mdi mdi-chevron-down"></i></span>
@@ -163,9 +162,11 @@
                         </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="{{ route('profile.index') }}"><i class="ti ti-user font-16 me-1 align-text-bottom"></i> Profile</a>
+                        <a class="dropdown-item" href="{{ route('profile.index') }}"><i
+                                class="ti ti-user font-16 me-1 align-text-bottom"></i> Profile</a>
                         <div class="dropdown-divider mb-0"></div>
-                        <a class="dropdown-item" href="{{ route('login.logout') }}"><i class="ti ti-power font-16 me-1 align-text-bottom"></i> Logout</a>
+                        <a class="dropdown-item" href="{{ route('login.logout') }}"><i
+                                class="ti ti-power font-16 me-1 align-text-bottom"></i> Logout</a>
                     </div>
                 </li><!--end topbar-profile-->
             </ul><!--end topbar-nav-->
@@ -214,7 +215,8 @@
             <!--Start Footer-->
             <!-- Footer Start -->
             <footer class="footer text-center text-sm-start">
-                &copy; <script>
+                &copy;
+                <script>
                     document.write(new Date().getFullYear())
                 </script> Metrica <span class="text-muted d-none d-sm-inline-block float-end">Crafted with <i
                         class="mdi mdi-heart text-danger"></i> by Mannatthemes</span>
@@ -239,25 +241,25 @@
     @stack('scripts')
 
     @session('success')
-    <script>
-        Swal.fire({
-            title: 'Success',
-            text: '{{ session('success') }}',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    </script>
+        <script>
+            Swal.fire({
+                title: 'Success',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
     @endsession
 
     @session('error')
-    <script>
-        Swal.fire({
-            title: 'Error',
-            text: '{{ session('error') }}',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    </script>
+        <script>
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        </script>
     @endsession
 </body>
 <!--end body-->

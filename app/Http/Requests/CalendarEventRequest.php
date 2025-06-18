@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class CalendarEventRequest extends FormRequest
 {
@@ -21,8 +22,9 @@ class CalendarEventRequest extends FormRequest
      */
     public function rules(): array
     {
+        Log::error($this->all());
         return [
-            'title' => 'required|string|max:255',
+            'data' => $this->type == 'shift' ? 'required|exists:shifts,id' : 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'extend_data' => 'nullable|array',

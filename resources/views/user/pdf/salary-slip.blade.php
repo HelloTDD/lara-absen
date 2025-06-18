@@ -33,9 +33,9 @@
     </div>
 
     <div class="slip-info">
-        <p><strong>Employee Name:</strong> {{ $data?->user?->name ?? 'N/A' }}</p>
-        <p><strong>Employee ID:</strong> {{ $data?->user?->id ?? 'N/A' }}</p>
-        <p><strong>Department:</strong> {{ $data?->user?->department ?? 'N/A' }}</p>
+        <p><strong>Employee Name:</strong> {{ $data->user?->name ?? 'N/A' }}</p>
+        <p><strong>Employee ID:</strong> {{ $data->user?->id ?? 'N/A' }}</p>
+        <p><strong>Department:</strong> {{ $data->user?->department ?? 'N/A' }}</p>
     </div>
 
     <table class="salary-details">
@@ -47,28 +47,28 @@
         </tr>
         <tr>
             <td>Basic Salary</td>
-            <td>{{ number_format($data?->salary_basic ?? 0, 2) }}</td>
+            <td>{{ number_format($data->salary_basic ?? 0, 2) }}</td>
             <td>Tax</td>
-            <td>{{ number_format($data?->salary_allowance ?? 0, 2) }}</td>
+            <td>{{ number_format($data->salary_allowance ?? 0, 2) }}</td>
         </tr>
         <tr>
             <td>Allowance</td>
-            <td>{{ number_format($data?->salary_allowance ?? 0, 2) }}</td>
+            <td>{{ number_format($data->salary_allowance ?? 0, 2) }}</td>
             <td>Insurance</td>
-            <td>{{ number_format($data?->insurance ?? 0, 2) }}</td>
+            <td>{{ number_format($data->insurance ?? 0, 2) }}</td>
         </tr>
         <tr>
             <td><strong>Total Earnings</strong></td>
-            <td><strong>{{ number_format(($data?->salary_total ?? 0) + ($data?->allowance ?? 0), 2) }}</strong></td>
+            <td><strong>{{ number_format(($data->salary_total ?? 0) + ($data->allowance ?? 0), 2) }}</strong></td>
             <td><strong>Total Deductions</strong></td>
-            <td><strong>{{ number_format(($data?->tax ?? 0) + ($data?->insurance ?? 0), 2) }}</strong></td>
+            <td><strong>{{ number_format(($data->tax ?? 0) + ($data->insurance ?? 0), 2) }}</strong></td>
         </tr>
     </table>
 
     <div style="margin-top: 20px;">
         <p><strong>Net Salary:</strong> {{ number_format(
-            (($data?->basic_salary ?? 0) + ($data?->allowance ?? 0)) - 
-            (($data?->tax ?? 0) + ($data?->insurance ?? 0)), 2
+            (($data->basic_salary ?? 0) + ($data->allowance ?? 0)) - 
+            (($data->tax ?? 0) + ($data->insurance ?? 0)), 2
         ) }}</p>
     </div>
 

@@ -27,9 +27,22 @@ class UserShiftController extends Controller
     {
         DB::beginTransaction();
         try {
-            $service->createShift($request);
+
+            $cek_shift = UserShift::where('shift_id',$request->shift_id)
+                                        ->where('user_id',$request->user_id)
+                                        ->where('start_date_shift',$request->start_date_shift)
+                                        ->when($request->end_date_shift, function ($query) use ($request) {
+                                            $query->where('end_date_shift',$request->end_date_shift);
+                                        })->count();
+                                        
+            if($cek_shift == 0){
+                $service->createShift($request);
+            } else {
+                throw new \Exception("Jadwal Shift Sudah ada", 1);
+                
+            }
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Failed to create user shift', [
                 'error' => $e->getMessage(),
@@ -39,26 +52,34 @@ class UserShiftController extends Controller
         return redirect()->route('user-shift.index')->with('success', 'Shift created successfully.');
     }
 
-
-    public function update(Request $request, $id)
+    public function update(Request $request, $id) 
     {
         $userShift = UserShift::find($id);
         if (!$userShift) {
+            if($request->ajax()) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Shift Not Found'
+                ]);
+            }
             return redirect()->route('user-shift.index')->with('error', 'Shift not found.');
         }
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'shift_id' => 'required|exists:shifts,id',
+            'shift_id' => 'required|exists:shifts,id', 
             'start_date_shift' => 'required|date',
             'end_date_shift' => 'required|date|after_or_equal:start_date_shift',
         ]);
+
         DB::beginTransaction();
         try {
-            $userShift->user_id = $request->user_id;
-            $userShift->shift_id = $request->shift_id;
-            $userShift->start_date_shift = $request->start_date_shift;
-            $userShift->end_date_shift = $request->end_date_shift;
-            $userShift->save();
+            $userShift->update([
+                'user_id' => $request->user_id,
+                'shift_id' => $request->shift_id,
+                'start_date_shift' => $request->start_date_shift,
+                'end_date_shift' => $request->end_date_shift
+            ]);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -66,9 +87,26 @@ class UserShiftController extends Controller
                 'error' => $e->getMessage(),
                 'id' => $id,
             ]);
+
+            if($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update shift: ' . $e->getMessage()
+                ]);
+            }
             return redirect()->back()->withErrors(['error' => 'Failed to update shift: ' . $e->getMessage()]);
         }
-        return redirect()->route('user-shift.index')->with('success', 'Shift updated successfully.');
+
+        //masih bisa disederhanakan gunakan helper yang pernah dibuat agar tidak redundan dan kode re-useable
+        if($request->ajax())
+        {
+            return response()->json([
+                'success' => true,
+                'message' => 'berhasil mengganti shift'
+            ]);
+        } else {
+            return redirect()->route('user-shift.index')->with('success', 'Shift updated successfully.');
+        }
     }
 
     public function destroy($id)

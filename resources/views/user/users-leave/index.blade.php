@@ -8,10 +8,18 @@
                 {{-- <div class="align-self-center"> --}}
                     <div class="justify-content-between d-flex">
                         {{-- <div class="align-self-center"> --}}
-                            <div>
-                                <h3 class="card-title">Daftar Cuti Karyawan</h3>
+                            <div class="gap-2">
+                                <h3 class="card-title">Daftar Cuti Karyawan {{ Auth::user()->is_admin ? '' : Str::ucsplit(Auth::user()->name) }}</h3>
+                                @if (Auth::user()->is_admin < 0)
+                                    <div class="">
+                                        <span class="badge bg-info text-white fs-6 rounded-4"><label for="">Sisa Cuti :</label> {{ Auth::user()->leave }} </span>
+                                    </div>
+                                    <div class="">
+                                        <span class="badge bg-info text-white fs-6 rounded-4"><label for="">Sisa Cuti :</label> {{ Auth::user()->leave }} </span>
+                                    </div>
+                                @endif
                             </div>
-                            <div>
+                            <div class="align-content-center">
                                 <button type="button" class="btn btn-primary btn-md" data-bs-toggle="modal"
                                     data-bs-target="#exampleModalLarge"><i data-feather="plus-square"
                                         class="align-self-center icon-xs me-2"></i>Tambah Data Cuti</button>

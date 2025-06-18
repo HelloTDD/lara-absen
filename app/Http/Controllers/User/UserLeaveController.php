@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\UserLeave;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
-
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log as lgs;
 
 class UserLeaveController extends Controller implements UserLeaveInterface
@@ -105,19 +105,46 @@ class UserLeaveController extends Controller implements UserLeaveInterface
     {
         $leave = null;
         try {
-            $leave = UserLeave::find($id);
-            if ($leave) {
-                $leave->update(['status' => 'approved']);
-            } else {
+            $leave = UserLeave::with('user')->find($id);
+            
+            if (!$leave) {
                 throw new \Exception('Leave not found');
             }
+            
+            if($leave->user?->leave < 0 ){
+                throw new \Exception('User has no leave');
+            }
+            
+            if ($leave->user) {
+
+                $joinDate = Carbon::parse($leave->user?->date_joined);
+                $oneYearAfterJoin = $joinDate->copy()->addYear();
+                $today = Carbon::now();
+                
+                if ($today->lt($oneYearAfterJoin)) {
+                    throw new \Exception('User must be employed for at least 1 year to take leave');
+                }
+
+                $user = $leave->user;
+                $user->leave = max(0, $user->leave - 1); // supaya tidak negatif
+                $user->save();
+            } else {
+                throw new \Exception("User tersebut tidak ada", 1);
+            }
+
+            $leave->update([
+                'status' => 'approved'
+            ]);
+
         } catch (\Throwable $th) {
+
             Log::create([
                 'action' => 'approve user leave',
                 'controller' => 'UserLeaveController',
                 'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),
             ]);
+
         }
 
         return returnProccessData($leave);

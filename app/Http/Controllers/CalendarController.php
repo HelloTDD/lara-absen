@@ -7,7 +7,9 @@ use App\Models\UserShift;
 use App\Models\User;
 use App\Models\Log;
 
+use App\Services\UserShiftService;
 use App\Http\Requests\CalendarEventRequest;
+use App\Models\Shift;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -33,20 +35,20 @@ class CalendarController extends Controller
                 return [
                     'id' => 'shift_'.$userShift->id,
                     'title' => $userShift->shift?->shift_name .' - '.$userShift->user->name,
-                    'start' => $userShift->shift?->start_date_shift?->format('Y-m-d'),
-                    'end' => $userShift->shift?->end_date_shift?->format('Y-m-d'),
+                    'start' => $userShift->start_date_shift,
+                    'end' => $userShift->end_date_shift,
                     'extendedProps' => [
                         'tipe' => 'shift',
                         'user' => $userShift->user->id,
+                        'shift_id' => $userShift->shift?->id,
                     ],
                 ];
             });
-        
-        $calendarEvents = CalendarEvent::all()
+        $calendarEvents = CalendarEvent::with('user')->get()
             ->map(function ($event) {
                 return [
                     'id' => 'event_'.$event->id,
-                    'title' => $event->title,
+                    'title' => $event->user?->name . ":" . $event->title,
                     'start' => $event->start_date->format('Y-m-d'),
                     'end' => $event->end_date->format('Y-m-d'),
                     'extendedProps' => [
@@ -56,23 +58,51 @@ class CalendarController extends Controller
                     ],
                 ];
             });
-
-            // dd($userShift->toArray());
+        $shift = Shift::all();
         $events = array_merge($userShift->toArray(), $calendarEvents->toArray());
         $event_finals = array_merge($events, $user->toArray());
-        return view('user.calendar.index', compact('event_finals'));
+        return view('user.calendar.index', compact('event_finals','shift'));
     }
 
-    public function store(CalendarEventRequest $request)
+    public function store(CalendarEventRequest $request, UserShiftService $service)
     {
         $result = null;
         try {
-            $result = CalendarEvent::create([
-                'title' => $request->title,
-                'start_date' => Carbon::parse($request->start_date),
-                'end_date' => Carbon::parse($request->end_date),
-                'created_by' => Auth::user()->id,
-            ]);
+            if($request->type == 'shift'){
+
+                //data request di susun ulang agar sesuai dengan yang diharapkan oleh service
+                $title_shift = Shift::where('id', $request->data)->first()->shift_name;
+
+                $cek_shift = UserShift::where('shift_id',$request->data)
+                                        ->where('user_id',Auth::user()->id)
+                                        ->where('start_date_shift',$request->start_date)
+                                        ->when($request->end_date, function ($query) use ($request) {
+                                            $query->where('end_date_shift',$request->end_date);
+                                        })->count();
+                                        
+                if($cek_shift == 0){
+                    $data = [
+                        'user_id' => Auth::user()->id,
+                        'shift_id' => $request->data,
+                        'start_date_shift' => $request->start_date, 
+                        'end_date_shift' => $request->end_date,
+                    ];
+    
+                    $title = $title_shift . " - " . Auth::user()->name; //title untuk di calendar
+                    $result = $service->createShift($data);
+                } else {
+                    throw new \Exception("Shift Sudah Ada", 1);
+                }
+
+            } else {
+                $result = CalendarEvent::create([
+                    'title' => $request->data,
+                    'start_date' => Carbon::parse($request->start_date),
+                    'end_date' => Carbon::parse($request->end_date),
+                    'created_by' => Auth::user()->id,
+                ]);
+                $title = $request->data; //title untuk di calendar
+            }
         } catch (\Throwable $th) {
             Log::create([
                 'action' => 'create type calendar event',
@@ -80,11 +110,16 @@ class CalendarController extends Controller
                 'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),
             ]);
+
+            $title = $th->getMessage();
         }
 
         return response()->json([
             'status' => $result ? 'success' : 'error',
-            'message' => $result ? 'Event created successfully.' : 'Failed to create event.',
+            'message' => $result ? 'Event created successfully.' : 'Failed to create event. Message : '.$title,
+            'data' => [
+                'title' => $title,
+            ]
         ]);
     }
 
@@ -93,17 +128,26 @@ class CalendarController extends Controller
         $result = null;
         try {
             
-            if(str_starts_with($id, 'user_')) {
-                throw new \Exception('Cannot delete user birthday events.', 400);
-            }
-
-            if(Auth::user()->is_admin == 0 && str_starts_with($id, 'shift_')) {
-                throw new \Exception('You do not have permission to delete shift events.', 403);
-            }
-
             $id = str_replace('event_', '', $id);
-            $result = CalendarEvent::findOrFail($id);
-            $result->delete();
+            $data = CalendarEvent::where('id',$id)->where('created_by', Auth::user()->id);
+
+            if($data->count() > 0){
+                
+                $result = $data->first();
+
+                if(str_starts_with($id, 'user_') && $result->created_by !== Auth::user()->id) {
+                    throw new \Exception('Cannot delete user birthday events.', 400);
+                }
+    
+                // dd($result->created_by,str_starts_with($id, 'event_'),$id);
+                if(Auth::user()->is_admin == 0 && str_starts_with($id, 'shift_')) {
+                    throw new \Exception('You do not have permission to delete shift events.', 403);
+                }
+    
+                $result->delete();
+            } else {
+                throw new \Exception('Cannot delete user this events.', 400);
+            }
         } catch (\Throwable $th) {
             Log::create([
                 'action' => 'delete type calendar event',
@@ -115,7 +159,7 @@ class CalendarController extends Controller
 
         return response()->json([
             'status' => $result ? 'success' : 'error',
-            'message' => $result ? 'Event deleted successfully.' : 'Failed to delete event.',
+            'message' => $result ? 'Event deleted successfully.' : 'Failed to delete event. Message :'.$th->getMessage(),
         ]);
     }
 }
