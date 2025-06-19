@@ -93,9 +93,11 @@
                                             class="btn btn-info"> <i class="fas fa-download"></i>
                                             Download</a> </td>
                                     <td>
-                                        @if (in_array($item->status_contract, ['approved', 'renew']))
+                                        @if (in_array($item->status_contract, ['APPROVE ', 'REVISION', 'RENEWE']))
                                             <span
                                                 class="badge rounded-4 bg-success fs-6 m-1">{{ $item->status_contract }}</span>
+                                        @elseif ($item->status_contract == 'APPROVE')
+                                            <span class="badge rounded-4 bg-success fs-6 m-1">APPROVE</span>
                                         @elseif ($item->status_contract == 'CANCEL')
                                             <span class="badge rounded-4 bg-danger fs-6 m-1">Reject</span>
                                         @elseif ($item->status_contract == 'REVISION')
@@ -115,13 +117,13 @@
                                                 @if ($item->status_contract == 'PENDING' && Auth::user()->is_admin == 1)
 
                                                     <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'approve']) }}">Approve</a>
+                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'APPROVE']) }}">Approve</a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'cancel']) }}">Reject</a>
+                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'CANCEL']) }}">Reject</a>
 
                                                     <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'revision']) }}">Revisi</a>
-                                                        
+                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'REVISION']) }}">Revisi</a>
+
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-contract.delete', ['id' => $item->contracts?->id]) }}">Delete</a>
 

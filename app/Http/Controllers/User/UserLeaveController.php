@@ -34,8 +34,29 @@ class UserLeaveController extends Controller implements UserLeaveInterface
         $create_leave = null;
         try {
             $user_id = Auth::check() ? Auth::user()->id : User::where('id', $request->user_id)->first()->id;
+            if(Auth::user()->is_admin == 1){
+                $user = User::where('id', $request->user_id)->first();
+            }else {
+                $user = User::find($user_id);
+            }
+
+            if ($user) {
+                $joinDate = Carbon::parse($user->date_joined);
+                $oneYearAfterJoin = $joinDate->copy()->addYear();
+                $today = Carbon::now();
+
+                if ($today->lt($oneYearAfterJoin)) {
+                    return redirect()->back()->with('error', 'User must be employed for at least 1 year to take leave');
+                }
+            }else {
+                throw new \Exception("User tersebut tidak ada", 1);
+            }
+            if($user->leave <= 0 || $user->leave == '0'){
+                return redirect()->back()->with('error', 'User has no leave');
+            }
+
             $create_leave = UserLeave::create([
-                'user_id' => $user_id,
+                'user_id' => $user->id,
                 'leave_date_start' => $request->start_date,
                 'leave_date_end' => $request->end_date,
                 'desc_leave' => $request->description,
@@ -106,21 +127,21 @@ class UserLeaveController extends Controller implements UserLeaveInterface
         $leave = null;
         try {
             $leave = UserLeave::with('user')->find($id);
-            
+
             if (!$leave) {
                 throw new \Exception('Leave not found');
             }
-            
+
             if($leave->user?->leave < 0 ){
                 throw new \Exception('User has no leave');
             }
-            
+
             if ($leave->user) {
 
                 $joinDate = Carbon::parse($leave->user?->date_joined);
                 $oneYearAfterJoin = $joinDate->copy()->addYear();
                 $today = Carbon::now();
-                
+
                 if ($today->lt($oneYearAfterJoin)) {
                     throw new \Exception('User must be employed for at least 1 year to take leave');
                 }
@@ -162,6 +183,58 @@ class UserLeaveController extends Controller implements UserLeaveInterface
         } catch (\Throwable $th) {
             Log::create([
                 'action' => 'reject user leave',
+                'controller' => 'UserLeaveController',
+                'error_code' => $th->getCode(),
+                'description' => $th->getMessage(),
+            ]);
+        }
+
+        return returnProccessData($leave);
+    }
+
+    public function cancel_request($id)
+    {
+        $leave = null;
+        try {
+            $leave = UserLeave::find($id);
+            if ($leave) {
+                $leave->update([
+                    'status' => 'cancel',
+                ]);
+            } else {
+                throw new \Exception('Leave not found');
+            }
+        } catch (\Throwable $th) {
+            Log::create([
+                'action' => 'canceled user leave',
+                'controller' => 'UserLeaveController',
+                'error_code' => $th->getCode(),
+                'description' => $th->getMessage(),
+            ]);
+        }
+
+        return returnProccessData($leave);
+    }
+
+    public function cancel_leave($id)
+    {
+        $leave = null;
+        try {
+            $leave = UserLeave::with('user')->find($id);
+            $user = User::where('id' , $leave->user_id)->first();
+            if ($leave) {
+                $leave->update([
+                    'status' => 'rejected',
+                ]);
+                $user->update([
+                    'leave' => $user->leave  += 1,
+                ]);
+            } else {
+                throw new \Exception('Leave not found');
+            }
+        } catch (\Throwable $th) {
+            Log::create([
+                'action' => 'pending user leave',
                 'controller' => 'UserLeaveController',
                 'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),

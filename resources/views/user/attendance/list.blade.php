@@ -49,7 +49,7 @@
                                             $lateMinutes = $shiftStart->diffInMinutes($checkInTime);
                                             $hours = floor($lateMinutes / 60);
                                             $minutes = $lateMinutes % 60;
-                                            
+
                                             if ($hours > 0 && $minutes > 0) {
                                                 $item->late_reason = "Terlambat {$hours} jam {$minutes} menit";
                                             } elseif ($hours > 0) {
@@ -119,7 +119,7 @@
                                             <a href="{{ route('attendance.edit', $item->id) }}" class="btn btn-warning mb-2" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('attendance.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?');" class="d-inline">
+                                            <form action="{{ route('attendance.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger">

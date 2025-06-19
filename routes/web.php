@@ -15,7 +15,7 @@ use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\CalendarController;
 
-URL::forceScheme('http');
+URL::forceScheme('https');
 
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
@@ -46,6 +46,9 @@ Route::middleware('auth')->group(function(){
             Route::put('/user-leave/update/{id}', 'update_leave')->name('user-leave.update');
             Route::get('/user-leave/approve/{id}', 'approve_leave')->name('user-leave.approve');
             Route::get('/user-leave/reject/{id}', 'reject_leave')->name('user-leave.reject');
+            Route::get('/user-leave/canceled/{id}', 'cancel_leave')->name('user-leave.cancel');
+            Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
+
         });
 
         Route::prefix('user-shift')->controller(UserShiftController::class)->name('user-shift.')->group(function () {
@@ -101,6 +104,7 @@ Route::middleware('auth')->group(function(){
     Route::controller(UserLeaveController::class)->group(function(){
         Route::get('/user-leave/user', 'index_by_user')->name('user-leave.user');
         Route::post('/user-leave', 'create_leave')->name('user-leave.store');
+        Route::get('/user-leave/canceled-request/{id}', 'cancel_request')->name('user-leave.cancel-request');
         Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
     });
 
@@ -114,7 +118,7 @@ Route::middleware('auth')->group(function(){
 
     });
 
-    
+
     Route::put('/ajax/update-shift/{id}',[UserShiftController::class,'update'])->name('user-shift.ajax.update');
 
 });

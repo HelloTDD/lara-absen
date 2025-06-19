@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('leave_date_start');
             $table->date('leave_date_end');
             $table->text('desc_leave');
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending','canceled', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

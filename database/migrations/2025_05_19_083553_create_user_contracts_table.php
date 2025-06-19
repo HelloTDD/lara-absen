@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('name',45);
             $table->text('desc_contract');
-            $table->string('approve_with',45);
+            $table->string('approve_with',45)->nullable();
             $table->date('start_contract_date');
             $table->date('end_contract_date');
             $table->text('file');

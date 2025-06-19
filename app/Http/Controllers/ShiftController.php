@@ -26,6 +26,11 @@ class ShiftController extends Controller
      */
     public function store(ShiftRequest $request, ShiftService $shiftService)
     {
+        $shiftExists = Shift::where('shift_name', $request->shift_name)
+            ->first();
+        if ($shiftExists) {
+            return redirect()->route('shift.index')->with('error', 'Shift already exists.');
+        }
         DB::beginTransaction();
         try {
             $shiftService->createShift($request);

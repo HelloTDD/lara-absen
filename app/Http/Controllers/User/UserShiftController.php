@@ -25,22 +25,19 @@ class UserShiftController extends Controller
 
     public function store(UserShiftRequest $request, UserShiftService $service)
     {
+        $cek_shift = UserShift::where('shift_id',$request->shift_id)
+        ->where('user_id',$request->user_id)
+        ->where('start_date_shift',$request->start_date_shift)
+        ->first();
+        if($cek_shift){
+            // throw new \Exception("Jadwal Shift Sudah ada", 1);
+            return redirect()->route('user-shift.index')->with('error', 'Shift Already exist.');
+        }
+
         DB::beginTransaction();
         try {
-
-            $cek_shift = UserShift::where('shift_id',$request->shift_id)
-                                        ->where('user_id',$request->user_id)
-                                        ->where('start_date_shift',$request->start_date_shift)
-                                        ->when($request->end_date_shift, function ($query) use ($request) {
-                                            $query->where('end_date_shift',$request->end_date_shift);
-                                        })->count();
-                                        
-            if($cek_shift == 0){
                 $service->createShift($request);
-            } else {
-                throw new \Exception("Jadwal Shift Sudah ada", 1);
-                
-            }
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -52,22 +49,31 @@ class UserShiftController extends Controller
         return redirect()->route('user-shift.index')->with('success', 'Shift created successfully.');
     }
 
-    public function update(Request $request, $id) 
+    public function update(Request $request, $id)
     {
         $userShift = UserShift::find($id);
         if (!$userShift) {
             if($request->ajax()) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Shift Not Found'
                 ]);
             }
             return redirect()->route('user-shift.index')->with('error', 'Shift not found.');
         }
 
+        $cek_shift = UserShift::where('shift_id',$request->shift_id)
+        ->where('user_id',$request->user_id)
+        ->where('start_date_shift',$request->start_date_shift)
+        ->first();
+        if($cek_shift){
+            // throw new \Exception("Jadwal Shift Sudah ada", 1);
+             return redirect()->back()->with('error', 'Shift Already exist.');
+        }
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'shift_id' => 'required|exists:shifts,id', 
+            'shift_id' => 'required|exists:shifts,id',
             'start_date_shift' => 'required|date',
             'end_date_shift' => 'required|date|after_or_equal:start_date_shift',
         ]);

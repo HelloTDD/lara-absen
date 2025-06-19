@@ -95,7 +95,7 @@
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('user-shift.delete', ['id' => $item->id]) }}">Delete</a>
+                                                        href="{{ route('shift.delete', ['id' => $item->id]) }}">Delete</a>
                                                 </li>
                                             </ul>
                                         </div>

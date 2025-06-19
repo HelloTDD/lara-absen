@@ -28,7 +28,7 @@ class UserContractController extends Controller implements UserContractInterface
                     $query->where('id', Auth::id());
                 })->get();
         }
-        
+
         return view('user.users-contract.index', compact('userContracts','users'));
     }
 
@@ -79,11 +79,15 @@ class UserContractController extends Controller implements UserContractInterface
     }
 
     public function status_update ($status,$id,StatusContract $statusContract)
-    {   
+    {
         $result = null;
+        // dd($status,$id);
         try {
             $result = $statusContract->where('id',$id)->update([
                 'status_contract' => Str::upper($status)
+            ]);
+            $contract = UserContract::where('id',$id)->update([
+                'approve_with' => Auth::user()->name
             ]);
         } catch (\Throwable $th) {
             Log::create([
@@ -176,7 +180,7 @@ class UserContractController extends Controller implements UserContractInterface
             Log::create([
                 'action' => 'download user contract',
                 'controller' => 'UserContractController',
-                'error_code' => $th->getCode(), 
+                'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),
             ]);
             return back()->with('error', 'Failed to download contract');
