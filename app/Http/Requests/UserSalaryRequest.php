@@ -28,6 +28,8 @@ class UserSalaryRequest extends FormRequest
             'salary_allowance'=>'required|array',
             'salary_bonus'=>'required|numeric',
             'salary_holiday'=>'required|numeric',
+            'month' => 'required|numeric',
+            'year' => 'required|numeric',
         ];
     }
 

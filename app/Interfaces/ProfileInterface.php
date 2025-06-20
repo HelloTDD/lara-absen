@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Interfaces;
+use Illuminate\Http\Request;
 use App\Http\Requests\ProfileRequest;
 
 interface ProfileInterface
@@ -8,8 +9,8 @@ interface ProfileInterface
     public function index();
 
     public function update(ProfileRequest $request);
-    
+
     public function changePassword(ProfileRequest $request);
 
-    public function downloadSalarySlip();
+    public function downloadSalarySlip(Request $request);
 }

@@ -4,16 +4,17 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\User\UserLeaveController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
-use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\User\UserReferenceController;
 
 URL::forceScheme('https');
 
@@ -48,6 +49,14 @@ Route::middleware('auth')->group(function(){
             Route::get('/user-leave/reject/{id}', 'reject_leave')->name('user-leave.reject');
             Route::get('/user-leave/canceled/{id}', 'cancel_leave')->name('user-leave.cancel');
             Route::delete('/user-leave/delete/{id}','delete_leave')->name('user-leave.delete');
+        });
+
+        Route::controller(UserReferenceController::class)->group(function () {
+            Route::get('/user-references', 'index')->name('user-references.index');
+            Route::post('/user-references', 'store')->name('user-references.store');
+            Route::put('/user-references/update/{id}', 'update')->name('user-references.update');
+            Route::get('/user-references/delete/{id}', 'destroy')->name('user-references.delete');
+            Route::get('/user-references/unduh-references/{id}','download')->name('user-references.download');
 
         });
 
@@ -58,7 +67,7 @@ Route::middleware('auth')->group(function(){
             Route::get('/shift/{id}/delete', 'destroy')->name('delete');
         });
 
-         Route::prefix('shift')->controller(ShiftController::class)->name('shift.')->group(function () {
+        Route::prefix('shift')->controller(ShiftController::class)->name('shift.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/save', 'store')->name('store');
             Route::put('/update/{id}', 'update')->name('update');
@@ -77,7 +86,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/profile','index')->name('profile.index');
         Route::put('/profile/update','update')->name('profile.update');
         Route::put('/change-password/update','changePassword')->name('profile.change.password');
-        Route::get('/slip-gaji','downloadSalarySlip')->name('profile.slip.gaji');
+        Route::post('/slip-gaji','downloadSalarySlip')->name('profile.slip.gaji');
     });
 
     Route::prefix('role')->controller(RoleController::class)->name('role.')->group(function () {

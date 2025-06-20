@@ -17,50 +17,65 @@
                                                     </span>
                                                 </div>
                                                 <div class="met-profile_user-detail">
-                                                    <h5 class="met-user-name">{{ Auth::user()->name }}</h5>                                                        
-                                                    <p class="mb-0 met-user-name-post">Demo</p>                                                        
-                                                    <p class="mb-0 met-user-name-post">Salary : Rp {{ empty($data->salary_basic) ? 0 : number_format($data->salary_basic) }} </p>                                                        
+                                                    <h5 class="met-user-name">{{ Auth::user()->name }}</h5>
+                                                    <p class="mb-0 met-user-name-post">Demo</p>
+                                                    <p class="mb-0 met-user-name-post">Salary : Rp {{ empty($data->salary_basic) ? 0 : number_format($data->salary_basic) }} </p>
                                                 </div>
-                                            </div>                                                
+                                            </div>
                                         </div><!--end col-->
-                                        
+
                                         <div class="col-lg-4 ms-auto align-self-center">
                                             <ul class="list-unstyled personal-detail mb-0">
                                                 <li class=""><i class="las la-phone mr-2 text-secondary font-22 align-middle"></i> <b> phone </b> : {{ Auth::user()->phone }}</li>
                                                 <li class="mt-2"><i class="las la-envelope text-secondary font-22 align-middle mr-2"></i> <b> Email </b> : {{ Auth::user()->email }}</li>
                                                 <li>
-                                                    <button class="btn btn-primary btn-sm mt-2 ms-4" type="button" onclick="window.location.href='{{ route('profile.slip.gaji') }}'">Download Slip Gaji</button>
-                                                </li>                                         
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModalLarge"><i data-feather="download"
+                                                            class="align-self-center icon-xs me-2"></i>Download Slip Gaji</button>
+                                                            @php
+                                                            if($data){
+                                                                echo '<div class="alert alert-success mt-2 fs-6">
+                                                                       Silahkan download slip gaji anda pada bulan ini.
+                                                                    </div>';
+                                                            }else{
+                                                                echo '<div class="alert alert-danger mt-2 fs-6">
+                                                                       slip gaji anda belum tersedia.
+                                                                    </div>';
+                                                            }
+                                                            @endphp
+                                                    {{-- <button class="btn btn-primary btn-sm mt-2 ms-4" type="button" onclick="window.location.href='{{ route('profile.slip.gaji') }}'">Download Slip Gaji</button> --}}
+                                                </li>
                                             </ul>
-                                           
+
                                         </div><!--end col-->
-                                        
+
                                     </div><!--end row-->
-                                </div><!--end f_profile-->                                                                                
-                            </div><!--end card-body-->  
-                            <div class="card-body p-0">    
+                                </div><!--end f_profile-->
+                            </div><!--end card-body-->
+                            <div class="card-body p-0">
                                 <!-- Nav tabs -->
-                                <ul class="nav nav-tabs" role="tablist">                                             
+                                <ul class="nav nav-tabs" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link active" data-bs-toggle="tab" href="#Settings" role="tab" aria-selected="false">Settings</a>
                                     </li>
                                 </ul>
 
+
                                 <!-- Tab panes -->
                                 <div class="tab-content">
-                                                                                   
+
                                     <div class="tab-pane p-3 show active" id="Settings" role="tabpanel">
                                         <div class="row">
                                             <div class="col-lg-6 col-xl-6">
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <div class="row align-items-center">
-                                                            <div class="col">                      
-                                                                <h4 class="card-title">Personal Information</h4>                      
-                                                            </div><!--end col-->                                                       
-                                                        </div>  <!--end row-->                                  
+                                                            <div class="col">
+                                                                <h4 class="card-title">Personal Information</h4>
+                                                            </div><!--end col-->
+                                                        </div>  <!--end row-->
                                                     </div><!--end card-header-->
-                                                    <div class="card-body"> 
+                                                    <div class="card-body">
                                                         @if ($errors->any() && request()->routeIs('profile.update'))
                                                             <div class="alert alert-danger mb-3">
                                                                 <ul class="mb-0">
@@ -132,17 +147,17 @@
                                                             <div class="col-lg-9 col-xl-8 offset-lg-3">
                                                                 <button type="submit" class="btn btn-de-primary">Submit</button>
                                                             </div>
-                                                        </div>                                                    
-                                                        </form>                      
-                                                    </div>                                            
+                                                        </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
-                                            </div> <!--end col--> 
+                                            </div> <!--end col-->
                                             <div class="col-lg-6 col-xl-6">
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <h4 class="card-title">Change Password</h4>
                                                     </div><!--end card-header-->
-                                                    <div class="card-body"> 
+                                                    <div class="card-body">
 
                                                         @if ($errors->any() && request()->routeIs('profile.change.password'))
                                                             {{-- Check if the session has a success message --}}
@@ -187,7 +202,7 @@
                                                                 <button type="submit" class="btn btn-de-primary">Change Password</button>
                                                                 <button type="button" class="btn btn-de-danger">Cancel</button>
                                                             </div>
-                                                        </div>   
+                                                        </div>
                                                         </form>
                                                     </div><!--end card-body-->
                                                 </div><!--end card-->
@@ -195,8 +210,8 @@
                                                     <div class="card-header">
                                                         <h4 class="card-title">Other Settings</h4>
                                                     </div><!--end card-header-->
-                                                    <div class="card-body"> 
-    
+                                                    <div class="card-body">
+
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" value="" id="Email_Notifications" checked>
                                                             <label class="form-check-label" for="Email_Notifications">
@@ -213,11 +228,11 @@
                                                         </div>
                                                     </div><!--end card-body-->
                                                 </div><!--end card--> --}}
-                                            </div> <!-- end col -->                                                                              
+                                            </div> <!-- end col -->
                                         </div><!--end row-->
                                     </div>
-                                </div>        
-                            </div> <!--end card-body-->                            
+                                </div>
+                            </div> <!--end card-body-->
                         </div><!--end card-->
                     </div><!--end col-->
                 </div><!--end row-->
@@ -231,7 +246,7 @@
                       <h5 class="m-0 font-14" id="AppearanceLabel">Appearance</h5>
                       <button type="button" class="btn-close text-reset p-0 m-0 align-self-center" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body">  
+                    <div class="offcanvas-body">
                         <h6>Account Settings</h6>
                         <div class="p-2 text-start mt-3">
                             <div class="form-check form-switch mb-2">
@@ -261,12 +276,12 @@
                                 <input class="form-check-input" type="checkbox" id="settings-switch6">
                                 <label class="form-check-label" for="settings-switch6">Notifications Popup</label>
                             </div><!--end form-switch-->
-                        </div><!--end /div-->               
+                        </div><!--end /div-->
                     </div><!--end offcanvas-body-->
                 </div>
                 <!--end Rightbar/offcanvas-->
                  <!--end Rightbar-->
-                 
+
                 <!--Start Footer-->
                 <!-- Footer Start -->
                 <footer class="footer text-center text-sm-start">
@@ -275,9 +290,33 @@
                     </script> Metrica <span class="text-muted d-none d-sm-inline-block float-end">Crafted with <i
                             class="mdi mdi-heart text-danger"></i> by Mannatthemes</span>
                 </footer>
-                <!-- end Footer -->                
+                <!-- end Footer -->
                 <!--end footer-->
         </div>
         <!-- end page content -->
     </div>
+                                <x-modal id="exampleModalLarge" title="Form Slip Gaji">
+                                    <form action="{{ route('profile.slip.gaji') }}" method="post">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="mb-3 col-lg-6">
+                                                <label for="salary_holiday">Month</label>
+                                                <select class="form-control" name="month" required>
+                                                    @foreach ($monthlist as $key => $month)
+                                                        <option value="{{ $key }}">{{ $month }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3 col-lg-6">
+                                                <label for="salary_holiday">Year</label>
+                                                <select class="form-control" name="year" required>
+                                                    @foreach ($yearlist as $year)
+                                                        <option value="{{ $year }}">{{ $year }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Submit</button>
+                                    </form>
+                                </x-modal>
 @endsection

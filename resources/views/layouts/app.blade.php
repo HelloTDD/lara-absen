@@ -131,6 +131,9 @@
                             <li class="nav-item">
                                 <a href="{{ route('user-contract.index') }}" class="nav-link ">Kontrak</a>
                             </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a href="{{ route('user-references.index') }}" class="nav-link ">Surat Referensi</a>
+                            </li><!--end nav-item-->
                         </ul><!--end navbar-nav--->
                     </div><!--end sidebarCollapse-->
                 </div><!-- end Crypto -->

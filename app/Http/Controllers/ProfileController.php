@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileRequest;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use App\Models\Log;
-use Illuminate\Support\Facades\Hash;
 use App\Models\UserSalary;
+use Illuminate\Http\Request;
 use App\Interfaces\ProfileInterface;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\ProfileRequest;
 
 class ProfileController extends Controller implements ProfileInterface
 {
@@ -16,8 +18,10 @@ class ProfileController extends Controller implements ProfileInterface
      */
     public function index()
     {
-        $data = UserSalary::where('user_id', Auth::user()->id)->first();
-        return view('user.profile.index', compact('data'));
+        $data = UserSalary::where('user_id', Auth::user()->id)->where('month',now()->format('m'))->where('year', now()->format('Y'))->first();
+        $monthlist = monthList();
+        $yearlist = yearList();
+        return view('user.profile.index', compact('data','monthlist', 'yearlist'));
     }
 
     /**
@@ -71,7 +75,7 @@ class ProfileController extends Controller implements ProfileInterface
         } catch (\Exception $th) {
             Log::create([
                 'action' => 'change password',
-                'controller' => 'ProfileController', 
+                'controller' => 'ProfileController',
                 'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),
             ]);
@@ -83,10 +87,13 @@ class ProfileController extends Controller implements ProfileInterface
     /**
      * Download salary slip PDF
      */
-    public function downloadSalarySlip()
+    public function downloadSalarySlip(Request $request)
     {
         try {
-            $data = UserSalary::with('user')->where('user_id',Auth::user()->id)->first();
+            $data = UserSalary::with('user')->where('user_id',Auth::user()->id)->where('month',$request->month)->where('year',$request->year)->first();
+            if (!$data) {
+                return redirect()->route('profile.index')->with('error', 'Sallary not found.');
+            }
             $pdf = new \Dompdf\Dompdf();
             $pdf->loadHtml(view('user.pdf.salary-slip', compact('data')));
             $pdf->setPaper('A4', 'portrait');
