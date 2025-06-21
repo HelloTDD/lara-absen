@@ -57,7 +57,8 @@ Route::middleware('auth')->group(function(){
             Route::put('/user-references/update/{id}', 'update')->name('user-references.update');
             Route::get('/user-references/delete/{id}', 'destroy')->name('user-references.delete');
             Route::get('/user-references/unduh-references/{id}','download')->name('user-references.download');
-
+            Route::get('/user-references/{id}/preview', [UserReferenceController::class, 'preview'])->name('user-references.preview');
+            Route::get('/user-reference/delete/{id}', [UserReferenceController::class, 'destroy'])->name('user-references.delete');
         });
 
         Route::prefix('user-shift')->controller(UserShiftController::class)->name('user-shift.')->group(function () {

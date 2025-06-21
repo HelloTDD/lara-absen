@@ -21,13 +21,17 @@ class UserReferenceService
             return redirect()->route('user-references.index')->with('error', 'No active contract found for the user.');
         }
 
+        $no = UserReference::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count() + 1;
+
         // dd($request->all(), $contract->toArray());
         DB::beginTransaction();
         try {
             $userReference = new UserReference();
             $userReference->user_id =  $request->user_id ?? auth()->id();
             $userReference->contract_id = $contract->id;
-            $userReference->references_no = '204/'.Carbon::now()->format('d').'/'.Carbon::now()->format('m').'/'.Carbon::now()->format('Y');
+            $userReference->references_no = $no.'/'.Carbon::now()->format('d').'/'.Carbon::now()->format('m').'/'.Carbon::now()->format('Y');
             $userReference->name = $contract->user->name;
             $userReference->desc_references = $request->desc_references;
             $userReference->approve_with = Auth()->user()->name;

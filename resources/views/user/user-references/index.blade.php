@@ -62,6 +62,7 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>No. Referensi</th>
                                     <th>Nama Karyawan</th>
                                     <th>Tanggal</th>
                                     <th>Disetujui Oleh</th>
@@ -73,6 +74,7 @@
                                 @foreach ($userReferences as $reference)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $reference->references_no }}</td>
                                         <td>{{ $reference->user->name }}</td>
                                         <td>{{ $reference->references_date }}</td>
                                         <td>{{ $reference->approve_with ?? '-' }}</td>
@@ -80,13 +82,31 @@
                                         <a href="{{ route('user-references.download', ['id' => $reference->id]) }}"
                                             class="btn btn-info"> <i class="fas fa-download"></i>
                                             Download</a>
+                                            <a href="{{ route('user-references.preview', $reference->id) }}" target="_blank" class="btn btn-secondary">Preview</a>
+
                                         </td>
-                                        <td>
-                                            @if (Auth::user()->is_admin)
-                                                <button class="btn btn-warning btn-sm"
-                                                    onclick="openModalEdit('{{ $reference->id }}', '{{ $reference->start_contract_date }}', '{{ $reference->end_contract_date }}', '{{ $reference->desc_constract }}')">Edit</button>
+                                        @if (Auth::user()->is_admin)
+                                        <td class="text-end">
+                                        <div class="dropstart d-inline-block">
+                                            <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"
+                                                id="dropdownMenuButton{{ $reference->id }}" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i class="las la-ellipsis-v font-20 text-muted"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end"
+                                                aria-labelledby="dropdownMenuButton{{ $reference->id }}">
+                                                <li>
+                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                                                        onclick="openModalEdit('{{ $reference->id }}', '{{ $reference->user_id }}', '{{ $reference->references_date }}', '{{ $reference->desc_references }}')">Edit</button>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user-references.delete', ['id' => $reference->id]) }}">Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        </td>
                                             @endif
-                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -96,23 +116,31 @@
                             <form action="" method="post">
                                 @csrf
                                 @method('PUT')
-                                <div class="row g-3 mb-3">
-                                    <div class="col-lg-6">
-                                        <label>Tanggal Mulai References</label>
-                                        <input class="form-control" type="date" name="start_contract_date"
-                                            id="start_date" required>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label>Tanggal Selesai References</label>
-                                        <input class="form-control" type="date" name="end_contract_date" id="end_date"
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label>Keterangan References</label>
-                                    <textarea class="form-control" name="desc_constract" id="description" required
-                                        rows="10" maxlength="1000"></textarea>
-                                </div>
+                                @if (Auth::user()->is_admin == 1)
+                                                <div class="mb-3">
+                                                    <label>Nama Karyawan</label>
+                                                    <select class="form-select" name="user_id" id="user_id_edit" required>
+                                                        <option value="">Pilih Karyawan</option>
+                                                        @foreach ($users as $user)
+                                                            @if ($user->is_admin == 0)
+                                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            @endif
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-lg-6">
+                                                    <label>Tanggal References</label>
+                                                    <input class="form-control" type="date" name="references_date" id="references_date_edit"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Keterangan References</label>
+                                                <textarea class="form-control" name="desc_references" id="desc_references_edit" required rows="10"
+                                                    maxlength="1000"></textarea>
+                                            </div>
                                 <button type="submit" class="btn btn-success">Submit</button>
                             </form>
 
@@ -129,12 +157,12 @@
             <script src="{{ asset('assets/libs/tinymce/tinymce.min.js') }}"></script>
             <script src="{{ asset('assets/js/pages/form-editor.init.js') }}"></script>
             <script>
-                function openModalEdit(id, start_date, end_date, description) {
+                function openModalEdit(id, user_id, references_date, desc_references) {
                     $('#modalEdits').modal('show');
-                    $('#start_date').val(start_date);
-                    $('#end_date').val(end_date);
-                    $('#description').text(description);
-                    $('form').attr('action', `/user-contract/update/${id}`);
+                    $('#user_id_edit').val(user_id);
+                    $('#references_date_edit').val(references_date);
+                    $('#desc_references_edit').text(desc_references);
+                    $('form').attr('action', `/user-references/update/${id}`);
                 }
             </script>
         @endpush

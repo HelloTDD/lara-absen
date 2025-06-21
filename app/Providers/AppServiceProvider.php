@@ -2,20 +2,22 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
+
+use App\Interfaces\AuthInterface;
+use Illuminate\Support\Facades\App;
 use Illuminate\Pagination\Paginator;
 
-use Illuminate\Support\ServiceProvider;
-use App\Http\Controllers\User\UserSalaryController;
+use App\Interfaces\UserLeaveInterface;
 use App\Interfaces\UserSalaryInterface;
 
-use App\Http\Controllers\User\UserLeaveController;
-use App\Interfaces\UserLeaveInterface;
+use Illuminate\Support\ServiceProvider;
+use App\Interfaces\UserContractInterface;
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Interfaces\AuthInterface;
-
+use App\Http\Controllers\User\UserLeaveController;
+use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\User\UserContractController;
-use App\Interfaces\UserContractInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,5 +49,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
+        App::setLocale('id');
+        Carbon::setLocale('id');
     }
 }
