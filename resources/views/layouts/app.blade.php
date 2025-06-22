@@ -109,11 +109,11 @@
                             <li class="nav-item">
                                 <a href="{{ route('attendance.list') }}" class="nav-link ">Absensi</a>
                             </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
+                            </li><!--end nav-item-->
 
                             @if(Auth::user()->is_admin == 1)
-                                <li class="nav-item">
-                                    <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
-                                </li><!--end nav-item-->
                                 <li class="nav-item">
                                     <a href="{{ route('role.index') }}" class="nav-link ">Bagian</a>
                                 </li><!--end nav-item-->

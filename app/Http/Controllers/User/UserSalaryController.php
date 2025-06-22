@@ -10,6 +10,7 @@ use App\Models\TypeAllowance;
 use App\Http\Controllers\Controller;
 use App\Interfaces\UserSalaryInterface;
 use App\Http\Requests\UserSalaryRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log as lgs;
 
 class UserSalaryController extends Controller implements UserSalaryInterface
@@ -19,16 +20,14 @@ class UserSalaryController extends Controller implements UserSalaryInterface
     {
         $type_allowance = TypeAllowance::all();
         $users = User::all();
-        $salary = UserSalary::with(['user.allowances'])->get();
+        $salary = UserSalary::with(['user.allowances'])
+                            ->when(Auth::check() && Auth::user()->is_admin == 0, function($query){
+                                $query->where('user_id', Auth::user()->id);
+                            })
+                            ->get();
+                            
         $monthlist = monthList();
         $yearlist = yearList();
-
-        // foreach ($salary as $item):
-        //     dd($item->user->allowances->pivot->amount);
-        //         // foreach ($item->user->allowances as $allowance):
-        //         //     dd($allowance->pivot->amount);
-        //         // endforeach;
-        // endforeach;
 
         return view('user.users-salary.index', compact('users', 'salary','type_allowance', 'monthlist', 'yearlist'));
     }

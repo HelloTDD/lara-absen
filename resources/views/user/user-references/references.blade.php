@@ -63,26 +63,28 @@
         }
 
         .info-table {
-            margin: 20px 0;
+            width: 100%;
+            font-size: 14px;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
 
-        .info-row {
-            display: flex;
-            margin: 5px 0;
+        .info-table td {
+            padding: 4px 0;
+            vertical-align: top;
         }
 
         .info-label {
-            width: 120px;
+            width: 160px;
             font-weight: normal;
         }
 
         .info-separator {
-            width: 20px;
-            text-align: center;
+            width: 10px;
         }
 
         .info-value {
-            flex: 1;
+            width: auto;
         }
 
         .signature-section {
@@ -123,17 +125,16 @@
     <div class="content">
         <div class="section">
             Yang bertanda tangan di bawah ini :
-
             <table class="info-table">
                 <tr>
                     <td class="info-label">Nama</td>
                     <td class="info-separator">:</td>
-                    <td>Widya Arifa</td>
+                    <td class="info-value">{{ Auth::user()->name }}</td>
                 </tr>
                 <tr>
                     <td class="info-label">Jabatan</td>
                     <td class="info-separator">:</td>
-                    <td>HRD</td>
+                    <td class="info-value"> {{ Auth::user()->role?->role_name }} </td>
                 </tr>
             </table>
         </div>
@@ -145,17 +146,17 @@
                 <tr>
                     <td class="info-label">Nama</td>
                     <td class="info-separator">:</td>
-                    <td>{{ $data->name }}</td>
+                    <td class="info-value">{{ $data->user?->name }}</td>
                 </tr>
-                <tr>
+                <tr class="info-row">
                     <td class="info-label">Tempat/Tgl. Lahir</td>
                     <td class="info-separator">:</td>
-                    <td>{{ $data->user->place_of_birth ?? '-' }}, {{ \Carbon\Carbon::parse($data->user->date_of_birth ?? now())->translatedFormat('d F Y') }}</td>
+                    <td class="info-value">{{ $data->user?->address.', '.$data->user?->birth_date }}</td>
                 </tr>
-                <tr>
+                <tr class="info-row">
                     <td class="info-label">Jabatan</td>
                     <td class="info-separator">:</td>
-                    <td>{{ $data->userContract->position ?? 'Programmer' }}</td>
+                    <td class="info-value">{{ $data->user?->role?->role_name }}</td>
                 </tr>
             </table>
         </div>
@@ -175,7 +176,7 @@
         </div>
 
         <div class="signature-section">
-            <div class="signature-date">Karanganyar, {{ \Carbon\Carbon::parse($data->references_date)->translatedFormat('d F Y') }}</div>
+            <div class="signature-date">Karanganyar, {{ \Carbon\Carbon::today()->format('d M Y') }}</div>
             <div class="signature-company">PT. Transformasi Data Digital</div>
 
             <div class="signature-name">{{ $data->approve_with ?? 'Admin' }}</div>

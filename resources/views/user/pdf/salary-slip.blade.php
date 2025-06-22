@@ -35,7 +35,7 @@
     <div class="slip-info">
         <p><strong>Employee Name:</strong> {{ $data->user?->name ?? 'N/A' }}</p>
         <p><strong>Employee ID:</strong> {{ $data->user?->id ?? 'N/A' }}</p>
-        <p><strong>Department:</strong> {{ $data->user?->department ?? 'N/A' }}</p>
+        <p><strong>Department:</strong> {{ $data->user?->role?->role_name ?? 'N/A' }}</p>
     </div>
 
     <table class="salary-details">

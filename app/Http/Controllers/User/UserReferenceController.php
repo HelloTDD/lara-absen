@@ -61,9 +61,7 @@ class UserReferenceController extends Controller
     public function download($id)
     {
         try {
-            $data = UserReference::with(['user', 'userContract'])
-            ->where('id', $id)
-            ->first();
+            $data = UserReference::with(['user.role', 'userContract'])->first();
             // dd($contract);
             $pdf = new \Dompdf\Dompdf();
             $pdf->loadHtml(view('user.user-references.references', compact('data')));

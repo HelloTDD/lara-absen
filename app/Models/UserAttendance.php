@@ -39,11 +39,11 @@ class UserAttendance extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function shift()
     {
-        return $this->belongsTo(Shift::class);
+        return $this->belongsTo(Shift::class,'shift_id','id');
     }
 }

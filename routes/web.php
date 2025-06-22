@@ -18,9 +18,11 @@ use App\Http\Controllers\User\UserReferenceController;
 
 URL::forceScheme('https');
 
-Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
-Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
-Route::delete('/calendar/delete/{id}', [CalendarController::class, 'destroy'])->name('calendar.delete');
+Route::controller(CalendarController::class)->group(function(){
+    Route::get('/calendar', 'index')->name('calendar.index');
+    Route::post('/calendar', 'store')->name('calendar.store');
+    Route::delete('/calendar/delete/{id}', 'destroy')->name('calendar.delete');
+});
 
 route::controller(AuthController::class)->group(function(){
     Route::get('/login','index')->name('login');
@@ -31,7 +33,6 @@ route::controller(AuthController::class)->group(function(){
 Route::middleware('auth')->group(function(){
     Route::middleware(['is_admin'])->group(function () {
         Route::controller(UserSalaryController::class)->group(function () {
-            Route::get('/user-salaries', 'index')->name('user-salaries.index');
             Route::post('/user-salaries', 'store')->name('user-salaries.store');
             Route::put('/user-salaries/update/{id}', 'update')->name('user-salaries.update');
             Route::get('/user-salaries/delete/{id}', 'destroy')->name('user-salaries.delete');
@@ -82,7 +83,9 @@ Route::middleware('auth')->group(function(){
         });
 
     });
-
+    
+    Route::get('/user-salaries', [UserSalaryController::class,'index'])->name('user-salaries.index');
+    
     Route::controller(ProfileController::class)->group(function(){
         Route::get('/profile','index')->name('profile.index');
         Route::put('/profile/update','update')->name('profile.update');
@@ -125,7 +128,6 @@ Route::middleware('auth')->group(function(){
         Route::get('/absensi/{id}/edit', 'edit')->name('edit');
         Route::put('/absensi/{id}', 'update')->name('update');
         Route::delete('/absensi/{id}/delete', 'destroy')->name('destroy');
-
     });
 
 

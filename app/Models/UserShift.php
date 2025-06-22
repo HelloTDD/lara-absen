@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class UserShift extends Model
 {
     use HasFactory;
-    // protected $table = 'user_shifts';
+    protected $table = 'user_shifts';
     // protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
@@ -27,5 +27,4 @@ class UserShift extends Model
     {
         return $this->belongsTo(Shift::class);
     }
-
 }

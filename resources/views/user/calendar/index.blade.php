@@ -17,6 +17,7 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
     <script>
         $(document).ready(function () {
+            console.log({!! json_encode($event_finals) !!});
             let shift = {!! json_encode($shift) !!};
             let html = `<input type="text" name="title" id="title" class="swal2-input" placeholder="Event Title">
                             <select name="shift" id="shift" class="swal2-input d-none" disabled>
@@ -40,8 +41,7 @@
                                     <input type="radio" name="types" placeholder="Event Title" value="shift">
                                     <label class="swal2-label">Shift</label>
                                 </div>
-                            </div>
-                `;
+                            </div>`;
 
             var calendarEl = $('#calendar');
             var calendar = new FullCalendar.Calendar(calendarEl[0], {
@@ -177,12 +177,7 @@
                 },
                 dayMaxEvents: true,
                 eventDrop:function(e){
-                    // console.log(e.event.extendedProps.shift_id);
                     let id = e.event.id;
-                    // console.log(type);
-                    // console.log(actualId);
-                    // console.log(userId);
-                    // console.log(id.split('_'));
                     let [type, actualId, userId] = id.split('_');
                     $.ajax({
                         url: "{{ route('user-shift.ajax.update', '') }}/" + actualId,
@@ -202,10 +197,6 @@
                             console.error('Error:', error);
                         }
                     })
-                    // console.log(e.event.id);
-                    // console.log(e.event.start);
-                    // console.log(e.event.end);
-                    // console.log(e.event.extendedProps.user);
                 }
             });
             calendar.render();

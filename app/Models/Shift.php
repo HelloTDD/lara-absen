@@ -15,4 +15,14 @@ class Shift extends Model
         'check_in',
         'check_out',
     ];
+
+    public function user_shift()
+    {
+        return $this->hasMany(UserShift::class,'shift_id');
+    }
+
+    public function attendance()
+    {
+        return $this->hasMany(UserAttendance::class,'shift_id','id');
+    }
 }

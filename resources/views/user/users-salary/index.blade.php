@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('page-title', 'Daftar Gaji Karyawan')
+@section('page-title', Auth::user()->is_admin == 1 ? 'Daftar Gaji Karyawan' : 'Laporan Gaji '. Auth::user()->name )
 @section('content')
 <div class="row">
     <div class="col-lg-12">
@@ -9,7 +9,7 @@
                     <div class="justify-content-between d-flex">
                         {{-- <div class="align-self-center"> --}}
                             <div>
-                                <h3 class="card-title">Daftar Gaji Karyawan</h3>
+                                <h3 class="card-title">{{ Auth::user()->is_admin == 1 ? 'Daftar Gaji Karyawan' : 'Laporan Gaji '. Auth::user()->name }}</h3>
                             </div>
 
                             @if(Auth::user()->is_admin == 1)
@@ -28,112 +28,114 @@
                         {{-- </div> --}}
                     @if(Auth::user()->is_admin == 1)
 
-                        <x-modal id="dataTunjangan" title="Data Tunjangan Karyawan">
-                            <div class="row">
-                                <form action="{{ route('allowance.store') }}" method="post" class="d-flex flex-row">
-                                    @csrf
-                                    <div class="col-lg-9 col-md-9 col-sm-9">
-                                        <div class="mb-3">
-                                            <input type="text" class="form-control" name="name"
-                                                placeholder="Masukkan nama tunjangan" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-auto">
-                                        <button type="submit" class="btn btn-success mb-3 ms-2">Tambah</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Nama Tunjangan</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php($no = 1)
-                                        @foreach($type_allowance as $allowance)
-                                        <tr>
-                                            <td>{{ $no }}</td>
-                                            <td>{{ $allowance->name_allowance }}</td>
-                                            <td><a class="btn btn-danger btn-sm text-white" href="{{ route('allowance.delete',['id' => $allowance->id]) }}"> <i class="fas fa-times"></i> </a></td>
-                                        </tr>
-                                        @php($no++)
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </x-modal>
-
-                        <x-modal id="exampleModalLarge" title="Form Gaji">
-                            <form action="{{ route('user-salaries.store') }}" method="post">
+                    <x-modal id="dataTunjangan" title="Data Tunjangan Karyawan">
+                        <div class="row">
+                            <form action="{{ route('allowance.store') }}" method="post" class="d-flex flex-row">
                                 @csrf
-                                <div class="row">
+                                <div class="col-lg-9 col-md-9 col-sm-9">
                                     <div class="mb-3">
-                                        <label for="user_id">User</label>
-                                        <select class="form-control" name="user_id" required>
-                                            @if (count($users) == 0)
-                                                <option value="">No users available</option>
-                                            @else
-                                                @foreach($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
+                                        <input type="text" class="form-control" name="name"
+                                            placeholder="Masukkan nama tunjangan" required>
                                     </div>
-                                    <div class="mb-3 col-lg-6">
-                                        <label for="salary_basic">Basic Salary</label>
-                                        <input class="form-control" type="number" name="salary_basic" value="0" required>
-                                    </div>
-                                    {{-- <div class="mb-3 col-lg-6">
-                                        <label for="salary_allowance">Allowance</label>
-                                        <input class="form-control" type="number" name="salary_allowance" value="0"
-                                            required>
-                                    </div> --}}
-                                    <div class="mb-3 col-lg-6">
-                                        <label for="salary_bonus">Bonus</label>
-                                        <input class="form-control" type="number" name="salary_bonus" value="0" required>
-                                    </div>
-                                    <div class="mb-3 col-lg-6">
-                                        <label for="salary_holiday">Holiday</label>
-                                        <input class="form-control" type="number" name="salary_holiday" value="0" required>
-                                    </div>
-                                    <div class="mb-3 col-lg-6">
-                                        <label for="salary_holiday">Month</label>
-                                        <select class="form-control" name="month" required>
-                                            @foreach ($monthlist as $key => $month)
-                                                <option value="{{ $key }}">{{ $month }}</option>
+                                </div>
+                                <div class="col-lg-auto">
+                                    <button type="submit" class="btn btn-success mb-3 ms-2">Tambah</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Tunjangan</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php($no = 1)
+                                    @foreach($type_allowance as $allowance)
+                                    <tr>
+                                        <td>{{ $no }}</td>
+                                        <td>{{ $allowance->name_allowance }}</td>
+                                        <td><a class="btn btn-danger btn-sm text-white"
+                                                href="{{ route('allowance.delete', ['id' => $allowance->id]) }}"> <i
+                                                    class="fas fa-times"></i> </a></td>
+                                    </tr>
+                                    @php($no++)
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </x-modal>
+
+                    <x-modal id="exampleModalLarge" title="Form Gaji">
+                        <form action="{{ route('user-salaries.store') }}" method="post">
+                            @csrf
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label for="user_id">User</label>
+                                    <select class="form-control" name="user_id" required>
+                                        @if (count($users) == 0)
+                                            <option value="">No users available</option>
+                                        @else
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
                                             @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-lg-6">
-                                        <label for="salary_holiday">Year</label>
-                                        <select class="form-control" name="year" required>
-                                            @foreach ($yearlist as $year)
-                                                <option value="{{ $year }}">{{ $year }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-lg-12">
-                                        <label for="salary_allowance">Allowance</label>
-                                        <div class="form-check">
-                                            @foreach($type_allowance as $allowance)
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        name="salary_allowance[]" value="{{ $allowance->id }}"
-                                                        id="allowance_{{ $allowance->id }}">
-                                                    <label class="form-check-label"
-                                                        for="allowance_{{ $allowance->id }}">{{ $allowance->name_allowance }}</label>
-                                                </div>
-                                                <input type="number" name="allowances[{{ $allowance->id }}]" value="" class="form-control" id="">
-                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_basic">Basic Salary</label>
+                                    <input class="form-control" type="number" name="salary_basic" value="0" required>
+                                </div>
+                                {{-- <div class="mb-3 col-lg-6">
+                                    <label for="salary_allowance">Allowance</label>
+                                    <input class="form-control" type="number" name="salary_allowance" value="0"
+                                        required>
+                                </div> --}}
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_bonus">Bonus</label>
+                                    <input class="form-control" type="number" name="salary_bonus" value="0" required>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_holiday">Holiday</label>
+                                    <input class="form-control" type="number" name="salary_holiday" value="0" required>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_holiday">Month</label>
+                                    <select class="form-control" name="month" required>
+                                        @foreach ($monthlist as $key => $month)
+                                            <option value="{{ $key }}">{{ $month }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="salary_holiday">Year</label>
+                                    <select class="form-control" name="year" required>
+                                        @foreach ($yearlist as $year)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-lg-12">
+                                    <label for="salary_allowance">Allowance</label>
+                                    <div class="form-check">
+                                        @foreach($type_allowance as $allowance)
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="salary_allowance[]"
+                                                    value="{{ $allowance->id }}" id="allowance_{{ $allowance->id }}">
+                                                <label class="form-check-label"
+                                                    for="allowance_{{ $allowance->id }}">{{ $allowance->name_allowance }}</label>
+                                            </div>
+                                            <input type="number" name="allowances[{{ $allowance->id }}]" value=""
+                                                class="form-control" id="">
+                                        @endforeach
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-success">Submit</button>
-                            </form>
-                        </x-modal>
+                        </form>
+                    </x-modal>
                     @endif
                 </div>
 
@@ -153,7 +155,9 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Karyawan</th>
+                                    @if(Auth::user()->is_admin == 1)
+                                        <th>Nama Karyawan</th>
+                                    @endif
                                     <th>Gaji Pokok</th>
                                     <th>Tunjangan</th>
                                     <th>Bonus</th>
@@ -178,27 +182,35 @@
                                     <td>{{ $monthlist[$item->month] ?? $item->month }}</td>
                                     <td>{{ $item->year }}</td>
                                     <td class="text-end">
-                                        <div class="dropstart d-inline-block">
-                                            <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"
-                                                id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                                <i class="las la-ellipsis-v font-20 text-muted"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end"
-                                                aria-labelledby="dropdownMenuButton{{ $item->id }}">
-                                                <li>
-                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal" modal-bs-target="#modalEdits"
-                                                        onclick='openModalEdit(@json($item->id), @json($item->user_id), @json($item->salary_basic), @json($item->salary_bonus), @json($item->salary_holiday), @json($item->month), @json($item->year), @json($item->user->allowances), @json($type_allowance))'>
-                                                        Edit
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('user-salaries.delete', ['id' => $item->id]) }}">Delete</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
+                                    @if(Auth::user()->is_admin == 1)
+                                            <div class="dropstart d-inline-block">
+                                                <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"
+                                                    id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    <i class="las la-ellipsis-v font-20 text-muted"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="dropdownMenuButton{{ $item->id }}">
+                                                    <li>
+                                                        <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                                                            modal-bs-target="#modalEdits"
+                                                            onclick='openModalEdit(@json($item->id), @json($item->user_id), @json($item->salary_basic), @json($item->salary_bonus), @json($item->salary_holiday), @json($item->month), @json($item->year), @json($item->user->allowances), @json($type_allowance))'>
+                                                            Edit
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-salaries.delete', ['id' => $item->id]) }}">Delete</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            @else 
+                                            <form action="{{ route('profile.slip.gaji') }}" method="post">
+                                                @csrf
+                                                <button type="submit" name="id_salaries" class="btn btn-primary btn-sm" value="{{ $item->id }}"> <i class="ti ti-cloud-download"></i> Download Slip Gaji</button>
+                                            </form>
+                                            @endif
+                                        </td>
                                 </tr>
                                 @php($no++)
                                 @endforeach
@@ -239,12 +251,12 @@
                                                 id="salary_holiday_edit" value="0" required>
                                         </div>
                                         <div class="mb-3 col-lg-6">
-                                        <label for="salary_holiday">Month</label>
-                                        <select class="form-control" name="month" id="month_edit" required>
-                                            @foreach ($monthlist as $key => $month)
-                                                <option value="{{ $key }}">{{ $month }}</option>
-                                            @endforeach
-                                        </select>
+                                            <label for="salary_holiday">Month</label>
+                                            <select class="form-control" name="month" id="month_edit" required>
+                                                @foreach ($monthlist as $key => $month)
+                                                    <option value="{{ $key }}">{{ $month }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label for="salary_holiday">Year</label>
@@ -273,8 +285,8 @@
         @endsection
 
         @push('scripts')
-        <script>
-                function openModalEdit(id, user_id, salary_basic, salary_bonus, salary_holiday, month, year, salary_allowances,type_allowance) {
+            <script>
+                function openModalEdit(id, user_id, salary_basic, salary_bonus, salary_holiday, month, year, salary_allowances, type_allowance) {
                     $('#modalEdits').modal('show');
 
                     $('#user_id_edit').val(user_id);
@@ -298,18 +310,18 @@
                         const $wrapper = $('<div>', { class: 'mb-2' });
 
                         const checkboxHtml = `
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox"
-                                    name="salary_allowance[]" value="${allowanceType.id}"
-                                    id="allowance_${allowanceType.id}" ${isChecked}>
-                                <label class="form-check-label"
-                                    for="allowance_${allowanceType.id}">${allowanceType.name_allowance}</label>
-                            </div>
-                        `;
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                        name="salary_allowance[]" value="${allowanceType.id}"
+                                        id="allowance_${allowanceType.id}" ${isChecked}>
+                                    <label class="form-check-label"
+                                        for="allowance_${allowanceType.id}">${allowanceType.name_allowance}</label>
+                                </div>
+                            `;
 
                         const inputHtml = `
-                            <input type="number" name="allowances[${allowanceType.id}]" value="${existingAllowance?.pivot?.amount || ''}" class="form-control">
-                        `;
+                                <input type="number" name="allowances[${allowanceType.id}]" value="${existingAllowance?.pivot?.amount || ''}" class="form-control">
+                            `;
 
                         $wrapper.append(checkboxHtml);
                         $wrapper.append(inputHtml);

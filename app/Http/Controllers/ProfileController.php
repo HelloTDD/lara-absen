@@ -90,10 +90,18 @@ class ProfileController extends Controller implements ProfileInterface
     public function downloadSalarySlip(Request $request)
     {
         try {
-            $data = UserSalary::with('user')->where('user_id',Auth::user()->id)->where('month',$request->month)->where('year',$request->year)->first();
+            $data = UserSalary::with(['user.role'])->where('user_id',Auth::user()->id)
+                                                        ->when($request->id_salaries, function($query) use ($request){
+                                                            $query->where('id',$request->id_salaries);
+                                                        })
+                                                        ->when($request->month && $request->year, function($query) use ($request){
+                                                            $query->where('month',$request->month)->where('year',$request->year);
+                                                        })->first();
+
             if (!$data) {
                 return redirect()->route('profile.index')->with('error', 'Sallary not found.');
             }
+            
             $pdf = new \Dompdf\Dompdf();
             $pdf->loadHtml(view('user.pdf.salary-slip', compact('data')));
             $pdf->setPaper('A4', 'portrait');
