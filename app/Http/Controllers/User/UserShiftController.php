@@ -51,15 +51,20 @@ class UserShiftController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $userShift = UserShift::find($id);
+        
         if (!$userShift) {
+
             if($request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Shift Not Found'
                 ]);
             }
+
             return redirect()->route('user-shift.index')->with('error', 'Shift not found.');
+
         }
 
         $cek_shift = UserShift::where('shift_id',$request->shift_id)

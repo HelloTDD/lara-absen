@@ -19,6 +19,9 @@ use App\Http\Controllers\User\UserLeaveController;
 use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\User\UserContractController;
 
+use App\Http\Controllers\CalendarController;
+use App\Interfaces\CalendarInterface;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -40,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(UserContractInterface::class, function($app){
             return new UserContractController();
+        });
+
+        $this->app->bind(CalendarInterface::class, function($app){
+            return new CalendarController();
         });
 
     }

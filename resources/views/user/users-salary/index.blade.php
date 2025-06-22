@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('page-title', Auth::user()->is_admin == 1 ? 'Daftar Gaji Karyawan' : 'Laporan Gaji '. Auth::user()->name )
+@section('page-title', 'Daftar Gaji Karyawan')
 @section('content')
 <div class="row">
     <div class="col-lg-12">
@@ -9,7 +9,7 @@
                     <div class="justify-content-between d-flex">
                         {{-- <div class="align-self-center"> --}}
                             <div>
-                                <h3 class="card-title">{{ Auth::user()->is_admin == 1 ? 'Daftar Gaji Karyawan' : 'Laporan Gaji '. Auth::user()->name }}</h3>
+                                <h3 class="card-title">Daftar Gaji Karyawan</h3>
                             </div>
 
                             @if(Auth::user()->is_admin == 1)
@@ -102,22 +102,6 @@
                                     <label for="salary_holiday">Holiday</label>
                                     <input class="form-control" type="number" name="salary_holiday" value="0" required>
                                 </div>
-                                <div class="mb-3 col-lg-6">
-                                    <label for="salary_holiday">Month</label>
-                                    <select class="form-control" name="month" required>
-                                        @foreach ($monthlist as $key => $month)
-                                            <option value="{{ $key }}">{{ $month }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3 col-lg-6">
-                                    <label for="salary_holiday">Year</label>
-                                    <select class="form-control" name="year" required>
-                                        @foreach ($yearlist as $year)
-                                            <option value="{{ $year }}">{{ $year }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
                                 <div class="mb-3 col-lg-12">
                                     <label for="salary_allowance">Allowance</label>
                                     <div class="form-check">
@@ -163,8 +147,6 @@
                                     <th>Bonus</th>
                                     <th>THR</th>
                                     <th>Total</th>
-                                    <th>Bulan</th>
-                                    <th>Tahun</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -179,10 +161,8 @@
                                     <td>Rp {{ number_format($item->salary_bonus) }}</td>
                                     <td>Rp {{ number_format($item->salary_holiday) }}</td>
                                     <td>Rp {{ number_format($item->salary_total) }}</td>
-                                    <td>{{ $monthlist[$item->month] ?? $item->month }}</td>
-                                    <td>{{ $item->year }}</td>
                                     <td class="text-end">
-                                    @if(Auth::user()->is_admin == 1)
+                                        @if(Auth::user()->is_admin == 1)
                                             <div class="dropstart d-inline-block">
                                                 <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"
                                                     id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown"
@@ -204,11 +184,6 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                            @else 
-                                            <form action="{{ route('profile.slip.gaji') }}" method="post">
-                                                @csrf
-                                                <button type="submit" name="id_salaries" class="btn btn-primary btn-sm" value="{{ $item->id }}"> <i class="ti ti-cloud-download"></i> Download Slip Gaji</button>
-                                            </form>
                                             @endif
                                         </td>
                                 </tr>
@@ -250,22 +225,7 @@
                                             <input class="form-control" type="number" name="salary_holiday"
                                                 id="salary_holiday_edit" value="0" required>
                                         </div>
-                                        <div class="mb-3 col-lg-6">
-                                            <label for="salary_holiday">Month</label>
-                                            <select class="form-control" name="month" id="month_edit" required>
-                                                @foreach ($monthlist as $key => $month)
-                                                    <option value="{{ $key }}">{{ $month }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="mb-3 col-lg-6">
-                                            <label for="salary_holiday">Year</label>
-                                            <select class="form-control" name="year" id="year_edit" required>
-                                                @foreach ($yearlist as $year)
-                                                    <option value="{{ $year }}">{{ $year }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                        
                                         <div class="mb-3 col-lg-12">
                                             <label>Allowance</label>
                                             <div id="allowance-container">

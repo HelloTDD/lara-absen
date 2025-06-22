@@ -15,8 +15,9 @@ use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
+use App\Http\Controllers\MonthlySalaryController;
 
-URL::forceScheme('https');
+URL::forceScheme('http');
 
 Route::controller(CalendarController::class)->group(function(){
     Route::get('/calendar', 'index')->name('calendar.index');
@@ -33,6 +34,7 @@ route::controller(AuthController::class)->group(function(){
 Route::middleware('auth')->group(function(){
     Route::middleware(['is_admin'])->group(function () {
         Route::controller(UserSalaryController::class)->group(function () {
+            Route::get('/user-salaries', 'index')->name('user-salaries.index');
             Route::post('/user-salaries', 'store')->name('user-salaries.store');
             Route::put('/user-salaries/update/{id}', 'update')->name('user-salaries.update');
             Route::get('/user-salaries/delete/{id}', 'destroy')->name('user-salaries.delete');
@@ -53,13 +55,9 @@ Route::middleware('auth')->group(function(){
         });
 
         Route::controller(UserReferenceController::class)->group(function () {
-            Route::get('/user-references', 'index')->name('user-references.index');
             Route::post('/user-references', 'store')->name('user-references.store');
             Route::put('/user-references/update/{id}', 'update')->name('user-references.update');
             Route::get('/user-references/delete/{id}', 'destroy')->name('user-references.delete');
-            Route::get('/user-references/unduh-references/{id}','download')->name('user-references.download');
-            Route::get('/user-references/{id}/preview', [UserReferenceController::class, 'preview'])->name('user-references.preview');
-            Route::get('/user-reference/delete/{id}', [UserReferenceController::class, 'destroy'])->name('user-references.delete');
         });
 
         Route::prefix('user-shift')->controller(UserShiftController::class)->name('user-shift.')->group(function () {
@@ -84,8 +82,17 @@ Route::middleware('auth')->group(function(){
 
     });
     
-    Route::get('/user-salaries', [UserSalaryController::class,'index'])->name('user-salaries.index');
-    
+    Route::controller(UserReferenceController::class)->group(function(){
+        Route::get('/user-references', 'index')->name('user-references.index');
+        Route::get('/user-references/unduh-references/{id}','download')->name('user-references.download');
+        Route::get('/user-references/{id}/preview', 'preview')->name('user-references.preview');
+    });
+    Route::controller(MonthlySalaryController::class)->group(function(){
+        Route::get('/monthly-salary','index')->name('monthly.salary.index');
+        Route::post('/monthly-salary','store')->name('monthly.salary.store');
+        Route::put('/monthly-salary/publish','publish_salary')->name('monthly.salary.publish');
+    });
+
     Route::controller(ProfileController::class)->group(function(){
         Route::get('/profile','index')->name('profile.index');
         Route::put('/profile/update','update')->name('profile.update');

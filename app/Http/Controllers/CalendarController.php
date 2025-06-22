@@ -6,15 +6,15 @@ use App\Models\CalendarEvent;
 use App\Models\UserShift;
 use App\Models\User;
 use App\Models\Log;
-use App\Models\UserAttendance;
 
+use App\Interfaces\CalendarInterface;
 use App\Services\UserShiftService;
 use App\Http\Requests\CalendarEventRequest;
 use App\Models\Shift;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class CalendarController extends Controller
+class CalendarController extends Controller implements CalendarInterface
 {
     public function index()
     {

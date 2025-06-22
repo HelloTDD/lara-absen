@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailAllowanceUser;
 use Carbon\Carbon;
 use App\Models\Log;
 use App\Models\UserSalary;
@@ -97,13 +98,15 @@ class ProfileController extends Controller implements ProfileInterface
                                                         ->when($request->month && $request->year, function($query) use ($request){
                                                             $query->where('month',$request->month)->where('year',$request->year);
                                                         })->first();
+                                    
+            $detail_allowances = DetailAllowanceUser::with('typeAllowance')->where('user_id',Auth::id())->get();
 
             if (!$data) {
                 return redirect()->route('profile.index')->with('error', 'Sallary not found.');
             }
             
             $pdf = new \Dompdf\Dompdf();
-            $pdf->loadHtml(view('user.pdf.salary-slip', compact('data')));
+            $pdf->loadHtml(view('user.pdf.salary-slip', compact('data','detail_allowances')));
             $pdf->setPaper('A4', 'portrait');
             $pdf->render();
             return $pdf->stream('salary-slip-' . Auth::user()->name . '.pdf');

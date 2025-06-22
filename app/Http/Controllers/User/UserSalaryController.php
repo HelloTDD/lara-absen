@@ -25,11 +25,8 @@ class UserSalaryController extends Controller implements UserSalaryInterface
                                 $query->where('user_id', Auth::user()->id);
                             })
                             ->get();
-                            
-        $monthlist = monthList();
-        $yearlist = yearList();
 
-        return view('user.users-salary.index', compact('users', 'salary','type_allowance', 'monthlist', 'yearlist'));
+        return view('user.users-salary.index', compact('users', 'salary','type_allowance'));
     }
 
     public function store(Request $request)
@@ -55,8 +52,6 @@ class UserSalaryController extends Controller implements UserSalaryInterface
                     'salary_allowance' => $total_allowance,
                     'salary_bonus' => $request->salary_bonus,
                     'salary_holiday' => $request->salary_holiday,
-                    'month' => $request->month,
-                    'year' => $request->year,
                     'salary_total' => $total,
                 ]);
 
@@ -81,9 +76,9 @@ class UserSalaryController extends Controller implements UserSalaryInterface
         $update_salary = null;
         try {
             $user = User::find($request->user_id);
-            $salary = $user->salary()->where('id', $id)->first(); // cari salary-nya
 
-            if ($user && $salary) {
+            if ($user) {
+                $salary = $user->salary()->where('id', $id)->first();
                 $total_allowance = 0;
 
                 // Hitung dan update allowance
@@ -98,18 +93,31 @@ class UserSalaryController extends Controller implements UserSalaryInterface
 
                 $total = $request->salary_basic + $total_allowance + $request->salary_bonus + $request->salary_holiday;
 
-                $update_salary = $salary->update([
-                    'salary_basic' => $request->salary_basic,
-                    'salary_allowance' => $total_allowance,
-                    'salary_bonus' => $request->salary_bonus,
-                    'salary_holiday' => $request->salary_holiday,
-                    'salary_total' => $total,
-                    'month' => $request->month,
-                    'year' => $request->year,
-                ]);
-
-                if (!$update_salary) {
-                    throw new \Exception('Salary details not updated');
+                if ($salary) {
+                    // Update jika salary sudah ada
+                    $update_salary = $salary->update([
+                        'salary_basic' => $request->salary_basic,
+                        'salary_allowance' => $total_allowance,
+                        'salary_bonus' => $request->salary_bonus,
+                        'salary_holiday' => $request->salary_holiday,
+                        'salary_total' => $total
+                    ]);
+                    if (!$update_salary) {
+                        throw new \Exception('Salary details not updated');
+                    }
+                } else {
+                    // Create jika salary belum ada
+                    $update_salary = $user->salary()->create([
+                        'user_id' => $user->id,
+                        'salary_basic' => $request->salary_basic,
+                        'salary_allowance' => $total_allowance,
+                        'salary_bonus' => $request->salary_bonus,
+                        'salary_holiday' => $request->salary_holiday,
+                        'salary_total' => $total
+                    ]);
+                    if (!$update_salary) {
+                        throw new \Exception('Salary details not created');
+                    }
                 }
             }
         } catch (\Throwable $th) {

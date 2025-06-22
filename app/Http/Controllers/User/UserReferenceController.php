@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserContract;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\UserReference;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,7 +27,7 @@ class UserReferenceController extends Controller
     public function store(UserReferenceRequest $request, UserReferenceService $userReferenceService)
     {
        $contract = UserContract::with(['user', 'status_contract'])
-        ->where('user_id', $request->user_id ?? auth()->id())
+        ->where('user_id', $request->user_id ?? Auth::id())
         ->whereHas('status_contract', function ($query) {
             $query->where('status_contract', 'APPROVE');
         })
@@ -37,7 +38,7 @@ class UserReferenceController extends Controller
         }
         DB::beginTransaction();
         try {
-            $userReferenceService->createReference($request, $userReferenceService);
+            $userReferenceService->createReference($request);
 
             // Update the contract's end date if it is null
             if (is_null($contract->end_contract_date)) {
@@ -111,7 +112,7 @@ class UserReferenceController extends Controller
         $reference = UserReference::findOrFail($id);
 
         $contract = UserContract::with(['user', 'status_contract'])
-            ->where('user_id', $request->user_id ?? auth()->id())
+            ->where('user_id', $request->user_id ?? Auth::id())
             ->whereHas('status_contract', function ($query) {
                 $query->where('status_contract', 'APPROVE');
             })
@@ -124,7 +125,7 @@ class UserReferenceController extends Controller
         DB::beginTransaction();
         try {
             // Update field manual
-            $reference->user_id = $request->user_id ?? auth()->id();
+            $reference->user_id = $request->user_id ?? Auth::id();
             $reference->references_date = $request->references_date;
             $reference->desc_references = $request->desc_references;
             $reference->save();

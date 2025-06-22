@@ -82,14 +82,17 @@ class UserContractController extends Controller implements UserContractInterface
     {
         $result = null;
         // dd($status,$id);
+        DB::beginTransaction();
         try {
-            $result = $statusContract->where('id',$id)->update([
+            $statusContract->where('id',$id)->update([
                 'status_contract' => Str::upper($status)
             ]);
-            $contract = UserContract::where('id',$id)->update([
+            $result = UserContract::where('id',$id)->update([
                 'approve_with' => Auth::user()->name
             ]);
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
             Log::create([
                 'action' => 'update status user contract',
                 'controller' => 'UserContractController',

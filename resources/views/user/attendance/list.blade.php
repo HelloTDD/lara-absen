@@ -100,15 +100,15 @@
                                     </td>
                                     <td class="py-2 px-4">
                                         @if ($item->desc_attendance == 'PULANG')
-                                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">PULANG</span>
+                                            <span class="badge rounded-4 text-white bg-danger">PULANG</span>
                                         @else
-                                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">MASUK</span>
+                                            <span class="badge rounded-4 text-white bg-success">MASUK</span>
                                         @endif
                                     </td>
                                     <td class="py-2 px-4">
                                         @if ($item->late_reason)
-                                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
-                                                {{ $item->late_reason }}
+                                            <span class="badge rounded-4 bg-{{ isset($item->late_reason) ? 'danger' : 'success' }} text-white">
+                                                {{ isset($item->late_reason) ? $item->late_reason : 'Tepat Waktu' }}
                                             </span>
                                         @else
                                             -
