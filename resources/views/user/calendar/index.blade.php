@@ -17,7 +17,6 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
     <script>
         $(document).ready(function () {
-            console.log({!! json_encode($event_finals) !!});
             let shift = {!! json_encode($shift) !!};
             let html = `<input type="text" name="title" id="title" class="swal2-input" placeholder="Event Title">
                             <select name="shift" id="shift" class="swal2-input d-none" disabled>
@@ -80,11 +79,13 @@
                             return { title, type, shift };
                         }
                     }).then((result) => {
-                        let data_event = '';
+                        let data_event, type_cal;
                         if(result.value.type === 'shift') {
                             data_event = result.value.shift;
+                            type_cal = 'shift';
                         } else {
                             data_event = result.value.title;
+                            type_cal = 'event'
                         }
                         if (result.isConfirmed) {
                             $.ajax({
@@ -102,10 +103,14 @@
                                     if (e.status === 'success') {
                                         status = e.status;
                                         calendar.addEvent({
+                                            id: e.data?.id,
                                             title: "{{ Auth::user()->name }}:" + e.data?.title,
                                             start: arg.start,
                                             end: arg.end,
-                                            allDay: arg.allDay
+                                            allDay: arg.allDay,
+                                            extendedProps:{
+                                                type:type_cal
+                                            }
                                         });
                                     } else {
                                         status = e.status;
@@ -117,7 +122,7 @@
                                         });
                                 },
                                 error: function (xhr, status, error) {
-                                    console.error('Error:', error);
+                                    console.error('Error:', [error,xhr,status]);
                                 }
                             });
                         }
@@ -143,7 +148,6 @@
                     calendar.unselect();
                 },
                 eventClick: function (arg) {
-                    console.log(arg.event.id);
                     if (confirm('Are you sure you want to delete this event?')) {
                         $.ajax({
                             url: '{{ url("/calendar/delete/") }}/' + arg.event.id,
@@ -177,19 +181,33 @@
                 },
                 dayMaxEvents: true,
                 eventDrop:function(e){
+                    let url,data;
                     let id = e.event.id;
                     let [type, actualId, userId] = id.split('_');
-                    $.ajax({
-                        url: "{{ route('user-shift.ajax.update', '') }}/" + actualId,
-                        type : "POST",
-                        data : {
+                    if(type === 'event'){
+                        url = "{{ route('calendar.update','') }}/" + actualId;
+                        data = {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'PUT',
+                            start_date: e.event.startStr,
+                            end_date: e.event.endStr
+                        };
+                    } else {
+                        url = "{{ route('user-shift.ajax.update', '') }}/" + actualId;
+                        data = {
                             _token: '{{ csrf_token() }}',
                             _method: 'PUT',
                             start_date_shift: e.event.startStr,
                             end_date_shift: e.event.endStr,
                             user_id : e.event.extendedProps.user,
                             shift_id : e.event.extendedProps.shift_id
-                        },
+                        };
+                    }
+                    console.log([type,actualId,userId])
+                    $.ajax({
+                        url: url,
+                        type : "POST",
+                        data : data,
                         success : function(response){
                             console.log(response);
                         },

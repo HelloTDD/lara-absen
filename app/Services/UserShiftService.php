@@ -7,42 +7,48 @@ use App\Models\UserShift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\Log as lg;
+use App\Models\Log as LogModel;
 use Illuminate\Support\Facades\Storage;
 
 class UserShiftService
 {
-    public function createShift($request)
+    /**
+     * Create a new user shift.
+     */
+    public function createUserShift($request)
     {
+        $id = null;
         DB::beginTransaction();
         try {
+            $data = is_array($request) ? $request : (array) $request;
             $userShift = new UserShift();
-            $userShift->user_id = is_array($request) ? $request['user_id'] : $request->user_id;
-            $userShift->shift_id = is_array($request) ? $request['shift_id'] : $request->shift_id;
-            $userShift->start_date_shift = Carbon::parse(is_array($request) ? $request['start_date_shift'] : $request->start_date_shift);
-            $userShift->end_date_shift = Carbon::parse(is_array($request) ? $request['end_date_shift'] : $request->end_date_shift);
-            
+            $userShift->user_id = $data['user_id'];
+            $userShift->shift_id = $data['shift_id'];
+            $userShift->start_date_shift = Carbon::parse($data['start_date_shift']);
+            $userShift->end_date_shift = Carbon::parse($data['end_date_shift']);
+
             if($userShift->save()){
                 $return = true;
+                $id = $userShift->id;
+                DB::commit();
+                Log::info('Check-in berhasil', $userShift->toArray());
             } else {
-                throw new \Exception("Gagal Menyimpan data shift", 1);
+                throw new \Exception("Failed to save shift data", 1);
             }
-            DB::commit();
-            Log::info('Check-in berhasil', $userShift->toArray());
-            
         } catch (\Throwable $th) {
             DB::rollBack();
-            lg::create([
+            Log::error('Gagal membuat user shift', [
                 'action' => 'create type calendar event',
                 'controller' => 'CalendarController',
                 'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),
             ]);
-
             $return = false;
         }
 
-        return $return;
-
+        return [
+            'return' => $return,
+            'id' => $id
+        ];
     }
 }

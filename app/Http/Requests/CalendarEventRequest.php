@@ -22,9 +22,8 @@ class CalendarEventRequest extends FormRequest
      */
     public function rules(): array
     {
-        Log::error($this->all());
         return [
-            'data' => $this->type == 'shift' ? 'required|exists:shifts,id' : 'required|string|max:255',
+            'data' => request()->routeIs('calendar.update') ? 'nullable' : ($this->type == 'shift' ? 'required|exists:shifts,id' : 'required|string|max:255'),
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'extend_data' => 'nullable|array',

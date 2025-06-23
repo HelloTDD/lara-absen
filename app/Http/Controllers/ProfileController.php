@@ -19,7 +19,7 @@ class ProfileController extends Controller implements ProfileInterface
      */
     public function index()
     {
-        $data = UserSalary::where('user_id', Auth::user()->id)->where('month',now()->format('m'))->where('year', now()->format('Y'))->first();
+        $data = UserSalary::where('user_id', Auth::user()->id)->first();
         $monthlist = monthList();
         $yearlist = yearList();
         return view('user.profile.index', compact('data','monthlist', 'yearlist'));
@@ -91,6 +91,7 @@ class ProfileController extends Controller implements ProfileInterface
     public function downloadSalarySlip(Request $request)
     {
         try {
+            
             $data = UserSalary::with(['user.role'])->where('user_id',Auth::user()->id)
                                                         ->when($request->id_salaries, function($query) use ($request){
                                                             $query->where('id',$request->id_salaries);

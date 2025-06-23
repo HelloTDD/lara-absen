@@ -16,7 +16,7 @@
                                             <span class="badge bg-info text-white fs-6 rounded-4"><label for="">Sisa Cuti :</label> {{ Auth::user()->leave }} </span>
                                         </div>
                                         <div class="col-lg-6 mt-2">
-                                            <span class="badge bg-info text-white fs-6 rounded-4"><label for="">Cuti Terpakai :</label> {{ 12 - Auth::user()->leave }} </span>
+                                            <span class="badge bg-info text-white fs-6 rounded-4"><label for="">Cuti Terpakai :</label> {{ max(0,12 - Auth::user()->leave) }} </span>
                                         </div>
                                     </div>
                                 @endif
@@ -65,7 +65,20 @@
                     </x-modal>
 
                 </div>
+
+
                 <div class="card-body">
+                    
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <div class="table-responsive">
 
                         <table class="table table-bordered table-striped">
@@ -103,7 +116,7 @@
                                         @endif
                                     </td>
                                     @if (Auth::user()->is_admin == 1)
-                                    <td>{{ 12 - $leave->user->leave  }}</td>
+                                    <td>{{ max(0,12 - $leave->user->leave)  }}</td>
                                     <td>{{ $leave->user->leave  }}</td>
                                     @endif
 
@@ -115,19 +128,19 @@
                                                 <i class="las la-ellipsis-v font-20 text-muted"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dLabel11">
-                                                @if ($leave->status == 'pending' && Auth::user()->is_admin == 1)
+                                                @if (($leave->status == 'pending' || $leave->status == 'canceled') && Auth::user()->is_admin == 1)
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-leave.approve', ['id' => $leave->id]) }}">Approve</a>
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
                                                 @endif
                                                 @if (Auth::user()->is_admin == 1)
-                                                @if ($leave->status == 'cancel')
-                                                <a class="dropdown-item"
-                                                        href="{{ route('user-leave.cancel', ['id' => $leave->id]) }}">Reject</a>
-                                                @endif
+                                                    @if ($leave->status == 'canceled')
+                                                    <a class="dropdown-item"
+                                                            href="{{ route('user-leave.cancel', ['id' => $leave->id]) }}">Cancel</a>
+                                                    @endif
                                                     <button class="dropdown-item" type="button" data-bs-toggle="modal"
-                                                        onclick="openModalEdit('{{ $leave->id }}', '{{ $leave->leave_date_start }}', '{{ $leave->leave_date_end }}', '{{ $leave->desc_leave }}')">Edit</button>
+                                                        onclick='openModalEdit("{{ $leave->id }}", "{{ $leave->leave_date_start }}", "{{ $leave->leave_date_end }}", "{{ $leave->desc_leave }}")'>Edit</button>
                                                 @endif
                                                 {{-- <a class="dropdown-item"
                                                     href="{{ route('user-leave.edit', ['id' => $leave->id]) }}">Edit</a>

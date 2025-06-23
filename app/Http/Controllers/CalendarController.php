@@ -77,6 +77,34 @@ class CalendarController extends Controller implements CalendarInterface
         return view('user.calendar.index', compact('event_finals', 'shift'));
     }
 
+    public function update(CalendarEventRequest $request, CalendarEvent $calendarEvent,$id)
+    {
+        $result = null;
+        try {
+            $get_data = $calendarEvent->findOrFail($id);
+            if(!$get_data->count() < 0 ){
+                throw new \Exception("Event Tidak Ada", 1);
+            }
+
+            $result =$get_data->update([
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date
+            ]);
+        } catch (\Throwable $th) {
+            Log::create([
+                'action' => 'update calendar event',
+                'controller' => 'CalendarController',
+                'error_code' => $th->getCode(),
+                'description' => $th->getMessage(),
+            ]);
+
+        }
+        return response()->json([
+            'status' => $result ? 'success' : 'error',
+            'message' => $result ? 'Event updated successfully.' : 'Failed to update event',
+        ]);
+    }
+
     public function store(CalendarEventRequest $request, UserShiftService $service)
     {
         $result = null;
@@ -86,8 +114,7 @@ class CalendarController extends Controller implements CalendarInterface
                 //data request di susun ulang agar sesuai dengan yang diharapkan oleh service
                 $title_shift = Shift::where('id', $request->data)->first()->shift_name;
 
-                $cek_shift = UserShift::where('shift_id', $request->data)
-                    ->where('user_id', Auth::user()->id)
+                $cek_shift = UserShift::where('user_id', Auth::user()->id)
                     ->where('start_date_shift', $request->start_date)
                     ->when($request->end_date, function ($query) use ($request) {
                         $query->where('end_date_shift', $request->end_date);
@@ -102,7 +129,7 @@ class CalendarController extends Controller implements CalendarInterface
                     ];
 
                     $title = $title_shift . " - " . Auth::user()->name; //title untuk di calendar
-                    $result = $service->createShift($data);
+                    $result = $service->createUserShift($data);
                 } else {
                     throw new \Exception("Shift Sudah Ada", 1);
                 }
@@ -114,6 +141,7 @@ class CalendarController extends Controller implements CalendarInterface
                     'created_by' => Auth::user()->id,
                 ]);
                 $title = $request->data; //title untuk di calendar
+                $id = 'event_' .$result->id; //title untuk di calendar
             }
         } catch (\Throwable $th) {
             Log::create([
@@ -125,12 +153,18 @@ class CalendarController extends Controller implements CalendarInterface
 
             $title = $th->getMessage();
         }
+        if(is_array($result))
+        {
+            $id = 'shift_' . $result['id'];
+            $result = $result['return'];
+        }
 
         return response()->json([
             'status' => $result ? 'success' : 'error',
             'message' => $result ? 'Event created successfully.' : 'Failed to create event. Message : ' . $title,
             'data' => [
                 'title' => $title,
+                'id' => $id ?? NULL
             ]
         ]);
     }

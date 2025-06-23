@@ -71,3 +71,8 @@ function yearlist() {
     }
     return $years;
 }
+
+function filterSpecialChar($param)
+{
+    return str_replace(['"',"'"],' ',$param);
+}

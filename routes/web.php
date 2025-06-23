@@ -22,6 +22,7 @@ URL::forceScheme('http');
 Route::controller(CalendarController::class)->group(function(){
     Route::get('/calendar', 'index')->name('calendar.index');
     Route::post('/calendar', 'store')->name('calendar.store');
+    Route::put('/calendar/update/{id}', 'update')->name('calendar.update');
     Route::delete('/calendar/delete/{id}', 'destroy')->name('calendar.delete');
 });
 

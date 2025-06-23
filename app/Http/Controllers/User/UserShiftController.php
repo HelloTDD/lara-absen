@@ -36,7 +36,7 @@ class UserShiftController extends Controller
 
         DB::beginTransaction();
         try {
-                $service->createShift($request);
+                $service->createUserShift($request);
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -67,8 +67,7 @@ class UserShiftController extends Controller
 
         }
 
-        $cek_shift = UserShift::where('shift_id',$request->shift_id)
-        ->where('user_id',$request->user_id)
+        $cek_shift = UserShift::where('user_id',$request->user_id)
         ->where('start_date_shift',$request->start_date_shift)
         ->first();
         if($cek_shift){

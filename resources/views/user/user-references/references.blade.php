@@ -129,12 +129,12 @@
                 <tr>
                     <td class="info-label">Nama</td>
                     <td class="info-separator">:</td>
-                    <td class="info-value">{{ Auth::user()->name }}</td>
+                    <td class="info-value">{{Str::ucfirst($data->approve_with ?? 'admin')}}</td>
                 </tr>
                 <tr>
                     <td class="info-label">Jabatan</td>
                     <td class="info-separator">:</td>
-                    <td class="info-value"> {{ Auth::user()->role?->role_name }} </td>
+                    <td class="info-value"> HRD </td>
                 </tr>
             </table>
         </div>
@@ -179,8 +179,8 @@
             <div class="signature-date">Karanganyar, {{ \Carbon\Carbon::today()->format('d M Y') }}</div>
             <div class="signature-company">PT. Transformasi Data Digital</div>
 
-            <div class="signature-name">{{ $data->approve_with ?? 'Admin' }}</div>
-            <div class="signature-title">Ketua</div>
+            <div class="signature-name">{{ Str::ucfirst($data->approve_with ?? 'admin') }}</div>
+            <div class="signature-title">HRD</div>
         </div>
     </div>
 </body>
