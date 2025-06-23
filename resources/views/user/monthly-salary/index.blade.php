@@ -209,8 +209,6 @@
                         $('#salary_basic_edit').val(salary_basic);
                         $('#salary_bonus_edit').val(salary_bonus);
                         $('#salary_holiday_edit').val(salary_holiday);
-                        $('#month_edit').val(month);
-                        $('#year_edit').val(year);
                         $('form[action]').attr('action', `/user-salaries/update/${id}`);
 
                         // Kosongkan allowance container dulu
