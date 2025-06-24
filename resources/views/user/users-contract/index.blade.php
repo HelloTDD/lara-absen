@@ -96,14 +96,14 @@
                                         @if (in_array($item->status_contract, ['APPROVE ', 'REVISION', 'RENEWE']))
                                             <span
                                                 class="badge rounded-4 bg-success fs-6 m-1">{{ $item->status_contract }}</span>
-                                        @elseif ($item->status_contract == 'APPROVE')
+                                        @elseif ($item->status_contract == 'APPROVE' || $item->status_contract == 'RENEW')
                                             <span class="badge rounded-4 bg-success fs-6 m-1">APPROVE</span>
                                         @elseif ($item->status_contract == 'CANCEL')
                                             <span class="badge rounded-4 bg-danger fs-6 m-1">Reject</span>
                                         @elseif ($item->status_contract == 'REVISION')
                                             <span class="badge rounded-4 bg-info fs-6 m-1">Revision</span>
                                         @else
-                                            <span class="badge rounded-4 bg-warning fs-6 m-1">Pending</span>
+                                            <span class="badge rounded-4 bg-warning fs-6 m-1">{{ Str::ucfirst($item->status_contract) }}</span>
                                         @endif
                                     </td>
                                     <td class="text-end">
@@ -114,32 +114,22 @@
                                                 <i class="las la-ellipsis-v font-20 text-muted"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dLabel11">
-                                                @if ($item->status_contract == 'PENDING' && Auth::user()->is_admin == 1)
-
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'APPROVE']) }}">Approve</a>
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'CANCEL']) }}">Reject</a>
-
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'REVISION']) }}">Revisi</a>
-
+                                                @if (Auth::user()->is_admin == 1)
+                                                    @if (in_array($item->status_contract, ['PENDING', 'REVISION']))
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'APPROVE']) }}">Approve</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'CANCEL']) }}">Reject</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'REVISION']) }}">Revisi</a>
+                                                        <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                                                            onclick="openModalEdit('{{ $item->contracts?->id }}', '{{ $item->contracts?->start_contract_date }}', '{{ $item->contracts?->end_contract_date }}', '{{ $item->contracts?->desc_contract }}')">Edit</button>
+                                                    @elseif (($item->status_contract == 'APPROVE') && todayNow() > $item->contracts?->end_contract_date)
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'RENEW']) }}">Renew</a>
+                                                    @endif
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-contract.delete', ['id' => $item->contracts?->id]) }}">Delete</a>
-
-                                                @elseif($item->status_contract == 'APPROVE' && todayNow() < $item->contracts?->end_contract_date)
-
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'renew']) }}">Renew</a>
-
-
-                                                @endif
-
-                                                @if (Auth::user()->is_admin == 1 && in_array($item->status_contract, ['PENDING', 'REVISION']))
-
-                                                    <button class="dropdown-item" type="button" data-bs-toggle="modal"
-                                                        onclick="openModalEdit('{{ $item->contracts?->id }}', '{{ $item->contracts?->start_contract_date }}', '{{ $item->contracts?->end_contract_date }}', '{{ $item->contracts?->desc_contract }}')">Edit</button>
-
                                                 @endif
                                             </div>
                                         </div>

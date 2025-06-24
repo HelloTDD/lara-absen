@@ -44,15 +44,21 @@ class UserSalaryController extends Controller implements UserSalaryInterface
 
             if ($user) {
                 $total_allowance = 0;
-                foreach ($request->salary_allowance as $allowance) {
-                    $total_allowance += $request->allowances[$allowance];
 
-                    $user->allowances()->syncWithoutDetaching([
-                        $allowance => ['amount' => $request->allowances[$allowance]]
-                    ]);
+                if (!empty($request->salary_allowance) || is_array($request->salary_allowance)) {
+
+                    foreach ($request->salary_allowance as $allowance) {
+                        $total_allowance += $request->allowances[$allowance];
+    
+                        $user->allowances()->syncWithoutDetaching([
+                            $allowance => ['amount' => $request->allowances[$allowance]]
+                        ]);
+                    }
+
                 }
-
                 $total = $request->salary_basic + $total_allowance + $request->salary_bonus + $request->salary_holiday;
+
+
                 $create_salary = $user->salary()->create([
                     'salary_basic' => $request->salary_basic,
                     'salary_allowance' => $total_allowance,
@@ -87,16 +93,17 @@ class UserSalaryController extends Controller implements UserSalaryInterface
                 $salary = $user->salary()->where('id', $id)->first();
                 $total_allowance = 0;
 
-                // Hitung dan update allowance
-                foreach ($request->salary_allowance as $allowance) {
-                    $amount = $request->allowances[$allowance];
-                    $total_allowance += $amount;
+                if (!empty($request->salary_allowance) || is_array($request->salary_allowance)) {
+                    
+                    foreach ($request->salary_allowance as $allowance) {
+                        $total_allowance += $request->allowances[$allowance];
+    
+                        $user->allowances()->syncWithoutDetaching([
+                            $allowance => ['amount' => $request->allowances[$allowance]]
+                        ]);
+                    }
 
-                    $user->allowances()->syncWithoutDetaching([
-                        $allowance => ['amount' => $amount]
-                    ]);
                 }
-
                 $total = $request->salary_basic + $total_allowance + $request->salary_bonus + $request->salary_holiday;
 
                 if ($salary) {
