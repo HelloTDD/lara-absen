@@ -37,7 +37,7 @@ class UserSalaryController extends Controller implements UserSalaryInterface
             $user = User::find($request->user_id);
 
             $salary = $user->salary()->where('user_id', $user->id)->first();
-            if($salary->count() > 0)
+            if($salary)
             {
                 throw new \Exception("Salary Data is Exists", 1);
             }

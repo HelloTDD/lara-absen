@@ -17,7 +17,7 @@ use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
 use App\Http\Controllers\MonthlySalaryController;
 
-URL::forceScheme('https');
+URL::forceScheme('http');
 
 Route::controller(CalendarController::class)->group(function(){
     Route::get('/calendar', 'index')->name('calendar.index');
