@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use App\Models\Shift;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
 use App\Models\UserAttendance;
@@ -39,10 +40,22 @@ class AttendanceService
             ->whereDate('start_date_shift', '<=', $today)
             ->whereDate('end_date_shift', '>=', $today)
             ->first();
-        // $shift = UserShift::where('user_id', $userId)->first();
+
 
         if (!$shift) {
-            throw new \Exception('Shift tidak ditemukan.');
+            // throw new \Exception('Shift tidak ditemukan.');
+            //tanggal dan jam hari ini
+            $now = now('Asia/Jakarta');
+            $checkInTime = $now->toTimeString();
+            $checkShift = Shift::where('check_in', '<=', $checkInTime)
+                ->where('check_out', '>=', $checkInTime)
+                ->first();
+            $shiftData = UserShift::create([
+                'user_id' => $userId,
+                'shift_id' => $checkShift->id,
+                'start_date_shift' => now('Asia/Jakarta')->toDateString(),
+                'end_date_shift' => now('Asia/Jakarta')->toDateString(),
+            ]);
         }
 
         $attendance = UserAttendance::firstOrNew([
@@ -75,7 +88,7 @@ class AttendanceService
         }
 
         $attendance->fill([
-            'shift_id' => $shift->shift_id,
+            'shift_id' => $shift->shift_id ?? $checkShift->id,
             'check_in_time' => now('Asia/Jakarta')->toTimeString(),
             'latitude_in' => $latUser,
             'longitude_in' => $lngUser,
