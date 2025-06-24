@@ -37,11 +37,12 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = Role::find($id);
+        $job_description = json_decode($role->job_description, true);
         if (!$role) {
             Log::error('Role not found', ['id' => $id]);
             return redirect()->route('role.index')->with('error', 'role not found.');
         }
-        return view('user.role.edit', compact('role'));
+        return view('user.role.edit', compact('role', 'job_description'));
     }
 
     public function update(Request $request, $id)

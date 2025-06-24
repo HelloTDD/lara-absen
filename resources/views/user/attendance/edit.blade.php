@@ -33,12 +33,12 @@
 
                     <div class="mb-3">
                         <label for="check_in_time" class="form-label">Jam Masuk</label>
-                        <input type="time" name="check_in_time" class="form-control" value="{{ $absensi->check_in_time }}">
+                        <input type="time" step="1" name="check_in_time" class="form-control" value="{{ $absensi->check_in_time }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="check_out_time" class="form-label">Jam Pulang</label>
-                        <input type="time" name="check_out_time" class="form-control" value="{{ $absensi->check_out_time }}">
+                        <input type="time" step="1" name="check_out_time" class="form-control" value="{{ $absensi->check_out_time }}">
                     </div>
 
                     <div class="mb-3">

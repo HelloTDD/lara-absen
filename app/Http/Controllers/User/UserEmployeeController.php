@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\Log;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Services\UserEmployeeService;
 use App\Http\Requests\UserEmployeeRequest;
+use Illuminate\Support\Facades\Log as lgs;
 
 class UserEmployeeController extends Controller
 {
-     public function index()
+    public function index()
     {
         $users = User::with('role')
             ->orderBy('created_at', 'desc')
@@ -26,12 +27,12 @@ class UserEmployeeController extends Controller
     {
         $cekUsername = User::where('username', $request->username)->first();
         if($cekUsername){
-            Log::error('Username already exists', ['username' => $request->username]);
+            lgs::error('Username already exists', ['username' => $request->username]);
             return redirect()->route('user-employee.index')->with('error' , 'Username already exists.');
         }
         $cekEmail = User::where('email', $request->email)->first();
         if($cekEmail){
-            Log::error('Email already exists', ['email' => $request->email]);
+            lgs::error('Email already exists', ['email' => $request->email]);
             return redirect()->route('user-employee.index')->with('error' , 'email name already exists.');
         }
 
@@ -41,8 +42,11 @@ class UserEmployeeController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to create user employee', [
-                'error' => $e->getMessage(),
+            Log::create([
+                'action' => 'create user employee',
+                'controller' => 'UserEmployeeController',
+                'error_code' => $e->getCode(),
+                'description' => $e->getMessage(),
             ]);
             return redirect()->route('user-employee.index')->with('error' , 'Gagal menambah data. Pesan : ' . $e->getMessage());
         }
@@ -53,7 +57,7 @@ class UserEmployeeController extends Controller
     {
         $user = User::find($id);
         if (!$user) {
-            Log::error('User not found', ['id' => $id]);
+            lgs::error('User not found', ['id' => $id]);
             return redirect()->route('user-employee.index')->with('error', 'User not found.');
         }
         $roles = Role::all();
@@ -64,13 +68,13 @@ class UserEmployeeController extends Controller
     {
         $user = User::find($id);
         if (!$user) {
-            Log::error('User not found', ['id' => $id]);
+            lgs::error('User not found', ['id' => $id]);
             return redirect()->route('user-employee.index')->with('error', 'User not found.');
         }
 
         $cekEmail = User::where('email', $request->email)->where('id','!=',$id)->first();
         if($cekEmail){
-            Log::error('Email already exists', ['email' => $request->email]);
+            lgs::error('Email already exists', ['email' => $request->email]);
             return redirect()->route('user-employee.index')->with('error' , 'email name already exists.');
         }
 
@@ -91,10 +95,10 @@ class UserEmployeeController extends Controller
             $user->is_admin = $request->has('is_admin') ? 1 : 0;
             $user->save();
             DB::commit();
-            Log::info('User updated successfully', $user->toArray());
+            lgs::info('User updated successfully', $user->toArray());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update user', [
+            lgs::error('Failed to update user', [
                 'error' => $e->getMessage(),
             ]);
             return redirect()->back()->withErrors(['error' => 'Failed to update user: ' . $e->getMessage()]);
@@ -106,7 +110,7 @@ class UserEmployeeController extends Controller
     {
         $user = User::find($id);
         if (!$user) {
-            Log::error('User not found', ['id' => $id]);
+            lgs::error('User not found', ['id' => $id]);
             return redirect()->route('user-employee.index')->with('error', 'User not found.');
         }
 
@@ -114,11 +118,14 @@ class UserEmployeeController extends Controller
         try {
             $user->delete();
             DB::commit();
-            Log::info('User deleted successfully', ['id' => $id]);
+            lgs::info('User deleted successfully', ['id' => $id]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to delete user', [
-                'error' => $e->getMessage(),
+            Log::create([
+                'action' => 'delete user employee',
+                'controller' => 'UserEmployeeController',
+                'error_code' => $e->getCode(),
+                'description' => $e->getMessage(),
             ]);
             return redirect()->back()->withErrors(['error' => 'Failed to delete user: ' . $e->getMessage()]);
         }
