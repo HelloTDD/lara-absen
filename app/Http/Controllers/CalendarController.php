@@ -111,6 +111,9 @@ class CalendarController extends Controller implements CalendarInterface
         try {
             if ($request->type == 'shift') {
 
+                if (Carbon::parse($request->start_date)->lt(Carbon::today())) {
+                    throw new \Exception("Tanggal shift tidak boleh kurang dari hari ini", 1);
+                }
                 //data request di susun ulang agar sesuai dengan yang diharapkan oleh service
                 $title_shift = Shift::where('id', $request->data)->first()->shift_name;
 
