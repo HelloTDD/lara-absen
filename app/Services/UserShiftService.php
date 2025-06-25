@@ -13,12 +13,14 @@ use Illuminate\Support\Facades\Storage;
 class UserShiftService
 {
     public function createUserShift($request)
-    {
+    {   
+        $overtime = is_array($request) ? $request['overtime'] : $request->overtime;
         DB::beginTransaction();
         try {
             $userShift = new UserShift();
             $userShift->user_id = is_array($request) ? $request['user_id'] : $request->user_id;
             $userShift->shift_id = is_array($request) ? $request['shift_id'] : $request->shift_id;
+            $userShift->desc_shift = $overtime == 'on' ? 'LEMBUR' : NULL;
             $userShift->start_date_shift = Carbon::parse(is_array($request) ? $request['start_date_shift'] : $request->start_date_shift);
             $userShift->end_date_shift = Carbon::parse(is_array($request) ? $request['end_date_shift'] : $request->end_date_shift);
             

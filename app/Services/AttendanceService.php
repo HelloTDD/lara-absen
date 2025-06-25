@@ -34,13 +34,16 @@ class AttendanceService
 
     public function checkIn($userId, Request $request)
     {
-
+        /**
+         * Point Penting 
+         */
         $today = now('Asia/Jakarta')->toDateString();
         $shift = UserShift::where('user_id', $userId)
             ->whereDate('start_date_shift', '<=', $today)
             ->whereDate('end_date_shift', '>=', $today)
             ->first();
-
+        
+        $descAttendance = 'MASUK';
 
         if (!$shift) {
             // throw new \Exception('Shift tidak ditemukan.');
@@ -50,12 +53,17 @@ class AttendanceService
             $checkShift = Shift::where('check_in', '<=', $checkInTime)
                 ->where('check_out', '>=', $checkInTime)
                 ->first();
-            $shiftData = UserShift::create([
+
+            $shift = UserShift::create([
                 'user_id' => $userId,
                 'shift_id' => $checkShift->id,
                 'start_date_shift' => now('Asia/Jakarta')->toDateString(),
                 'end_date_shift' => now('Asia/Jakarta')->toDateString(),
             ]);
+        }
+
+        if (!empty($shift->desc_shift) && $shift->desc_shift === 'LEMBUR') {
+            $descAttendance = 'LEMBUR MASUK';
         }
 
         $attendance = UserAttendance::firstOrNew([
@@ -67,6 +75,9 @@ class AttendanceService
             throw new \Exception('Sudah absen MASUK.');
         }
 
+        /**
+         * Point Penting ----- selesai
+         */
         $imageData = $request->image;
         $imageName = 'checkin_' . now()->format('YmdHis') . '.jpg';
         Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
@@ -94,7 +105,7 @@ class AttendanceService
             'longitude_in' => $lngUser,
             'distance_in' => $distance,
             'check_in_photo' => $imageName,
-            'desc_attendance' => 'MASUK',
+            'desc_attendance' => $descAttendance,
         ])->save();
 
         Log::info('Check-in berhasil', $attendance->toArray());
@@ -106,7 +117,12 @@ class AttendanceService
         $attendance = UserAttendance::where('user_id', $userId)
             ->where('date', $today)
             ->first();
-
+        
+        $descAttendance = 'PULANG';
+        
+        if($attendance->desc_attendance === 'LEMBUR MASUK'){
+            $descAttendance = 'LEMBUR PULANG';
+        } 
         if (!$attendance || !$attendance->check_in_time) {
             throw new \Exception('Belum absen MASUK.');
         }
@@ -141,7 +157,7 @@ class AttendanceService
             'longitude_out'   => $lngUser,
             'distance_out'    => $distance,
             'check_out_photo' => $imageName,
-            'desc_attendance' => 'PULANG',
+            'desc_attendance' => $descAttendance,
         ]);
 
         Log::info('Check-out berhasil', $attendance->toArray());

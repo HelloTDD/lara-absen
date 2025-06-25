@@ -116,14 +116,24 @@ class CalendarController extends Controller implements CalendarInterface
 
                 $cek_shift = UserShift::where('user_id', Auth::user()->id)
                     ->where('start_date_shift', $request->start_date)
-                    ->when($request->end_date, function ($query) use ($request) {
+                    ->when($request->end_date, callback: function ($query) use ($request) {
                         $query->where('end_date_shift', $request->end_date);
-                    })->count();
-
+                    })
+                    ->when($request->overtime == 'on', function ($query) use ($request) {
+                        $query->whereNotNull('desc_shift');
+                    })  
+                    ->when($request->overtime == 'off', function ($query) use ($request) {
+                        
+                        $query->whereNull('desc_shift');
+                    })
+                    ->count();
+                    // dd($cek_shift);
+                // dd($request->overtime);
                 if ($cek_shift == 0) {
                     $data = [
                         'user_id' => Auth::user()->id,
                         'shift_id' => $request->data,
+                        'overtime' => $request->overtime,
                         'start_date_shift' => $request->start_date,
                         'end_date_shift' => $request->end_date,
                     ];

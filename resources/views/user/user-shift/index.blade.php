@@ -54,6 +54,17 @@
                                     <label for="salary_allowance">Tanggal Selesai</label>
                                     <input class="form-control" type="date" name="end_date_shift" value="0" required>
                                 </div>
+                                
+                                <div class="mb-3 col-lg-12">
+                                    <div class="form-check">
+                                        <input type="hidden" name="overtime" value="off">
+                                        <input class="form-check-input" name="overtime" type="checkbox" id="flexCheckDefault">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            Lembur?
+                                        </label>
+                                    </div>
+                                </div>
+
                             </div>
                             <button type="submit" class="btn btn-success">Submit</button>
                         </form>
