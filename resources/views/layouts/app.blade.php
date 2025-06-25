@@ -21,6 +21,8 @@
 
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
+
+
     @stack('header')
 </head>
 
@@ -28,7 +30,7 @@
     <!-- leftbar-tab-menu -->
     <div class="leftbar-tab-menu">
         <div class="main-icon-menu">
-            <a href="/" class="logo logo-metrica d-block text-center">
+            <a href="/homes" class="logo logo-metrica d-block text-center">
                 <span>
                     <img src="{{ asset('assets/images/logo-sm.png') }}" alt="logo-small" class="logo-sm">
                 </span>
@@ -83,7 +85,7 @@
 
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/') }}">Home</a>
+                            <a class="nav-link" href="{{ url('/homes') }}">Home</a>
                         </li><!--end nav-item-->
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/calendar') }}">Calendar</a>
@@ -112,7 +114,7 @@
                             <li class="nav-item">
                                 <a href="{{ route('monthly.salary.index') }}" class="nav-link ">Gaji Bulanan</a>
                             </li><!--end nav-item-->
-                            
+
                             @if(Auth::user()->is_admin == 1)
                                 <li class="nav-item">
                                     <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
@@ -242,9 +244,31 @@
     <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
+
+    {{-- datatables --}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
     @stack('scripts')
+
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable({
+                "language": {
+                    "search": "Cari:",
+                    "lengthMenu": "Tampilkan _MENU_ entri",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                    "infoEmpty": "Tidak ada entri yang tersedia",
+                    "infoFiltered": "(disaring dari _MAX_ total entri)",
+                    "paginate": {
+                        "previous": "Sebelumnya",
+                        "next": "Berikutnya"
+                    }
+                }
+            });
+        });
+    </script>
 
     @session('success')
         <script>
@@ -267,6 +291,7 @@
             });
         </script>
     @endsession
+
 </body>
 <!--end body-->
 

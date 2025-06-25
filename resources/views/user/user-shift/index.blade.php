@@ -5,6 +5,64 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
+                    <form action="{{ route('user-shift.filter') }}" method="post">
+                            @csrf
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="user_id">User</label>
+                                        <select class="form-control" name="user_id" >
+                                            <option value="">Pilih User</option>
+                                            {{-- Check if there are users available --}}
+                                            @if (count($users) == 0)
+                                                <option value="">No users available</option>
+                                            @else
+                                                @foreach($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="user_id">Shift</label>
+                                        <select class="form-control" name="shift_id" >
+                                            <option value="">Pilih Shift</option>
+                                            {{-- Check if there are shifts available --}}
+                                            @if (count($shift) == 0)
+                                                <option value="">No shift available</option>
+                                            @else
+                                                @foreach($shift as $row)
+                                                    <option value="{{ $row->id }}">{{ $row->shift_name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="start_date_shift">Tanggal Mulai</label>
+                                        <input class="form-control" type="date" name="start_date_shift">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="end_date_shift">Tanggal Selesai</label>
+                                        <input class="form-control" type="date" name="end_date_shift">
+                                    </div>
+                                </div>
+                            </div>
+                        <button type="submit" class="btn btn-success">Filter</button>
+                        <a href="{{ route('user-shift.reset') }}" class="btn btn-secondary">Reset</a>
+                        <a href="{{ route('user-shift.print') }}" class="btn btn-primary">Print</a>
+                        <a href="{{ route('user-shift.export') }}" class="btn btn-primary">Export</a>
+                    </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
                 {{-- <div class="align-self-center"> --}}
                     <div class="justify-content-between d-flex">
                         {{-- <div class="align-self-center"> --}}
@@ -63,7 +121,7 @@
                 <div class="card-body">
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped" id="datatable">
                             <thead>
                                 <tr>
                                     <th>No</th>

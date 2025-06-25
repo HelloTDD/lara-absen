@@ -64,8 +64,12 @@ Route::middleware('auth')->group(function(){
         Route::prefix('user-shift')->controller(UserShiftController::class)->name('user-shift.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/save', 'store')->name('store');
+            Route::post('/filter', 'filter')->name('filter');
+            Route::get('/reset', 'resetFilter')->name('reset');
             Route::put('/update/{id}', 'update')->name('update');
             Route::get('/shift/{id}/delete', 'destroy')->name('delete');
+            Route::get('/print', 'print')->name('print');
+            Route::get('/export', 'export')->name('export');
         });
 
         Route::prefix('shift')->controller(ShiftController::class)->name('shift.')->group(function () {
@@ -82,7 +86,7 @@ Route::middleware('auth')->group(function(){
         });
 
     });
-    
+
     Route::controller(UserReferenceController::class)->group(function(){
         Route::get('/user-references', 'index')->name('user-references.index');
         Route::get('/user-references/unduh-references/{id}','download')->name('user-references.download');
@@ -98,6 +102,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/profile','index')->name('profile.index');
         Route::put('/profile/update','update')->name('profile.update');
         Route::put('/change-password/update','changePassword')->name('profile.change.password');
+        Route::put('/user-bank/update','updateBank')->name('profile.update.bank');
         Route::post('/slip-gaji','downloadSalarySlip')->name('profile.slip.gaji');
     });
 
