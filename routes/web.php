@@ -138,9 +138,13 @@ Route::middleware('auth')->group(function(){
         Route::get('/', 'index')->name('index');
         Route::post('/save', 'store')->name('store');
         Route::get('/list', 'list')->name('list');
+        Route::post('/filter', 'filter')->name('filter');   
+        Route::get('/reset', 'resetFilter')->name('reset');
         Route::get('/absensi/{id}/edit', 'edit')->name('edit');
         Route::put('/absensi/{id}', 'update')->name('update');
         Route::delete('/absensi/{id}/delete', 'destroy')->name('destroy');
+        Route::get('/print', 'print')->name('print');
+        Route::get('/export', 'export')->name('export');
     });
 
 

@@ -93,12 +93,22 @@
                             </thead>
                             <tbody>
                                 @php($no = 1)
-                                @foreach($role as $item)
+                                @foreach($role as $item):
                                 <tr>
                                     <td>{{ $no }}</td>
                                     <td>{{ $item->role_name }}</td>
                                     <td>{{ $item->description }}</td>
-                                    <td>{{ $item->job_description ?? 'Deskripsi belum dibuat' }}</td>
+                                    <td>
+                                        @if($item->job_description)
+                                        <ul>
+                                            @foreach(json_decode($item->job_description, true) as $desc)
+                                            <li>{{ $desc }}</li>
+                                            @endforeach
+                                        </ul>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
                                     <td class="text-end">
                                         <div class="dropstart d-inline-block">
                                             <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"

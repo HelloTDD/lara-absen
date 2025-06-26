@@ -3,6 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Daftar Shift Karyawan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .card-body {
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <div class="card-body">

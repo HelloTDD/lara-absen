@@ -167,8 +167,8 @@
         </div>
 
         <div class="section">
-            Selama bekerja yang bersangkutan telah menunjukkan dedikasi dan loyalitas tinggi serta memberikan kontribusi positif bagi perusahaan.
-            Selain itu, yang bersangkutan tidak pernah melakukan tindakan yang merugikan perusahaan.
+            {{ $data->desc_references ?? 'Selama bekerja yang bersangkutan telah menunjukkan dedikasi dan loyalitas tinggi serta memberikan kontribusi positif bagi perusahaan.
+            Selain itu, yang bersangkutan tidak pernah melakukan tindakan yang merugikan perusahaan.' }}
         </div>
 
         <div class="section">

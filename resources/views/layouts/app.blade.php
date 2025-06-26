@@ -265,7 +265,11 @@
                         "previous": "Sebelumnya",
                         "next": "Berikutnya"
                     }
-                }
+                },
+                "columnDefs": [{
+                "targets": [ 0 ],
+                "className": "dt-body-left",
+                }]
             });
         });
     </script>
