@@ -15,6 +15,7 @@ class UserShift extends Model
     protected $fillable = [
         'user_id',
         'shift_id',
+        'desc_shift',
         'start_date_shift',
         'end_date_shift',
     ];

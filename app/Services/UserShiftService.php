@@ -8,19 +8,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Log as lg;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserShiftService
 {
     public function createUserShift($request)
     {   
-        $overtime = is_array($request) ? $request['overtime'] : $request->overtime;
+        
+        if(!empty($request['overtime']) || !empty($request->overtime)){
+            $desc_shift = is_array($request) ? $request['overtime'] : $request->overtime;
+        } else {
+            $desc_shift = is_array($request) ? ($request['holiday'] ?? NULL) : ($request->holiday ?? NULL);
+        }
+
+        Log::info('tes'.$desc_shift);
         DB::beginTransaction();
         try {
             $userShift = new UserShift();
             $userShift->user_id = is_array($request) ? $request['user_id'] : $request->user_id;
             $userShift->shift_id = is_array($request) ? $request['shift_id'] : $request->shift_id;
-            $userShift->desc_shift = $overtime == 'on' ? 'LEMBUR' : NULL;
+            $userShift->desc_shift = !empty($desc_shift) ? Str::upper($desc_shift) : NULL;
             $userShift->start_date_shift = Carbon::parse(is_array($request) ? $request['start_date_shift'] : $request->start_date_shift);
             $userShift->end_date_shift = Carbon::parse(is_array($request) ? $request['end_date_shift'] : $request->end_date_shift);
             

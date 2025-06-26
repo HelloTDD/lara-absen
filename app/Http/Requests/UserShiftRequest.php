@@ -25,8 +25,7 @@ class UserShiftRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'shift_id' => 'required|exists:shifts,id',
             'start_date_shift' => 'required|date_format:Y-m-d',
-            'end_date_shift' => 'required|date_format:Y-m-d|after_or_equal:start_date_shift',
-            'overtime' => 'nullable'
+            'end_date_shift' => 'required|date_format:Y-m-d|after_or_equal:start_date_shift'
         ];
     }
 }

@@ -30,7 +30,8 @@
                         html += `</select>
                                 <select name="overtime" class="swal2-input ms-2 shifts" disabled>
                                     <option value="off">Tidak Lembur</option>
-                                    <option value="on">Lembur</option>
+                                    <option value="LEMBUR">Lembur</option>
+                                    <option value="HOLYDAY">Libur</option>
                                 </select>
                             </div>
                             <div class="d-flex justify-content-center gap-3 mt-3 align-items-center mb-2">

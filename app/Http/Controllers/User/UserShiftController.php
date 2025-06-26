@@ -25,6 +25,7 @@ class UserShiftController extends Controller
 
     public function store(UserShiftRequest $request, UserShiftService $service)
     {
+        // dd($request->all());
         $cek_shift = UserShift::where('shift_id',$request->shift_id)
                                 ->where('user_id',$request->user_id)
                                 ->where('start_date_shift',$request->start_date_shift)

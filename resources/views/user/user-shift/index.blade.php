@@ -55,12 +55,17 @@
                                     <input class="form-control" type="date" name="end_date_shift" value="0" required>
                                 </div>
                                 
-                                <div class="mb-3 col-lg-12">
+                                <div class="mb-3 col-lg-12 d-flex gap-3">
                                     <div class="form-check">
-                                        <input type="hidden" name="overtime" value="off">
-                                        <input class="form-check-input" name="overtime" type="checkbox" id="flexCheckDefault">
-                                        <label class="form-check-label" for="flexCheckDefault">
+                                        <input class="form-check-input" id="overtime" name="overtime" type="checkbox" value="overtime">
+                                        <label class="form-check-label" for="overtime">
                                             Lembur?
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" id="holiday" name="holiday" type="checkbox" value="holiday">
+                                        <label class="form-check-label" for="holiday">
+                                            Libur?
                                         </label>
                                     </div>
                                 </div>
@@ -206,5 +211,18 @@
                     $('#end_date_shift_edit').val(end_date_shift);
                     $('form[action]').attr('action', `/user-shift/update/${id}`);
                 }
+
+                $(document).ready(function(){
+                    $('#holiday').on('change', function(){
+                        if($(this).is(':checked')) {
+                            $('#overtime').prop('checked', false);
+                        }
+                    });
+                    $('#overtime').on('change', function(){
+                        if($(this).is(':checked')) {
+                            $('#holiday').prop('checked', false);
+                        }
+                    });
+                });
             </script>
         @endpush

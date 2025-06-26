@@ -7,6 +7,7 @@ use App\Models\UserShift;
 use App\Models\User;
 use App\Models\Log;
 
+use Illuminate\Support\Facades\Log as lg;
 use App\Interfaces\CalendarInterface;
 use App\Services\UserShiftService;
 use App\Http\Requests\CalendarEventRequest;
@@ -40,7 +41,11 @@ class CalendarController extends Controller implements CalendarInterface
 
                 $color = $cek_already_attendance
                     ? ['backgroundColor' => '#8ce089', 'textColor' => '#22941e']
-                    : [];
+                    : (
+                        $userShift->desc_shift == 'HOLIDAY'
+                        ? []
+                        : []
+                    );
 
                 return array_merge([
                     'id' => 'shift_' . $userShift->id,
@@ -77,16 +82,16 @@ class CalendarController extends Controller implements CalendarInterface
         return view('user.calendar.index', compact('event_finals', 'shift'));
     }
 
-    public function update(CalendarEventRequest $request, CalendarEvent $calendarEvent,$id)
+    public function update(CalendarEventRequest $request, CalendarEvent $calendarEvent, $id)
     {
         $result = null;
         try {
             $get_data = $calendarEvent->findOrFail($id);
-            if(!$get_data->count() < 0 ){
+            if (!$get_data->count() < 0) {
                 throw new \Exception("Event Tidak Ada", 1);
             }
 
-            $result =$get_data->update([
+            $result = $get_data->update([
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date
             ]);
@@ -97,7 +102,6 @@ class CalendarController extends Controller implements CalendarInterface
                 'error_code' => $th->getCode(),
                 'description' => $th->getMessage(),
             ]);
-
         }
         return response()->json([
             'status' => $result ? 'success' : 'error',
@@ -122,24 +126,27 @@ class CalendarController extends Controller implements CalendarInterface
                     ->when($request->end_date, callback: function ($query) use ($request) {
                         $query->where('end_date_shift', $request->end_date);
                     })
-                    ->when($request->overtime == 'on', function ($query) use ($request) {
-                        $query->whereNotNull('desc_shift');
-                    })  
-                    ->when($request->overtime == 'off', function ($query) use ($request) {
-                        
-                        $query->whereNull('desc_shift');
+                    ->when($request->overtime == 'LEMBUR' || $request->overtime == 'HOLYDAY', function ($query) use ($request) {
+                        $query->where('desc_shift',$request->overtime);
                     })
                     ->count();
-                    // dd($cek_shift);
+
+                lg::info($cek_shift);
                 // dd($request->overtime);
                 if ($cek_shift == 0) {
                     $data = [
                         'user_id' => Auth::user()->id,
                         'shift_id' => $request->data,
-                        'overtime' => $request->overtime,
                         'start_date_shift' => $request->start_date,
                         'end_date_shift' => $request->end_date,
                     ];
+
+                    if (!empty($request['overtime']) || !empty($request->overtime)) {
+                        $data['overtime'] = $request->overtime;
+                    } else {
+                        $data['holiday'] = !empty($request->holiday) ? $request->holiday : null;
+                    }
+
 
                     $title = $title_shift . " - " . Auth::user()->name; //title untuk di calendar
                     $result = $service->createUserShift($data);
@@ -154,7 +161,7 @@ class CalendarController extends Controller implements CalendarInterface
                     'created_by' => Auth::user()->id,
                 ]);
                 $title = $request->data; //title untuk di calendar
-                $id = 'event_' .$result->id; //title untuk di calendar
+                $id = 'event_' . $result->id; //title untuk di calendar
             }
         } catch (\Throwable $th) {
             Log::create([
@@ -166,8 +173,7 @@ class CalendarController extends Controller implements CalendarInterface
 
             $title = $th->getMessage();
         }
-        if(is_array($result))
-        {
+        if (is_array($result)) {
             $id = 'shift_' . $result['id'];
             $result = $result['return'];
         }

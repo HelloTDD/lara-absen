@@ -38,32 +38,45 @@ class AttendanceService
          * Point Penting 
          */
         $today = now('Asia/Jakarta')->toDateString();
-        $shift = UserShift::where('user_id', $userId)
+        $shift = UserShift::with('shift')->where('user_id', $userId)
             ->whereDate('start_date_shift', '<=', $today)
             ->whereDate('end_date_shift', '>=', $today)
             ->first();
         
         $descAttendance = 'MASUK';
-
-        if (!$shift) {
+        Log::info(!$shift || $shift->desc_shift == 'LEMBUR');
+        if (!$shift || $shift->desc_shift == 'LEMBUR') {
             // throw new \Exception('Shift tidak ditemukan.');
             //tanggal dan jam hari ini
-            $now = now('Asia/Jakarta');
-            $checkInTime = $now->toTimeString();
-            $checkShift = Shift::where('check_in', '<=', $checkInTime)
-                ->where('check_out', '>=', $checkInTime)
-                ->first();
-
-            $shift = UserShift::create([
-                'user_id' => $userId,
-                'shift_id' => $checkShift->id,
-                'start_date_shift' => now('Asia/Jakarta')->toDateString(),
-                'end_date_shift' => now('Asia/Jakarta')->toDateString(),
-            ]);
+            $descAttendance = 'LEMBUR MASUK';
+            
+            Log::info(!$shift);
+            if(!$shift){
+                $now = now('Asia/Jakarta');
+                $checkInTime = $now->toTimeString();
+                $checkShift = Shift::where('check_in', '<=', $checkInTime)
+                    ->where('check_out', '>=', $checkInTime)
+                    ->first();
+                
+    
+                $shift = UserShift::create([
+                    'user_id' => $userId,
+                    'shift_id' => $checkShift->id,
+                    'desc_shift' => 'LEMBUR',
+                    'start_date_shift' => now('Asia/Jakarta')->toDateString(),
+                    'end_date_shift' => now('Asia/Jakarta')->toDateString(),
+                ]);
+            }
         }
 
-        if (!empty($shift->desc_shift) && $shift->desc_shift === 'LEMBUR') {
+        if ($shift->desc_shift == 'HOLYDAY') {
             $descAttendance = 'LEMBUR MASUK';
+        }
+        
+        $time_now = Carbon::today()->format("H:i:s");
+        if($shift->shift?->check_in < $time_now)
+        {
+            $descAttendance = 'ABSEN MASUK DILUAR JAM KERJA';
         }
 
         $attendance = UserAttendance::firstOrNew([
@@ -81,7 +94,6 @@ class AttendanceService
         $imageData = $request->image;
         $imageName = 'checkin_' . now()->format('YmdHis') . '.jpg';
         Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
-
 
         $lokasiUser = explode(',', $request->lokasi);
         $latUser = trim($lokasiUser[0]);
@@ -114,7 +126,7 @@ class AttendanceService
     public function checkOut($userId, Request $request)
     {
         $today = now('Asia/Jakarta')->toDateString();
-        $attendance = UserAttendance::where('user_id', $userId)
+        $attendance = UserAttendance::with('shift')->where('user_id', $userId)
             ->where('date', $today)
             ->first();
         
@@ -123,6 +135,13 @@ class AttendanceService
         if($attendance->desc_attendance === 'LEMBUR MASUK'){
             $descAttendance = 'LEMBUR PULANG';
         } 
+
+        $time_now = Carbon::today()->format("H:i:s");
+        if($attendance->shift?->check_in > $time_now)
+        {
+            $descAttendance = 'ABSEN PULANG DILUAR JAM KERJA';
+        }
+
         if (!$attendance || !$attendance->check_in_time) {
             throw new \Exception('Belum absen MASUK.');
         }
