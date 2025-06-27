@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\User;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Interfaces\UserLeaveInterface;
-use App\Http\Requests\UserLeaveRequest;
+use Carbon\Carbon;
+use App\Models\Log;
 use App\Models\User;
 use App\Models\UserLeave;
-use App\Models\Log;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use App\Interfaces\UserLeaveInterface;
+use App\Http\Requests\UserLeaveRequest;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Illuminate\Support\Facades\Log as lgs;
 
 class UserLeaveController extends Controller implements UserLeaveInterface
@@ -18,15 +22,196 @@ class UserLeaveController extends Controller implements UserLeaveInterface
     public function index()
     {
         $users = User::all();
-        $leaves = UserLeave::with('user')->orderBy('created_at', 'desc')->paginate(10);
-        return view('user.users-leave.index', compact('users', 'leaves'));
+        $leaveStatus = leaveStatus();
+        $leaves = UserLeave::with('user')
+        ->when(session('user_leave_filter'), function ($query) {
+            $filter = session('user_leave_filter');
+            if (isset($filter['user_id']) && $filter['user_id']) {
+                $query->where('user_id', $filter['user_id']);
+            }
+            if (isset($filter['status']) && $filter['status']) {
+                $query->where('status', $filter['status']);
+            }
+            if (isset($filter['start_date']) && $filter['start_date']) {
+                $query->whereDate('leave_date_start', '>=', Carbon::parse($filter['start_date']));
+            }
+            if (isset($filter['end_date']) && $filter['end_date']) {
+                $query->whereDate('leave_date_end', '<=', Carbon::parse($filter['end_date']));
+            }
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+        return view('user.users-leave.index', compact('users', 'leaves', 'leaveStatus'));
+    }
+
+    public function filter(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $status = $request->input('status');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
+        $session = session('user_leave_filter', []);
+        $session['user_id'] = $user_id;
+        $session['status'] = $status;
+        $session['start_date'] = $start_date;
+        $session['end_date'] = $end_date;
+        session(['user_leave_filter' => $session]);
+        return redirect()->route('user-leave.index');
+    }
+
+    public function resetFilter()
+    {
+        session()->forget('user_leave_filter');
+        return redirect()->route('user-leave.index');
     }
 
     public function index_by_user()
     {
         $user_id = Auth::user()->id;
-        $leaves = UserLeave::where('user_id', $user_id)->with('user')->paginate(10);
-        return view('user.users-leave.index', compact('leaves'));
+        $users = User::all();
+        $leaveStatus = leaveStatus();
+        $leaves = UserLeave::where('user_id', $user_id)
+        ->when(session('user_leave_filter'), function ($query) {
+            $filter = session('user_leave_filter');
+            if (isset($filter['user_id']) && $filter['user_id']) {
+                $query->where('user_id', $filter['user_id']);
+            }
+            if (isset($filter['status']) && $filter['status']) {
+                $query->where('status', $filter['status']);
+            }
+            if (isset($filter['start_date']) && $filter['start_date']) {
+                $query->whereDate('leave_date_start', '>=', Carbon::parse($filter['start_date']));
+            }
+            if (isset($filter['end_date']) && $filter['end_date']) {
+                $query->whereDate('leave_date_end', '<=', Carbon::parse($filter['end_date']));
+            }
+        })
+        ->with('user')->paginate(10);
+        return view('user.users-leave.index', compact('leaves', 'users', 'leaveStatus'));
+    }
+
+    public function print()
+    {
+        try{
+        $leaves = UserLeave::with('user')
+        ->when(session('user_leave_filter'), function ($query) {
+            $filter = session('user_leave_filter');
+            if (isset($filter['user_id']) && $filter['user_id']) {
+                $query->where('user_id', $filter['user_id']);
+            }
+            if (isset($filter['status']) && $filter['status']) {
+                $query->where('status', $filter['status']);
+            }
+            if (isset($filter['start_date']) && $filter['start_date']) {
+                $query->whereDate('leave_date_start', '>=', Carbon::parse($filter['start_date']));
+            }
+            if (isset($filter['end_date']) && $filter['end_date']) {
+                $query->whereDate('leave_date_end', '<=', Carbon::parse($filter['end_date']));
+            }
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $pdf = new \Dompdf\Dompdf();
+            $pdf->loadHtml(view('user.users-leave.print', compact('leaves')));
+            $pdf->setPaper([0, 0, 595.28, 935.43], 'portrait');
+            $pdf->render();
+
+            return response($pdf->output(), 200)
+                ->header('Content-Type', 'application/pdf');
+        } catch (\Throwable $th) {
+            lgs::error('Failed to preview user leave', [
+                'action' => 'preview user leave',
+                'controller' => 'UserleaveController',
+                'error_code' => $th->getCode(),
+                'description' => $th->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to preview leave');
+        }
+    }
+
+    public function export()
+    {
+        try {
+            $leaves = UserLeave::with('user')
+            ->when(session('user_leave_filter'), function ($query) {
+                $filter = session('user_leave_filter');
+                if (isset($filter['user_id']) && $filter['user_id']) {
+                    $query->where('user_id', $filter['user_id']);
+                }
+                if (isset($filter['status']) && $filter['status']) {
+                    $query->where('status', $filter['status']);
+                }
+                if (isset($filter['start_date']) && $filter['start_date']) {
+                    $query->whereDate('leave_date_start', '>=', Carbon::parse($filter['start_date']));
+                }
+                if (isset($filter['end_date']) && $filter['end_date']) {
+                    $query->whereDate('leave_date_end', '<=', Carbon::parse($filter['end_date']));
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $sheet->setTitle('Daftar Cuti Karyawan');
+            $sheet->setCellValue('A1', 'No');
+            $sheet->setCellValue('B1', 'Nama Karyawan');
+            $sheet->setCellValue('C1', 'Tanggal Cuti');
+            $sheet->setCellValue('D1', 'Status');
+            $sheet->setCellValue('E1', 'Cuti Terpakai');
+            $sheet->setCellValue('F1', 'Cuti Tersisa');
+            $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A1:F1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $row = 2;
+
+            foreach ($leaves as $index => $leave) {
+
+                if($leave->status == 'approved'){
+                    $status = 'Approve';
+                }elseif($leave->status == 'rejected'){
+                   $status = 'Reject';
+                }elseif($leave->status == 'pending'){
+                   $status = 'Pending';
+                }elseif($leave->status == 'cancel'){
+                   $status = 'Cancel';
+                }else{
+                   $status = 'Pending';
+                }
+
+                $sheet->setCellValue('A' . $row, $index + 1);
+                $sheet->setCellValue('B' . $row, $leave->user->name);
+                $sheet->setCellValue('C' . $row, $leave->leave_date_start ." ~ ". $leave->leave_date_end);
+                $sheet->setCellValue('D' . $row, $status);
+                $sheet->setCellValue('E' . $row, max(0,12 - $leave->user->leave));
+                $sheet->setCellValue('F' . $row,  $leave->user->leave);
+                $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+                $sheet->getStyle('A' . $row . ':F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('A' . $row . ':F' . $row)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setSize(12);
+                $row++;
+            }
+
+            $writer = new Xlsx($spreadsheet);
+            $fileName = "Daftar_Cuti_Karyawan_".date('Y-m-d').".xlsx";
+            header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            header("Content-Disposition: attachment;filename=\"$fileName\"");
+            $writer->save("php://output");
+            exit();
+
+
+        } catch (\Throwable $th) {
+            lgs::error('Failed to export user leave', [
+                'action' => 'export user leave',
+                'controller' => 'UserleaveController',
+                'error_code' => $th->getCode(),
+                'description' => $th->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to export leave');
+        }
     }
 
     public function create_leave(UserLeaveRequest $request)
@@ -127,21 +312,21 @@ class UserLeaveController extends Controller implements UserLeaveInterface
         $result = null;
         try {
             $leave = UserLeave::with('user')->find($id);
-            
+
             if (!$leave) {
                 throw new \Exception('Leave not found');
             }
-            
+
             if($leave->user?->leave < 0 ){
                 throw new \Exception('User has no leave');
             }
-            
+
             if ($leave->user) {
-                
+
                 $joinDate = Carbon::parse($leave->user?->date_joined);
                 $oneYearAfterJoin = $joinDate->copy()->addYear();
                 $today = Carbon::now();
-                
+
                 if ($today->lt($oneYearAfterJoin)) {
                     throw new \Exception('User must be employed for at least 1 year to take leave');
                 }

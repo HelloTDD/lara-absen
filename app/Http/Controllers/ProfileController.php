@@ -20,7 +20,18 @@ class ProfileController extends Controller implements ProfileInterface
      */
     public function index()
     {
-        $data = UserSalary::where('user_id', Auth::user()->id)->first();
+        $data = UserSalary::with(['monthly_salary'])->where('user_id', Auth::user()->id)
+        ->whereHas('monthly_salary', function($query) {
+            $query->where('status', 'PUBLISHED');
+        })
+        ->whereHas('monthly_salary', function($query) {
+            $query->where('month', Carbon::now()->format('m'));
+        })
+        ->whereHas('monthly_salary', function($query) {
+            $query->where('year', Carbon::now()->format('Y'));
+        })
+        ->orderBy('created_at', 'desc')
+        ->first();
         $userBank = UserBank::where('user_id', Auth::user()->id)->first();
         $monthlist = monthList();
         $yearlist = yearList();
@@ -127,13 +138,18 @@ class ProfileController extends Controller implements ProfileInterface
     {
         try {
 
-            $data = UserSalary::with(['user.role'])->where('user_id',Auth::user()->id)
-                                                        ->when($request->id_salaries, function($query) use ($request){
-                                                            $query->where('id',$request->id_salaries);
-                                                        })
-                                                        ->when($request->month && $request->year, function($query) use ($request){
-                                                            $query->where('month',$request->month)->where('year',$request->year);
-                                                        })->first();
+            $data = UserSalary::with(['monthly_salary'])->where('user_id', Auth::user()->id)
+            ->whereHas('monthly_salary', function($query) {
+                $query->where('status', 'PUBLISHED');
+            })
+            ->whereHas('monthly_salary', function($query) {
+                $query->where('month', Carbon::now()->format('m'));
+            })
+            ->whereHas('monthly_salary', function($query) {
+                $query->where('year', Carbon::now()->format('Y'));
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
 
             $detail_allowances = DetailAllowanceUser::with('typeAllowance')->where('user_id',Auth::id())->get();
 

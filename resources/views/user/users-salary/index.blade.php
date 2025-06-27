@@ -135,7 +135,7 @@
                         </div>
                     @endif
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped" id="datatable">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -147,6 +147,9 @@
                                     <th>Bonus</th>
                                     <th>THR</th>
                                     <th>Total</th>
+                                    <th>Bank Name</th>
+                                    <th>Account Number</th>
+                                    <th>Bank Account Name</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -161,6 +164,9 @@
                                     <td>Rp {{ number_format($item->salary_bonus) }}</td>
                                     <td>Rp {{ number_format($item->salary_holiday) }}</td>
                                     <td>Rp {{ number_format($item->salary_total) }}</td>
+                                    <td>{{$item->user?->user_bank?->bank_name }}</td>
+                                    <td>{{ $item->user?->user_bank?->account_number }}</td>
+                                    <td>{{ $item->user?->user_bank?->account_name }}</td>
                                     <td class="text-end">
                                         @if(Auth::user()->is_admin == 1)
                                             <div class="dropstart d-inline-block">
@@ -225,7 +231,7 @@
                                             <input class="form-control" type="number" name="salary_holiday"
                                                 id="salary_holiday_edit" value="0" required>
                                         </div>
-                                        
+
                                         <div class="mb-3 col-lg-12">
                                             <label>Allowance</label>
                                             <div id="allowance-container">

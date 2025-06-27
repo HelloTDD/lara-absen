@@ -116,7 +116,7 @@
                     @endif
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped" id="datatable">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -130,6 +130,9 @@
                                     <th>Masuk</th>
                                     <th>Keluar</th>
                                     <th>Admin</th>
+                                    <th>Bank Name</th>
+                                    <th>Account Number</th>
+                                    <th>Account Name</th>
                                     <th>AKSI</th>
                                 </tr>
                             </thead>
@@ -148,6 +151,9 @@
                                     <td>{{ $item->date_joined }}</td>
                                     <td>{{ $item->date_leave }}</td>
                                     <td>{{ $item->is_admin == 1 ? 'Ya' : 'Tidak' }}</td>
+                                    <td>{{ $item->user_bank?->bank_name ?? '-' }}</td>
+                                    <td>{{ $item->user_bank?->account_number ?? '-' }}</td>
+                                    <td>{{ $item->user_bank?->account_name ?? '-' }}</td>
                                     <td class="text-end">
                                         <div class="dropstart d-inline-block">
                                             <button class="btn btn-link dropdown-toggle arrow-none p-0" type="button"
@@ -164,6 +170,10 @@
                                                 <li>
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-employee.delete', ['id' => $item->id]) }}">Delete</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user-employee.show', ['id' => $item->id]) }}">Detail</a>
                                                 </li>
                                             </ul>
                                         </div>

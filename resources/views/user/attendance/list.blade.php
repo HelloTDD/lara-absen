@@ -3,6 +3,7 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
+    @if(Auth()->user()->is_admin)
         <div class="card">
             <div class="card-header">
                     <form action="{{ route('attendance.filter') }}" method="post">
@@ -61,6 +62,7 @@
                     </form>
             </div>
         </div>
+        @endif
 
 
         <div class="card">

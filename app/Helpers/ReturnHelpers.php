@@ -76,3 +76,16 @@ function filterSpecialChar($param)
 {
     return str_replace(['"',"'"],' ',$param);
 }
+
+function leaveStatus()
+{
+        $statuses = [
+            'pending' => 'Pending',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+            'canceled' => 'Canceled',
+        ];
+
+        return $statuses ?? 'Unknown';
+}
+
