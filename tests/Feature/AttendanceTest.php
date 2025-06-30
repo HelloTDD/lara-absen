@@ -325,7 +325,7 @@ class AttendanceTest extends TestCase
     }
 
 
-    public function test_store_attendance_overtime_from_calendar_afternoon_to_night()
+    public function test_store_attendance_overtime_from_calendar_morning_shift_to_night_shift()
     {
         Carbon::setTestNow();
         $user = $this->actingAsUser(2);
@@ -407,7 +407,7 @@ class AttendanceTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function test_store_attendance_when_user_holiday_but_attendance_give_sign_as_overtime()
+    public function test_store_overtime_attendance_on_user_holiday()
     {
         Carbon::setTestNow();
         $user = $this->actingAsUser(2);
