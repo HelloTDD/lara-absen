@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class UserShiftRequest extends FormRequest
 {
@@ -21,6 +22,8 @@ class UserShiftRequest extends FormRequest
      */
     public function rules(): array
     {
+        
+        Log::info($this->all());
         return [
             'user_id' => 'required|exists:users,id',
             'shift_id' => 'required|exists:shifts,id',

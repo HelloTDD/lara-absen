@@ -20,9 +20,4 @@ class Shift extends Model
     {
         return $this->hasMany(UserShift::class,'shift_id');
     }
-
-    public function attendance()
-    {
-        return $this->hasMany(UserAttendance::class,'shift_id','id');
-    }
 }

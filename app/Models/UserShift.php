@@ -28,4 +28,9 @@ class UserShift extends Model
     {
         return $this->belongsTo(Shift::class);
     }
+
+    public function user_attendance()
+    {
+        return $this->hasMany(UserAttendance::class,'user_shift_id','id');
+    }
 }

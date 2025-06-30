@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('shift_id')->constrained('shifts')->onDelete('cascade');
+            $table->foreignId('user_shift_id')->constrained('user_shifts')->onDelete('cascade');
             $table->date('date');
             $table->time('check_in_time')->nullable();
             $table->string('latitude_in', 150)->nullable();

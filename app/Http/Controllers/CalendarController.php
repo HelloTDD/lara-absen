@@ -126,7 +126,7 @@ class CalendarController extends Controller implements CalendarInterface
                     ->when($request->end_date, callback: function ($query) use ($request) {
                         $query->where('end_date_shift', $request->end_date);
                     })
-                    ->when($request->overtime == 'LEMBUR' || $request->overtime == 'HOLYDAY', function ($query) use ($request) {
+                    ->when($request->overtime == 'LEMBUR' || $request->overtime == 'HOLIDAY', function ($query) use ($request) {
                         $query->where('desc_shift',$request->overtime);
                     })
                     ->count();

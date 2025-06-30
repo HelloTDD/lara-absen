@@ -17,7 +17,25 @@ use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
 use App\Http\Controllers\MonthlySalaryController;
 
+use App\Models\UserShift;
+
 URL::forceScheme('http');
+
+Route::get('tes-attendance',function(){
+    $now = now('Asia/Jakarta');
+    $today = $now->toDateString();
+    $checkInTime = $now->toTimeString();
+
+    $shift = UserShift::with(['shift', 'user_attendance'])->where('user_id', 1)
+        ->whereDate('start_date_shift', '<=', $today)
+        ->whereDate('end_date_shift', '>=', $today)
+        ->first();
+    foreach ($shift->user_attendance as $value) {
+        # code...
+        dd($value);
+    }
+    dd($shift->shift);
+});
 
 Route::controller(CalendarController::class)->group(function(){
     Route::get('/calendar', 'index')->name('calendar.index');

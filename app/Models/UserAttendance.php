@@ -22,7 +22,7 @@ class UserAttendance extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
-        'shift_id',
+        'user_shift_id',
         'date',
         'check_in_time',
         'latitude_in',
@@ -42,8 +42,8 @@ class UserAttendance extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
-    public function shift()
+    public function user_shift()
     {
-        return $this->belongsTo(Shift::class,'shift_id','id');
+        return $this->belongsTo(UserShift::class,'user_shift_id','id');
     }
 }

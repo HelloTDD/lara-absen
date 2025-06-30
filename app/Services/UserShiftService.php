@@ -21,7 +21,6 @@ class UserShiftService
             $desc_shift = is_array($request) ? ($request['holiday'] ?? NULL) : ($request->holiday ?? NULL);
         }
 
-        Log::info('tes'.$desc_shift);
         DB::beginTransaction();
         try {
             $userShift = new UserShift();
@@ -35,7 +34,7 @@ class UserShiftService
                 $return = true;
                 $id = $userShift->id;
                 DB::commit();
-                Log::info('Check-in berhasil', $userShift->toArray());
+                // Log::info('Check-in berhasil', $userShift->toArray());
             } else {
                 throw new \Exception("Failed to save shift data", 1);
             }
