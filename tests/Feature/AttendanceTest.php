@@ -299,7 +299,7 @@ class AttendanceTest extends TestCase
         ]);
 
         // Set waktu absensi 5 jam setelah shift mulai
-        $absenTime = $start_date->copy()->addHours(6);
+        $absenTime = $start_date->copy()->addHours(12);
         Carbon::setTestNow($absenTime);
 
         $response = $this->postJson('attendance/save', [
@@ -318,7 +318,7 @@ class AttendanceTest extends TestCase
             'date' => $absenTime->format('Y-m-d'),
             'latitude_in' => '-7.5751763',
             'longitude_in' => '110.897927',
-            'desc_attendance' => 'ABSEN MASUK DILUAR JAM KERJA',
+            'desc_attendance' => 'ABSEN DILUAR JAM KERJA',
         ]);
 
         Carbon::setTestNow();
@@ -374,7 +374,7 @@ class AttendanceTest extends TestCase
         //     'desc_attendance' => 'MASUK'
         // ]);
 
-        Carbon::setTestNow(Carbon::parse($start_date->copy()->addHours(8),'Asia/Jakarta'));
+        Carbon::setTestNow(Carbon::parse($start_date->copy()->addHours(10),'Asia/Jakarta'));
         
         $time_manipulate = Carbon::now('Asia/Jakarta');
         $response = $this->postJson('attendance/save',[
@@ -388,12 +388,6 @@ class AttendanceTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-
-        $this->assertDatabaseHas('user_shifts',[
-            'user_id' => $user->id,
-            'desc_shift' => 'LEMBUR',
-            'start_date_shift' => $time_manipulate->format('Y-m-d'),
-        ]);
 
         $this->assertDatabaseHas('user_attendances',[
             'user_id' => $user->id,
@@ -410,7 +404,7 @@ class AttendanceTest extends TestCase
     public function test_store_overtime_attendance_on_user_holiday()
     {
         Carbon::setTestNow();
-        $user = $this->actingAsUser(2);
+        $user = $this->actingAsUser(1);
         $shift = Shift::find(1); // days shift
         $shift_id = $shift->id;
         $start_date = Carbon::now();

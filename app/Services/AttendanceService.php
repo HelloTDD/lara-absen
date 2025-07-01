@@ -34,70 +34,44 @@ class AttendanceService
 
     public function checkIn($userId, Request $request)
     {
-
         $now = now('Asia/Jakarta');
         $today = $now->toDateString();
         $checkInTime = $now->toTimeString();
-
-        $checkShift = Shift::where(function ($q) use ($checkInTime) {
-            $q->where(function ($q1) use ($checkInTime) {
-                $q1->where('check_in', '<=', $checkInTime)
-                    ->where('check_out', '>=', $checkInTime);
-            })->orWhere(function ($q2) use ($checkInTime) {
-                $q2->whereColumn('check_in', '>', 'check_out')
-                    ->where(function ($q3) use ($checkInTime) {
-                        $q3->where('check_in', '<=', $checkInTime)
-                            ->orWhere('check_out', '>=', $checkInTime);
-                    });
+        Log::info("Time : ", [$checkInTime]);
+        
+        // Cari shift yang aktif pada jam sekarang
+        $checkShift = Shift::where(function ($q1) use ($checkInTime) {
+            $q1->where('check_in', '<=', $checkInTime)
+            ->where('check_out', '>=', $checkInTime);
+        })->orWhere(function ($q2) use ($checkInTime) {
+            $q2->whereColumn('check_in', '>', 'check_out')
+            ->where(function ($q3) use ($checkInTime) {
+                $q3->where('check_in', '<=', $checkInTime)
+                ->orWhere('check_out', '>=', $checkInTime);
             });
         })->first();
-
-        $shift = UserShift::with(['shift', 'user_attendance'])->where('user_id', $userId)
-            ->whereHas('shift',callback: function ($query) use ($checkShift){
-                $query->where('shift_id',$checkShift->id); // bagian ini masih bug
-            })
-            ->whereDate('start_date_shift', '<=', $today)
-            ->whereDate('end_date_shift', '>=', $today)
-            ->first();
-
         
-        Log::info("[1]:",[isset($shift)]);
+        Log::info("Shift : ", [$checkShift->id]);
+        
+        // Cari user shift yang aktif hari ini
+        $shift = UserShift::with(['shift', 'user_attendance'])
+                ->where('user_id', $userId)
+                ->whereDate('start_date_shift', '<=', $today)
+                ->whereDate('end_date_shift', '>=', $today)
+                ->first();
         
         $descAttendance = 'MASUK';
         
-        
         // Cegah absen dua kali
-        $checkInTimeNull = UserAttendance::whereDate('date', $today)
-                                ->whereNull('check_in_time')
-                                ->exists();
-        if(!$shift || $shift->desc_shift == 'LEMBUR' || !$checkInTimeNull){
-
-            if(!empty($shift->desc_shift) && $shift->desc_shift == 'LEMBUR'){
-                $descAttendance = 'LEMBUR MASUK';
-            }
-            
-            if (!$shift) {
-                $descAttendance = 'LEMBUR MASUK';
-
-                $shift = UserShift::create([
-                    'user_id' => $userId,
-                    'shift_id' => $checkShift->id,
-                    'desc_shift' => 'LEMBUR',
-                    'start_date_shift' => $today,
-                    'end_date_shift' => $today,
-                ]);
-            }
-        }
-
-        if ($shift->desc_shift === 'HOLIDAY') {
-            $descAttendance = 'LEMBUR MASUK';
-        }
-
-         // Cegah absen dua kali
-        $alreadyCheckedIn = UserAttendance::where('user_shift_id', $shift->id)
-            ->whereDate('date', $today)
-            ->whereNotNull('check_in_time')
-            ->exists();
+        $alreadyCheckedIn = UserAttendance::with(['user_shift'])->where('user_id', $userId)
+        ->whereHas('user_shift',function($q) use ($checkShift){
+            $q->where('shift_id',$checkShift->id);
+        })
+        ->whereDate('date', $today)
+        ->whereNotNull('check_in_time')
+        ->exists();
+        
+        Log::info("Already Absen : ", [$alreadyCheckedIn]);
 
         if ($alreadyCheckedIn) {
             throw new \Exception('Sudah absen MASUK.');
@@ -107,9 +81,7 @@ class AttendanceService
         if (!$request->has('image') || !$request->has('lokasi')) {
             throw new \Exception('Data lokasi atau foto tidak lengkap.');
         }
-        /**
-         * Point Penting ----- selesai
-         */
+
         $imageData = $request->image;
         $imageName = 'checkin_' . now()->format('YmdHis') . '.jpg';
         Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
@@ -129,6 +101,46 @@ class AttendanceService
             throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
         }
 
+        // --- Penentuan desc_attendance sesuai scenario ---
+        if (!$shift) {
+            $descAttendance = 'LEMBUR MASUK';
+            if ($checkShift && ($checkInTime < $checkShift->check_in || $checkInTime > $checkShift->check_out)) {
+                $descShift = null;
+            } else {
+                $descShift = 'LEMBUR';
+            }
+
+            $shift = UserShift::create([
+                'user_id' => $userId,
+                'shift_id' => $checkShift ? $checkShift->id : null,
+                'desc_shift' => $descShift,
+                'start_date_shift' => $today,
+                'end_date_shift' => $today,
+            ]);
+        } else {
+            if ($shift->desc_shift === 'LEMBUR') {
+                $descAttendance = 'LEMBUR MASUK';
+            } elseif ($shift->desc_shift === 'HOLIDAY') {
+                $descAttendance = 'LEMBUR MASUK';
+            } elseif (empty($shift->desc_shift)) {
+                if ($checkShift && ($checkInTime < $checkShift->check_in || $checkInTime > $checkShift->check_out)) {
+                    $sudahAbsenShiftLain = UserAttendance::where('user_id', $userId)
+                        ->whereDate('date', $today)
+                        ->where('desc_attendance','MASUK')
+                        ->exists();
+                    if ($sudahAbsenShiftLain) {
+                        $descAttendance = 'LEMBUR MASUK';
+                    } else {
+                        $descAttendance = 'ABSEN DILUAR JAM KERJA';
+                    }
+                } else {
+                    $descAttendance = 'MASUK';
+                }
+            } else {
+                $descAttendance = 'LEMBUR MASUK';
+            }
+        }
+
         // Simpan absensi
         UserAttendance::create([
             'user_id' => $userId,
@@ -141,8 +153,6 @@ class AttendanceService
             'check_in_photo' => $imageName,
             'desc_attendance' => $descAttendance,
         ]);
-
-        // Log::info('Check-in berhasil', $attendance->toArray());
     }
 
     public function checkOut($userId, Request $request)
