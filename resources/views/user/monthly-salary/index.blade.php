@@ -73,7 +73,7 @@
                             </div>
                         @endif
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
+                            <table class="table table-bordered table-striped" id="datatable">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -186,7 +186,7 @@
                             @endif
                         </div>
 
-                        @if (Auth::user()->is_admin == 1);
+                        @if (Auth::user()->is_admin == 1)
 
                             <form action="{{ route('monthly.salary.publish') }}" method="post">
                                 @csrf

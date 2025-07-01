@@ -16,7 +16,7 @@ class UserEmployeeController extends Controller
 {
     public function index()
     {
-        $users = User::with('role')
+        $users = User::with(['role', 'user_bank'])
             ->orderBy('created_at', 'desc')
             ->get();
         $roles = Role::all();
@@ -130,5 +130,15 @@ class UserEmployeeController extends Controller
             return redirect()->back()->withErrors(['error' => 'Failed to delete user: ' . $e->getMessage()]);
         }
         return redirect()->route('user-employee.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function show($id)
+    {
+        $user = User::with('user_bank')->find($id);
+        if (!$user) {
+            lgs::error('User not found', ['id' => $id]);
+            return redirect()->route('user-employee.index')->with('error', 'User not found.');
+        }
+        return view('user.user-employee.show', compact('user'));
     }
 }

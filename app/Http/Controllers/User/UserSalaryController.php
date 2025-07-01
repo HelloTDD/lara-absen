@@ -20,7 +20,7 @@ class UserSalaryController extends Controller implements UserSalaryInterface
     {
         $type_allowance = TypeAllowance::all();
         $users = User::all();
-        $salary = UserSalary::with(['user.allowances'])
+        $salary = UserSalary::with(['user.allowances', 'user.user_bank'])
                             ->when(Auth::check() && Auth::user()->is_admin == 0, function($query){
                                 $query->where('user_id', Auth::user()->id);
                             })
@@ -49,7 +49,7 @@ class UserSalaryController extends Controller implements UserSalaryInterface
 
                     foreach ($request->salary_allowance as $allowance) {
                         $total_allowance += $request->allowances[$allowance];
-    
+
                         $user->allowances()->syncWithoutDetaching([
                             $allowance => ['amount' => $request->allowances[$allowance]]
                         ]);
@@ -94,10 +94,10 @@ class UserSalaryController extends Controller implements UserSalaryInterface
                 $total_allowance = 0;
 
                 if (!empty($request->salary_allowance) || is_array($request->salary_allowance)) {
-                    
+
                     foreach ($request->salary_allowance as $allowance) {
                         $total_allowance += $request->allowances[$allowance];
-    
+
                         $user->allowances()->syncWithoutDetaching([
                             $allowance => ['amount' => $request->allowances[$allowance]]
                         ]);

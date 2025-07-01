@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DetailAllowanceUser;
 use Carbon\Carbon;
 use App\Models\Log;
+use App\Models\UserBank;
 use App\Models\UserSalary;
 use Illuminate\Http\Request;
+use App\Models\DetailAllowanceUser;
 use App\Interfaces\ProfileInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,10 +20,22 @@ class ProfileController extends Controller implements ProfileInterface
      */
     public function index()
     {
-        $data = UserSalary::where('user_id', Auth::user()->id)->first();
+        $data = UserSalary::with(['monthly_salary'])->where('user_id', Auth::user()->id)
+        ->whereHas('monthly_salary', function($query) {
+            $query->where('status', 'PUBLISHED');
+        })
+        ->whereHas('monthly_salary', function($query) {
+            $query->where('month', Carbon::now()->format('m'));
+        })
+        ->whereHas('monthly_salary', function($query) {
+            $query->where('year', Carbon::now()->format('Y'));
+        })
+        ->orderBy('created_at', 'desc')
+        ->first();
+        $userBank = UserBank::where('user_id', Auth::user()->id)->first();
         $monthlist = monthList();
         $yearlist = yearList();
-        return view('user.profile.index', compact('data','monthlist', 'yearlist'));
+        return view('user.profile.index', compact('data','monthlist', 'yearlist', 'userBank'));
     }
 
     /**
@@ -53,6 +66,39 @@ class ProfileController extends Controller implements ProfileInterface
 
         return returnProccessData($result);
     }
+
+
+    /**
+     * update bank
+     */
+    public function updateBank(Request $request)
+    {
+        $result = null;
+        try {
+            $user = Auth::user();
+            $userBank = UserBank::where('user_id', $user->id)->first();
+            //update or create user bank
+            $result = UserBank::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'bank_name' => $request->bank_name,
+                    'account_number' => $request->account_number,
+                    'account_name' => $request->account_name,
+                ]
+            );
+
+        } catch (\Exception $th) {
+            Log::create([
+                'action' => 'update bank',
+                'controller' => 'ProfileController',
+                'error_code' => $th->getCode(),
+                'description' => $th->getMessage(),
+            ]);
+        }
+
+        return returnProccessData($result);
+    }
+
 
     /**
      * Update user password
@@ -91,21 +137,26 @@ class ProfileController extends Controller implements ProfileInterface
     public function downloadSalarySlip(Request $request)
     {
         try {
-            
-            $data = UserSalary::with(['user.role'])->where('user_id',Auth::user()->id)
-                                                        ->when($request->id_salaries, function($query) use ($request){
-                                                            $query->where('id',$request->id_salaries);
-                                                        })
-                                                        ->when($request->month && $request->year, function($query) use ($request){
-                                                            $query->where('month',$request->month)->where('year',$request->year);
-                                                        })->first();
-                                    
+
+            $data = UserSalary::with(['monthly_salary'])->where('user_id', Auth::user()->id)
+            ->whereHas('monthly_salary', function($query) {
+                $query->where('status', 'PUBLISHED');
+            })
+            ->whereHas('monthly_salary', function($query) {
+                $query->where('month', Carbon::now()->format('m'));
+            })
+            ->whereHas('monthly_salary', function($query) {
+                $query->where('year', Carbon::now()->format('Y'));
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
             $detail_allowances = DetailAllowanceUser::with('typeAllowance')->where('user_id',Auth::id())->get();
 
             if (!$data) {
                 return redirect()->route('profile.index')->with('error', 'Sallary not found.');
             }
-            
+
             $pdf = new \Dompdf\Dompdf();
             $pdf->loadHtml(view('user.pdf.salary-slip', compact('data','detail_allowances')));
             $pdf->setPaper('A4', 'portrait');

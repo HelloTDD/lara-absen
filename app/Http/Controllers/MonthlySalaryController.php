@@ -17,12 +17,12 @@ class MonthlySalaryController extends Controller
      * Summary of index
      * @param \App\Models\MonthlySalary $monthlySalary
      * @return \Illuminate\Contracts\View\View
-     * 
+     *
      * @var $data output monthly salary data
      */
     public function index(MonthlySalary $monthlySalary)
-    {   
-        
+    {
+
         $type_allowance = TypeAllowance::all();
         $users = User::with(['salary','role'])->get();
         $raw_orm = $monthlySalary->with('user_salary.user.allowances');
@@ -38,9 +38,9 @@ class MonthlySalaryController extends Controller
 
         return view('user.monthly-salary.index',compact('data','users','month','year','type_allowance'));
     }
-    
+
     /**
-     * 
+     *
      */
     public function store(MonthlySalaryRequest $req, MonthlySalary $monthlySalary)
     {

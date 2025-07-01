@@ -240,7 +240,68 @@
                                                 </div>
                                             </form>
                                         </div><!--end card-body-->
-                                    </div><!--end card-->
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">Bank Information</h4>
+                                        </div><!--end card-header-->
+                                        <div class="card-body">
+
+                                            @if ($errors->any() && request()->routeIs('profile.change.password'))
+                                                {{-- Check if the session has a success message --}}
+                                                <div class="alert alert-danger mb-3">
+                                                    <ul class="mb-0">
+                                                        @foreach ($errors->all() as $error)
+                                                            <li>{{ $error }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                            @if(session('success') && request()->routeIs('profile.change.password'))
+                                                <div class="alert alert-success mb-3">
+                                                    {{ session('success') }}
+                                                </div>
+                                            @endif
+
+                                            <form action="{{ route('profile.update.bank') }}" method="post">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="form-group mb-3 row">
+                                                    <label
+                                                        class="col-xl-3 col-lg-3 text-end mb-lg-0 align-self-center form-label">Bank Name</label>
+                                                    <div class="col-lg-9 col-xl-8">
+                                                        <input type="text" name="bank_name" class="form-control"
+                                                            value="{{ $userBank->bank_name ?? '' }}" placeholder="masukan nama bank"
+                                                            aria-describedby="basic-addon1" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 row">
+                                                    <label
+                                                        class="col-xl-3 col-lg-3 text-end mb-lg-0 align-self-center form-label">Account Number</label>
+                                                    <div class="col-lg-9 col-xl-8">
+                                                        <input type="number" name="account_number" class="form-control"
+                                                            value="{{ $userBank->account_number ?? '' }}" placeholder="masukan nomor rekening"
+                                                            aria-describedby="basic-addon1" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 row">
+                                                    <label
+                                                        class="col-xl-3 col-lg-3 text-end mb-lg-0 align-self-center form-label">Account Name</label>
+                                                    <div class="col-lg-9 col-xl-8">
+                                                        <input type="text" name="account_name" class="form-control"
+                                                            value="{{ $userBank->account_name ?? '' }}" placeholder="masukan nama rekening"
+                                                            aria-describedby="basic-addon1" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 row">
+                                                    <div class="col-lg-9 col-xl-8 offset-lg-3">
+                                                        <button type="submit" class="btn btn-de-primary">Update</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div><!--end card-body-->
+                                    </div>
+                                    <!--end card-->
                                     {{-- <div class="card">
                                         <div class="card-header">
                                             <h4 class="card-title">Other Settings</h4>
@@ -333,7 +394,7 @@
     </div>
     <!-- end page content -->
     </div>
-    
+
     <x-modal id="exampleModalLarge" title="Form Slip Gaji">
         <form action="{{ route('profile.slip.gaji') }}" method="post">
             @csrf
