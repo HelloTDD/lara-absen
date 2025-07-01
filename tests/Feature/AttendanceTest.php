@@ -11,9 +11,11 @@ use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class AttendanceTest extends TestCase
 {
+    use WithoutMiddleware;
     protected function actingAsUser(int $id)
     {
         $users = User::find($id);
@@ -185,7 +187,7 @@ class AttendanceTest extends TestCase
     public function test_store_attendance_valid_data_overtime_from_user_shift_input()
     {
         
-        $user = $this->actingAsUser(1);
+        $user = $this->actingAsUser(2);
         $shift = Shift::find(1);
         $shift = Shift::inRandomOrder()->first();
         $shift_id = $shift->id;

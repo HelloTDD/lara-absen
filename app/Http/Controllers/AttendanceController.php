@@ -48,6 +48,7 @@ class AttendanceController extends Controller
             if ($action === 'check_in') {
                 $service->checkIn($userId, $request);
             } elseif ($action === 'check_out') {
+                Log::info("masuk sini");
                 $service->checkOut($userId, $request);
             } else {
                 return response()->json([

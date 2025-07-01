@@ -158,22 +158,41 @@ class AttendanceService
     public function checkOut($userId, Request $request)
     {
         $today = now('Asia/Jakarta')->toDateString();
-        $attendance = UserAttendance::with('shift')->where('user_id', $userId)
+
+        // Cari absensi hari ini yang belum check_out
+        $attendance = UserAttendance::where('user_id', $userId)
             ->where('date', $today)
+            ->whereNull('check_out_time')
+            ->orderByDesc('id')
             ->first();
 
-        $descAttendance = 'PULANG';
+        // Jika tidak ada, cek apakah user sudah absen pulang tapi ada absen lembur masuk setelahnya
+        if (!$attendance) {
+            // Cari absen lembur masuk hari ini yang belum check_out
+            $attendance = UserAttendance::where('user_id', $userId)
+            ->where('date', $today)
+            ->where('desc_attendance', 'LEMBUR MASUK')
+            ->whereNull('check_out_time')
+            ->orderByDesc('id')
+            ->first();
 
+            // Jika tetap tidak ada, throw error
+            if (!$attendance) {
+            throw new \Exception('Belum absen MASUK atau LEMBUR MASUK.');
+            }
+        }
+
+        $descAttendance = 'PULANG';
+        Log::info("[Checkout]:",[$attendance]);
         if ($attendance->desc_attendance === 'LEMBUR MASUK') {
             $descAttendance = 'LEMBUR PULANG';
         }
 
-        $time_now = Carbon::today()->format("H:i:s");
-        if ($attendance->shift?->check_in > $time_now) {
+        if ($attendance->desc_attendance === 'ABSEN DILUAR JAM KERJA') {
             $descAttendance = 'ABSEN PULANG DILUAR JAM KERJA';
         }
 
-        if (!$attendance || !$attendance->check_in_time) {
+        if (!$attendance->check_in_time) {
             throw new \Exception('Belum absen MASUK.');
         }
 
@@ -181,10 +200,13 @@ class AttendanceService
             throw new \Exception('Sudah absen PULANG.');
         }
 
+        if (!$request->has('image') || !$request->has('lokasi')) {
+            throw new \Exception('Data lokasi atau foto tidak lengkap.');
+        }
+
         $imageData = $request->image;
         $imageName = 'checkout_' . now()->format('YmdHis') . '.jpg';
         Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
-
 
         $lokasiUser = explode(',', $request->lokasi);
         $latUser = trim($lokasiUser[0]);
