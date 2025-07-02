@@ -27,11 +27,16 @@ class AttendanceController extends Controller
         $date = now()->format('Y-m-d');
         $time = Carbon::now('Asia/Jakarta')->format('H:i:s');
 
+        // test night time
+        // $date = '2025-07-03';
+        // $time = '04:00:00';
+        // $date = Carbon::parse($date, 'Asia/Jakarta')->format('Y-m-d');
+        // $time = Carbon::parse($time, 'Asia/Jakarta')->format('H:i:s');
         $existing = UserAttendance::where('user_id', $user_id)
                     ->where('date', now()->format('Y-m-d'))
                     ->where('check_in_time', '!=', null)
+                    ->orderBy('created_at', 'desc')
                     ->first();
-                    // dd($existing);
         if (empty($existing)) {
             $existing = new UserAttendance();
             $existing->check_in_time = null;
@@ -46,16 +51,18 @@ class AttendanceController extends Controller
 
         $action = $request->input('action');
 
-
         DB::beginTransaction();
 
         try {
             if ($action === 'check_in') {
                 $service->checkIn($userId, $request);
             } elseif ($action === 'check_out') {
-                Log::info("masuk sini");
+                Log::info("check_out");
                 $service->checkOut($userId, $request);
-            } else {
+            }elseif ($action === 'overtime') {
+                Log::info("overtime");
+                $service->overTime($userId, $request);
+            }else {
                 return response()->json([
                     'status' => 400,
                     'success' => false,
@@ -75,6 +82,7 @@ class AttendanceController extends Controller
             DB::rollBack();
             Log::error('Error during attendance processing: ' . $e->getMessage(), [
                 'user_id' => $userId,
+                'service' => $service,
                 'action' => $action,
                 'request_data' => $request->all(),
             ]);
@@ -91,7 +99,7 @@ class AttendanceController extends Controller
         $users = User::all();
         $shift = Shift::all();
         if(Auth::user()->is_admin == 1){
-            $data = UserAttendance::with('user', 'shift')
+            $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                 ->when(session('attendance_filter.user_id'), function ($query) {
                     return $query->where('user_id', session('attendance_filter.user_id'));
                 })
@@ -107,7 +115,7 @@ class AttendanceController extends Controller
                 ->orderBy('date', 'desc')
                 ->get();
         } else {
-            $data = UserAttendance::with('user', 'shift')
+            $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                 ->where('user_id', Auth::id())
                 ->when(session('attendance_filter.user_id'), function ($query) {
                     return $query->where('user_id', session('attendance_filter.user_id'));

@@ -19,7 +19,7 @@ use App\Http\Controllers\MonthlySalaryController;
 
 use App\Models\UserShift;
 
-URL::forceScheme('http');
+URL::forceScheme('https');
 
 Route::get('tes-attendance',function(){
     $now = now('Asia/Jakarta');

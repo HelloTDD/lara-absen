@@ -129,7 +129,7 @@
                                     <td class="py-2 px-4">{{ $index + 1 }}</td>
                                     <td class="py-2 px-4">{{ $item->user->name ?? '-' }}</td>
                                     <td class="py-2 px-4">{{ \Carbon\Carbon::parse($item->date)->translatedFormat('d F Y') }}</td>
-                                    <td class="py-2 px-4">{{ $item->shift->shift_name ?? '-' }}</td>
+                                    <td class="py-2 px-4">{{ $item->user_shift->shift->shift_name ?? '-' }}</td>
                                     <td class="py-2 px-4 text-green-600 font-semibold">
                                         {{ $item->check_in_time ?? '-' }}
                                     </td>
@@ -161,8 +161,10 @@
                                         @endif
                                     </td>
                                     <td class="py-2 px-4">
-                                        @if ($item->desc_attendance == 'PULANG')
-                                            <span class="badge rounded-4 text-white bg-danger">PULANG</span>
+                                        @if ($item->desc_attendance == 'MASUK')
+                                            <span class="badge rounded-4 text-white bg-success">MASUK</span>
+                                        @elseif ($item->desc_attendance == 'LEMBUR')
+                                            <span class="badge rounded-4 text-white bg-danger">LEMBUR</span>
                                         @else
                                             <span class="badge rounded-4 text-white bg-success">MASUK</span>
                                         @endif

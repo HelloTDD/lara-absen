@@ -27,7 +27,7 @@ class AttendanceRequest extends FormRequest
             'time'    => 'required|date_format:H:i:s',
             'image' => 'required|string',
             'lokasi' => 'required|string',
-            'action' => 'required|in:check_in,check_out',
+            'action' => 'required|in:check_in,check_out,overtime',
         ];
     }
 

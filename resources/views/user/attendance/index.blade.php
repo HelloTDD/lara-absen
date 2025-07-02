@@ -122,12 +122,12 @@
         </div>
 
             <!-- Sudah absen pulang -->
-            @if ($existing && $existing->check_out_time)
-                <div class="text-center">
-                    <button id="take-presensi" type="button"  name="action"
-                            class="w-full bg-[#B2C6D5] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300"
-                            disabled>
-                        Anda Sudah Absen Hari Ini
+            @if ($existing->check_out_time)
+                <!-- Tombol Absen Masuk -->
+                <div id="take-presensi" class="text-center">
+                    <input type="text" name="action" id="action" value="overtime" hidden>
+                    <button type="text" class="w-full bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">
+                        LEMBUR
                     </button>
                 </div>
 
@@ -249,6 +249,8 @@
                             notifikasi_presensi_masuk.play();
                         } else if (res.jenis_presensi == "check_out") {
                             notifikasi_presensi_keluar.play();
+                        }else if (res.jenis_presensi == "overtime") {
+                            notifikasi_presensi_masuk.play();
                         }
                         Swal.fire({
                             title: "Presensi",
