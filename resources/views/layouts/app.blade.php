@@ -131,6 +131,9 @@
                                 <li class="nav-item">
                                     <a href="{{ route('shift.index') }}" class="nav-link ">Shift</a>
                                 </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('config.index') }}" class="nav-link ">Configuration</a>
+                                </li><!--end nav-item-->
                             @endif
 
                             <li class="nav-item">

@@ -1,23 +1,24 @@
 <?php
 
+use App\Models\UserShift;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AllowanceController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\MonthlySalaryController;
 use App\Http\Controllers\User\UserLeaveController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\User\UserContractController;
+
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
-use App\Http\Controllers\MonthlySalaryController;
-
-use App\Models\UserShift;
 
 URL::forceScheme('https');
 
@@ -107,6 +108,12 @@ Route::middleware('auth')->group(function(){
             Route::put('/allowance/update/{id}', 'update')->name('allowance.update');
             Route::get('/allowance/delete/{id}', 'destroy')->name('allowance.delete');
         });
+
+        Route::controller(ConfigController::class)->group(function(){
+        Route::get('/config','index')->name('config.index');
+        Route::put('/config/update','update')->name('config.update');
+
+    });
 
     });
 

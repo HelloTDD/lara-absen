@@ -24,6 +24,24 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        Shift::create([
+            'shift_name' => 'Pagi',
+            'check_in' => '08:30:00',
+            'check_out' => '17:00:00',
+        ]);
+
+        Shift::create([
+            'shift_name' => 'Malam',
+            'check_in' => '19:00:00',
+            'check_out' => '04:00:00',
+        ]);
+
+        Shift::create([
+            'shift_name' => 'Lembur',
+            'check_in' => '00:00:00',
+            'check_out' => '23:59:00',
+        ]);
+
         Role::create([
             'role_name' => 'Staff',
             'description' => 'Staff',

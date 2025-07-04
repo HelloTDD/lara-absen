@@ -140,6 +140,14 @@
                     </button>
                 </div>
 
+            @elseif ($attendanceCount >= $limitAttendance)
+                <!-- total absen bulan ini -->
+                <div id="take-presensi" class="text-center">
+                    <input type="text" name="action" id="action" value="overtime" hidden>
+                    <button type="text" class="w-full bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">
+                        LEMBUR
+                    </button>
+                </div>
             @else
                 <!-- Tombol Absen Masuk -->
                 <div id="take-presensi" class="text-center">

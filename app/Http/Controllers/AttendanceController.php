@@ -6,6 +6,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Shift;
+use App\Models\Config;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
 use App\Models\UserAttendance;
@@ -42,7 +43,17 @@ class AttendanceController extends Controller
             $existing->check_in_time = null;
             $existing->check_out_time = null;
         }
-        return view('user.attendance.index',compact('date', 'time', 'existing'));
+
+        //check if attendace count status 'MASUK' == limit in this month
+        $limitAttendance = Config::first()->attendance_count ?? 20;
+        $attendanceCount = UserAttendance::where('user_id', $user_id)
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->where('desc_attendance', 'MASUK')
+            ->count();
+
+
+        return view('user.attendance.index',compact('date', 'time', 'existing', 'user_id', 'attendanceCount','limitAttendance'));
     }
 
     public function store(AttendanceRequest $request, AttendanceService $service)
@@ -104,7 +115,9 @@ class AttendanceController extends Controller
                     return $query->where('user_id', session('attendance_filter.user_id'));
                 })
                 ->when(session('attendance_filter.shift_id'), function ($query) {
-                    return $query->where('shift_id', session('attendance_filter.shift_id'));
+                    return $query->whereHas('user_shift', function($query) {
+                        $query->where('shift_id', session('attendance_filter.shift_id'));
+                    });
                 })
                 ->when(session('attendance_filter.start_date_shift'), function ($query) {
                     return $query->where('date', '>=',session('attendance_filter.start_date_shift'));
@@ -118,7 +131,9 @@ class AttendanceController extends Controller
             $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                 ->where('user_id', Auth::id())
                 ->when(session('attendance_filter.user_id'), function ($query) {
-                    return $query->where('user_id', session('attendance_filter.user_id'));
+                   return $query->whereHas('user_shift', function($query) {
+                        $query->where('shift_id', session('attendance_filter.shift_id'));
+                    });
                 })
                 ->when(session('attendance_filter.shift_id'), function ($query) {
                     return $query->where('shift_id', session('attendance_filter.shift_id'));
@@ -165,26 +180,30 @@ class AttendanceController extends Controller
             $users = User::all();
             $shift = Shift::all();
             if(Auth::user()->is_admin == 1){
-                $data = UserAttendance::with('user', 'shift')
-                    ->when(session('attendance_filter.user_id'), function ($query) {
-                        return $query->where('user_id', session('attendance_filter.user_id'));
-                    })
-                    ->when(session('attendance_filter.shift_id'), function ($query) {
-                        return $query->where('shift_id', session('attendance_filter.shift_id'));
-                    })
-                    ->when(session('attendance_filter.start_date_shift'), function ($query) {
-                        return $query->where('date', '>=',session('attendance_filter.start_date_shift'));
-                    })
-                    ->when(session('attendance_filter.end_date_shift'), function ($query) {
-                        return $query->where('date', '<=' , session('attendance_filter.end_date_shift'));
-                    })
-                    ->orderBy('date', 'desc')
-                    ->get();
+            $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
+                ->when(session('attendance_filter.user_id'), function ($query) {
+                    return $query->where('user_id', session('attendance_filter.user_id'));
+                })
+                ->when(session('attendance_filter.shift_id'), function ($query) {
+                    return $query->whereHas('user_shift', function($query) {
+                        $query->where('shift_id', session('attendance_filter.shift_id'));
+                    });
+                })
+                ->when(session('attendance_filter.start_date_shift'), function ($query) {
+                    return $query->where('date', '>=',session('attendance_filter.start_date_shift'));
+                })
+                ->when(session('attendance_filter.end_date_shift'), function ($query) {
+                    return $query->where('date', '<=' , session('attendance_filter.end_date_shift'));
+                })
+                ->orderBy('date', 'desc')
+                ->get();
             } else {
-                $data = UserAttendance::with('user', 'shift')
+                $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                     ->where('user_id', Auth::id())
                     ->when(session('attendance_filter.user_id'), function ($query) {
-                        return $query->where('user_id', session('attendance_filter.user_id'));
+                    return $query->whereHas('user_shift', function($query) {
+                            $query->where('shift_id', session('attendance_filter.shift_id'));
+                        });
                     })
                     ->when(session('attendance_filter.shift_id'), function ($query) {
                         return $query->where('shift_id', session('attendance_filter.shift_id'));
@@ -223,26 +242,30 @@ class AttendanceController extends Controller
             $users = User::all();
             $shift = Shift::all();
             if(Auth::user()->is_admin == 1){
-                $data = UserAttendance::with('user', 'shift')
-                    ->when(session('attendance_filter.user_id'), function ($query) {
-                        return $query->where('user_id', session('attendance_filter.user_id'));
-                    })
-                    ->when(session('attendance_filter.shift_id'), function ($query) {
-                        return $query->where('shift_id', session('attendance_filter.shift_id'));
-                    })
-                    ->when(session('attendance_filter.start_date_shift'), function ($query) {
-                        return $query->where('date', '>=',session('attendance_filter.start_date_shift'));
-                    })
-                    ->when(session('attendance_filter.end_date_shift'), function ($query) {
-                        return $query->where('date', '<=' , session('attendance_filter.end_date_shift'));
-                    })
-                    ->orderBy('date', 'desc')
-                    ->get();
+            $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
+                ->when(session('attendance_filter.user_id'), function ($query) {
+                    return $query->where('user_id', session('attendance_filter.user_id'));
+                })
+                ->when(session('attendance_filter.shift_id'), function ($query) {
+                    return $query->whereHas('user_shift', function($query) {
+                        $query->where('shift_id', session('attendance_filter.shift_id'));
+                    });
+                })
+                ->when(session('attendance_filter.start_date_shift'), function ($query) {
+                    return $query->where('date', '>=',session('attendance_filter.start_date_shift'));
+                })
+                ->when(session('attendance_filter.end_date_shift'), function ($query) {
+                    return $query->where('date', '<=' , session('attendance_filter.end_date_shift'));
+                })
+                ->orderBy('date', 'desc')
+                ->get();
             } else {
-                $data = UserAttendance::with('user', 'shift')
+                $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                     ->where('user_id', Auth::id())
                     ->when(session('attendance_filter.user_id'), function ($query) {
-                        return $query->where('user_id', session('attendance_filter.user_id'));
+                    return $query->whereHas('user_shift', function($query) {
+                            $query->where('shift_id', session('attendance_filter.shift_id'));
+                        });
                     })
                     ->when(session('attendance_filter.shift_id'), function ($query) {
                         return $query->where('shift_id', session('attendance_filter.shift_id'));
