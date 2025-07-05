@@ -32,10 +32,10 @@ class CalendarController extends Controller implements CalendarInterface
                 ];
             });
 
-        $userShift = UserShift::with(['user', 'shift.attendance'])
+        $userShift = UserShift::with(['user', 'shift','user_attendance'])
             ->get()
             ->map(function ($userShift) {
-                $cek_already_attendance = $userShift->shift?->attendance->some(function ($e) use ($userShift) {
+                $cek_already_attendance = $userShift->user_attendance->some(function ($e) use ($userShift) {
                     return $e->user_id == $userShift->user_id && $userShift->start_date_shift == $e->date && !empty($e->check_in_time);
                 });
 

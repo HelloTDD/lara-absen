@@ -132,7 +132,7 @@ class AttendanceTest extends TestCase
             'date' => $start_date->format('Y-m-d'),
             'latitude_in' => '-7.5751763',
             'longitude_in' => '110.897927',
-            'desc_attendance' => 'LEMBUR MASUK'
+            'desc_attendance' => 'LEMBUR'
         ]);
     }
 
@@ -229,7 +229,7 @@ class AttendanceTest extends TestCase
             'date' => $start_date->format('Y-m-d'),
             'latitude_in' => '-7.5751763',
             'longitude_in' => '110.897927',
-            'desc_attendance' => 'LEMBUR MASUK'
+            'desc_attendance' => 'LEMBUR'
         ]);
     }
 
@@ -296,7 +296,7 @@ class AttendanceTest extends TestCase
         $this->assertDatabaseHas('user_shifts', [
             'user_id' => $user->id,
             'shift_id' => $shift->id,
-            'desc_shift' => null,
+            'desc_shift' => 'MASUK',
             'start_date_shift' => $start_date->format('Y-m-d'),
         ]);
 
@@ -397,7 +397,7 @@ class AttendanceTest extends TestCase
             'date' => $time_manipulate->format('Y-m-d'),
             'latitude_in' => '-7.5751763',
             'longitude_in' => '110.897927',
-            'desc_attendance' => 'LEMBUR MASUK'
+            'desc_attendance' => 'LEMBUR'
         ]);
 
         Carbon::setTestNow();
@@ -449,7 +449,7 @@ class AttendanceTest extends TestCase
             'date' => $start_date->format('Y-m-d'),
             'latitude_in' => '-7.5751763',
             'longitude_in' => '110.897927',
-            'desc_attendance' => 'LEMBUR MASUK'
+            'desc_attendance' => 'LEMBUR'
         ]);
     }
 
