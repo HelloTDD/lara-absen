@@ -12,6 +12,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::job(new AwalBulanJob())
-// ->dailyAt('00:01')
-// ->when(fn()=> Carbon::now()->isStartOfMonth());
-->when(fn()=> true); // untuk testing
+->dailyAt('00:01')
+->when(fn()=> Carbon::now()->isStartOfMonth());
+// ->when(fn()=> true); // untuk testing

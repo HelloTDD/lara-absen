@@ -227,11 +227,11 @@ class AttendanceService
         $lngKantor = $config['longitude'];
         $radiusMax = $config['radius'];
 
-        $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
+        // $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
 
-        if ($distance > $radiusMax) {
-            throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
-        }
+        // if ($distance > $radiusMax) {
+        //     throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
+        // }
 
         $attendance->update([
             'check_out_time'  => $now->toTimeString(),

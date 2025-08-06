@@ -20,22 +20,8 @@ use App\Http\Controllers\User\UserContractController;
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
 
-URL::forceScheme('https');
-
-Route::get('tes-attendance',function(){
-    $now = now('Asia/Jakarta');
-    $today = $now->toDateString();
-    $checkInTime = $now->toTimeString();
-
-    $shift = UserShift::with(['shift', 'user_attendance'])->where('user_id', 1)
-        ->whereDate('start_date_shift', '<=', $today)
-        ->whereDate('end_date_shift', '>=', $today)
-        ->first();
-    foreach ($shift->user_attendance as $value) {
-        # code...
-        dd($value);
-    }
-    dd($shift->shift);
+Route::get('/version-lara',function(){
+    return view('welcome');
 });
 
 Route::controller(CalendarController::class)->group(function(){
