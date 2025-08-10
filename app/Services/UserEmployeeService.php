@@ -35,7 +35,7 @@ class UserEmployeeService
                 'birth_date' => Carbon::parse($request->birth_date)->format('Y-m-d'),
                 'gender' => $request->gender,
                 'address' => $request->address,
-                'leave' => $request->leave,
+                'leave' => $request->leave ?? 12,
                 'is_admin' => $request->is_admin,
                 'role_id' => $request->role_id,
                 'date_joined' => $request->date_joined ? Carbon::parse($request->date_joined)->format('Y-m-d') : null,

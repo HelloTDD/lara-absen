@@ -16,6 +16,7 @@ use App\Http\Controllers\User\UserLeaveController;
 use App\Http\Controllers\User\UserShiftController;
 use App\Http\Controllers\User\UserSalaryController;
 use App\Http\Controllers\User\UserContractController;
+use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
@@ -102,6 +103,7 @@ Route::middleware('auth')->group(function(){
     });
 
     });
+    Route::get('/homes', [HomeController::class, 'index'])->name('homes');
 
     Route::controller(UserReferenceController::class)->group(function(){
         Route::get('/user-references', 'index')->name('user-references.index');
@@ -168,22 +170,6 @@ Route::middleware('auth')->group(function(){
     Route::put('/ajax/update-shift/{id}',[UserShiftController::class,'update'])->name('user-shift.ajax.update');
 
 });
-
-
-
-// //dummy routes
-// Route::get('/home', function () {
-//     return 'Login';
-// })->name('home');
-
-// Route::get('/login', function () {
-//     return 'Home';
-// })->name('login');
-
-Route::get('/homes',function () {
-    return view('user.home.index');
-})->name('homes');
-
 Route::get('/', function () {
     return redirect()->route('attendance.index');
 });

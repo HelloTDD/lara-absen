@@ -53,6 +53,15 @@
                     center: 'title',
                     right: 'dayGridMonth'
                 },
+                windowResize: function(view) {
+                    if (window.innerWidth < 768) {
+                        calendar.changeView('listWeek');
+                    } else {
+                        calendar.changeView('dayGridMonth');
+                    }
+                },
+                longPressDelay: 300,
+                selectLongPressDelay: 100,
                 events: {!! json_encode($event_finals) !!},
                 editable: true,
                 navLinks: true, // can click day/week names to navigate views
@@ -69,7 +78,6 @@
                             const shift = document.querySelector('select[name="shift"]').value;
                             const overtime = document.querySelector('select[name="overtime"]').value;
                             const type = document.querySelector('input[name="types"]:checked').value;
-                            console.log(overtime);
                             if ((!title && type === 'event') || (type === 'shift' && !shift)) {
                                 if (type === 'shift') {
                                     Swal.showValidationMessage('Please select a shift');
@@ -210,7 +218,6 @@
                             shift_id: e.event.extendedProps.shift_id
                         };
                     }
-                    console.log([type, actualId, userId])
                     $.ajax({
                         url: url,
                         type: "POST",
