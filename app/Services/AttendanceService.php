@@ -40,17 +40,22 @@ class AttendanceService
         Log::info("Time : ", [$checkInTime]);
 
         // Cari shift yang aktif pada jam sekarang, exclude "Overtime"
-        $checkShift = Shift::where(function ($q1) use ($checkInTime) {
-            $q1->where('check_in', '<=', $checkInTime)
-                ->where('check_out', '>=', $checkInTime);
-        })->orWhere(function ($q2) use ($checkInTime) {
-            $q2->whereColumn('check_in', '>', 'check_out')
-                ->where(function ($q3) use ($checkInTime) {
-                    $q3->where('check_in', '<=', $checkInTime)
-                        ->orWhere('check_out', '>=', $checkInTime);
-                });
-        })
-        ->first();
+
+        if ($checkInTime >= '04:00:00' && $checkInTime < '08:30:00') {
+            $checkShift = Shift::where('shift_name', 'Pagi')->first();
+        } else {
+           $checkShift = Shift::where(function ($q1) use ($checkInTime) {
+                $q1->where('check_in', '<=', $checkInTime)
+                    ->where('check_out', '>=', $checkInTime);
+            })->orWhere(function ($q2) use ($checkInTime) {
+                $q2->whereColumn('check_in', '>', 'check_out')
+                    ->where(function ($q3) use ($checkInTime) {
+                        $q3->where('check_in', '<=', $checkInTime)
+                            ->orWhere('check_out', '>=', $checkInTime);
+                    });
+            })
+            ->first();
+        }
 
         Log::info("Shift : ", [$checkShift?->id ?? 'Tidak ditemukan']);
 
@@ -96,12 +101,12 @@ class AttendanceService
         $latKantor = $config['latitude'];
         $lngKantor = $config['longitude'];
         $radiusMax = $config['radius'];
-
+        //$distance  = 0;
         $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
 
-        if ($distance > $radiusMax) {
-            throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
-        }
+        // if ($distance > $radiusMax) {
+        //     throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
+        // }
 
         // --- Penentuan desc_attendance ---
         if (!$shift) {
@@ -226,8 +231,8 @@ class AttendanceService
         $latKantor = $config['latitude'];
         $lngKantor = $config['longitude'];
         $radiusMax = $config['radius'];
-
-        // $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
+        //$distance = 0;
+        $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
 
         // if ($distance > $radiusMax) {
         //     throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
