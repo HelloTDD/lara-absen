@@ -212,8 +212,8 @@
 
             //NOTE -  Lingkaran lokasi kantor
             const kantorCircle = L.circle([kantor.latitude, kantor.longitude], {
-                color: 'red',
-                fillColor: '#f03',
+                color: 'transparant',
+                fillColor: 'transparant',
                 fillOpacity: 0.5,
                 radius: kantor.radius
             }).addTo(map).bindPopup("Radius kantor");
