@@ -223,9 +223,23 @@
                         type: "POST",
                         data: data,
                         success: function (response) {
-                            console.log(response);
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message || 'Event change successfully.'
+                                });
+                            } else {
+                                e.revert();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to change the event.'
+                                });
+                            }
                         },
                         error: function (xhr, status, error) {
+                            e.revert();
                             console.error('Error:', error);
                         }
                     })

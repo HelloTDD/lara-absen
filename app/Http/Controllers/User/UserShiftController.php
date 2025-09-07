@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserShiftRequest;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -222,9 +223,21 @@ class UserShiftController extends Controller
 
         }
 
+        if($userShift->user_id != Auth::user()->id && !Auth::user()->is_admin ){
+            if($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized action'
+                ]);
+            }
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
         $cek_shift = UserShift::where('user_id',$request->user_id)
         ->where('start_date_shift',$request->start_date_shift)
         ->first();
+        
+        // dd($request->all(),Auth::user(), $cek_shift,$userShift);
         if($cek_shift){
             // throw new \Exception("Jadwal Shift Sudah ada", 1);
              return redirect()->back()->with('error', 'Shift Already exist.');
