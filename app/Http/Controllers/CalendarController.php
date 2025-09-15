@@ -85,8 +85,9 @@ class CalendarController extends Controller implements CalendarInterface
     public function update(CalendarEventRequest $request, CalendarEvent $calendarEvent, $id)
     {
         $result = null;
+        // dd($id, $request->all());
         try {
-            $get_data = $calendarEvent->findOrFail($id);
+            $get_data = $calendarEvent->find($id);
             if (!$get_data->count() < 0) {
                 throw new \Exception("Event Tidak Ada", 1);
             }
@@ -95,6 +96,7 @@ class CalendarController extends Controller implements CalendarInterface
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date
             ]);
+            // dd($result);
         } catch (\Throwable $th) {
             Log::create([
                 'action' => 'update calendar event',
@@ -104,7 +106,7 @@ class CalendarController extends Controller implements CalendarInterface
             ]);
         }
         return response()->json([
-            'status' => $result ? 'success' : 'error',
+            'success' => $result ? 'success' : 'error',
             'message' => $result ? 'Event updated successfully.' : 'Failed to update event',
         ]);
     }
@@ -193,7 +195,11 @@ class CalendarController extends Controller implements CalendarInterface
         $result = null;
         try {
 
-            $id = str_replace('event_', '', $id);
+            if(str_contains($id, 'shift_')){
+                $id = str_replace('shift_', '', $id);
+            } else {
+                $id = str_replace('event_', '', $id);
+            }
             $data = CalendarEvent::where('id', $id)->where('created_by', Auth::user()->id);
 
             if ($data->count() > 0) {

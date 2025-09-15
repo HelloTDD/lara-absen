@@ -163,9 +163,21 @@
                     calendar.unselect();
                 },
                 eventClick: function (arg) {
+                    let url;
+                    let id = arg.event.id;
+                    let [type, actualId] = id.split('_');
+
+                    console.log(type, actualId);
+
                     if (confirm('Are you sure you want to delete this event?')) {
+                        if(type === 'event'){
+                            url = "{{ route('calendar.delete', '') }}/" + actualId;
+                        } else {
+                            url = "{{ route('user-shift.delete', '') }}/" + actualId;
+                        }
+
                         $.ajax({
-                            url: '{{ url("/calendar/delete/") }}/' + arg.event.id,
+                            url: url,
                             type: 'DELETE',
                             data: {
                                 _token: '{{ csrf_token() }}'
