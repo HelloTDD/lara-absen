@@ -236,7 +236,7 @@ class UserShiftController extends Controller
         $cek_shift = UserShift::where('user_id',$request->user_id)
         ->where('start_date_shift',$request->start_date_shift)
         ->first();
-        
+
         // dd($request->all(),Auth::user(), $cek_shift,$userShift);
         if($cek_shift){
             // throw new \Exception("Jadwal Shift Sudah ada", 1);
@@ -287,24 +287,49 @@ class UserShiftController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $userShift = UserShift::find($id);
+
         if (!$userShift) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Shift not found.'
+                ], 404);
+            }
             return redirect()->route('user-shift.index')->with('error', 'Shift not found.');
         }
+
         DB::beginTransaction();
         try {
             $userShift->delete();
             DB::commit();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Shift deleted successfully.'
+                ]);
+            }
+
+            return redirect()->route('user-shift.index')->with('success', 'Shift deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete user shift', [
                 'error' => $e->getMessage(),
                 'id' => $id,
             ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to delete shift: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()->withErrors(['error' => 'Failed to delete shift: ' . $e->getMessage()]);
         }
-        return redirect()->route('user-shift.index')->with('success', 'Shift deleted successfully.');
     }
+
 }

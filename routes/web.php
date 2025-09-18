@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function(){
             Route::get('/reset', 'resetFilter')->name('reset');
             Route::put('/update/{id}', 'update')->name('update');
             Route::get('/shift/{id}/delete', 'destroy')->name('delete');
+            Route::delete('/shift/{id}/delete', 'destroy')->name('delete-shift');
             Route::get('/print', 'print')->name('print');
             Route::get('/export', 'export')->name('export');
         });

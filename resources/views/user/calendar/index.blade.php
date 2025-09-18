@@ -170,10 +170,11 @@
                     console.log(type, actualId);
 
                     if (confirm('Are you sure you want to delete this event?')) {
-                        if(type === 'event'){
-                            url = "{{ route('calendar.delete', '') }}/" + actualId;
+                        let url;
+                        if (type === 'event') {
+                            url = "{{ route('calendar.delete', ':id') }}".replace(':id', actualId);
                         } else {
-                            url = "{{ route('user-shift.delete', '') }}/" + actualId;
+                            url = "{{ route('user-shift.delete', ':id') }}".replace(':id', actualId);
                         }
 
                         $.ajax({
@@ -184,13 +185,11 @@
                             },
                             success: function (response) {
                                 if (response.status === 'success') {
-
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Success',
                                         text: response.message || 'Event deleted successfully.'
                                     });
-
                                     arg.event.remove();
                                 } else {
                                     Swal.fire({
@@ -205,6 +204,7 @@
                             }
                         });
                     }
+
                 },
                 dayMaxEvents: true,
                 eventDrop: function (e) {
