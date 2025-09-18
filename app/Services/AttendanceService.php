@@ -90,7 +90,7 @@ class AttendanceService
         }
 
         $imageData = $request->image;
-        $imageName = 'checkin_' . now()->format('YmdHis') . '.jpg';
+        $imageName = 'checkin_' .$userId.'_'. now()->format('YmdHis') . '.jpg';
         Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
 
         $lokasiUser = explode(',', $request->lokasi);
@@ -220,7 +220,7 @@ class AttendanceService
         }
 
         $imageData = $request->image;
-        $imageName = 'checkout_' . now()->format('YmdHis') . '.jpg';
+        $imageName = 'checkout_' .$userId.'_'. now()->format('YmdHis') . '.jpg';
         Storage::put("public/absensi/{$imageName}", base64_decode(str_replace('data:image/jpeg;base64,', '', $imageData)));
 
         $lokasiUser = explode(',', $request->lokasi);
