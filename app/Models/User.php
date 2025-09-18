@@ -102,6 +102,21 @@ class User extends Authenticatable
         return $menus[$this->role->role_name] ?? [];
     }
 
+    public function hasFullAccess()
+    {
+        $roles = [
+            'Staff',
+            'IT Support',
+            'Programmer',
+            'Front-end Developer',
+            'Supervisor',
+            'Finance',
+            'Scheduler',
+            'Karyawan',
+        ];
+
+        return in_array($this->role_name, $roles);
+    }
 
 
 }

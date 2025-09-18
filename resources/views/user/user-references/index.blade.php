@@ -22,7 +22,7 @@
                                         <form action="{{ route('user-references.store') }}" method="post"
                                             enctype="multipart/form-data">
                                             @csrf
-                                            @if (Auth::user()->is_admin == 1)
+                                            @if (Auth::user()->hasFullAccess())
                                                 <div class="mb-3">
                                                     <label>Nama Karyawan</label>
                                                     <select class="form-select" name="user_id" required>
@@ -116,7 +116,7 @@
                             <form action="" method="post">
                                 @csrf
                                 @method('PUT')
-                                @if (Auth::user()->is_admin == 1)
+                                @if (Auth::user()->hasFullAccess())
                                                 <div class="mb-3">
                                                     <label>Nama Karyawan</label>
                                                     <select class="form-select" name="user_id" id="user_id_edit" required>

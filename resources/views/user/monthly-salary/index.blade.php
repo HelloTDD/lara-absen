@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('page-title', Auth::user()->is_admin == 1 ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan')
+@section('page-title', Auth::user()->hasFullAccess() ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan')
 @section('content')
 <div class="row">
     <div class="col-lg-12">
@@ -9,10 +9,10 @@
                     <div class="justify-content-between d-flex">
                         {{-- <div class="align-self-center"> --}}
                             <div>
-                                <h3 class="card-title"> {{ Auth::user()->is_admin == 1 ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan' }} </h3>
+                                <h3 class="card-title"> {{ Auth::user()->hasFullAccess() ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan' }} </h3>
                             </div>
 
-                            @if (Auth::user()->is_admin == 1);
+                            @if (Auth::user()->hasFullAccess());
 
                                 <div>
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -102,7 +102,7 @@
                                         <td> {{ $month[$item->month] }}</td>
                                         <td> {{ $item->year }}</td>
                                         <td class="text-end">
-                                            @if(Auth::user()->is_admin == 1)
+                                            @if(Auth::user()->hasFullAccess())
                                                 <div class="dropstart d-inline-block">
                                                     <button class="btn btn-link dropdown-toggle arrow-none p-0"
                                                         type="button" id="dropdownMenuButton{{ $item->id }}"
@@ -139,7 +139,7 @@
                                 </tbody>
                             </table>
 
-                            @if(Auth::user()->is_admin == 1)
+                            @if(Auth::user()->hasFullAccess())
                                 <x-modal id="modalEdits" title="Edit Form Gaji">
                                     <form action="" method="post">
                                         @csrf
@@ -186,7 +186,7 @@
                             @endif
                         </div>
 
-                        @if (Auth::user()->is_admin == 1)
+                        @if (Auth::user()->hasFullAccess())
 
                             <form action="{{ route('monthly.salary.publish') }}" method="post">
                                 @csrf

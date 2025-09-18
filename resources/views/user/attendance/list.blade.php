@@ -179,7 +179,7 @@
                                         @endif
                                     </td>
                                     <td class="py-2 px-4">
-                                        @if(Auth::user()->is_admin == 1)
+                                        @if(Auth::user()->hasFullAccess())
                                             <a href="{{ route('attendance.edit', $item->id) }}" class="btn btn-warning mb-2" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>

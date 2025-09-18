@@ -7,8 +7,8 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="card-title align-items-center">User Shift</h5>
-                    
-                        @if (Auth::user()->is_admin == 1)
+
+                        @if (Auth::user()->hasFullAccess())
                             <div>
                                 <button class="btn btn-primary btn-sm ms-auto" type="button"
                                     onclick="location.href='{{ route('user-shift.index') }}'">See More</button>

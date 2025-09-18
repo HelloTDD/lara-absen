@@ -105,7 +105,7 @@
                         <!-- Navigation -->
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <a href="{{ Auth::user()->is_admin == 1 ? route('user-leave.index') : route('user-leave.user') }}"
+                                <a href="{{ Auth::user()->hasFullAccess() ? route('user-leave.index') : route('user-leave.user') }}"
                                     class="nav-link ">Cuti</a>
                             </li><!--end nav-item-->
                             <li class="nav-item">
@@ -115,7 +115,7 @@
                                 <a href="{{ route('monthly.salary.index') }}" class="nav-link ">Gaji Bulanan</a>
                             </li><!--end nav-item-->
 
-                            @if(Auth::user()->is_admin == 1)
+                            @if(Auth::user()->hasFullAccess())
                                 <li class="nav-item">
                                     <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
                                 </li><!--end nav-item-->

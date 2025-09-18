@@ -91,7 +91,7 @@
                     <x-modal id="exampleModalLarge" title="Form Cuti" size="lg">
                         <form action="{{ route('user-leave.store') }}" method="post">
                             @csrf
-                            @if (Auth::user()->is_admin == 1)
+                            @if (Auth::user()->hasFullAccess())
                                 <div class="mb-3">
                                     <label>Nama Karyawan</label>
                                     <select class="form-select" name="user_id" required>
@@ -148,7 +148,7 @@
                                     <th>Nama Karyawan</th>
                                     <th>Tanggal</th>
                                     <th>Status</th>
-                                    @if (Auth::user()->is_admin == 1)
+                                    @if (Auth::user()->hasFullAccess())
                                     <th>Cuti Terpakai</th>
                                     <th>Sisa Cuti</th>
                                     @endif
@@ -175,7 +175,7 @@
                                             <span class="badge rounded-4 bg-warning fs-6 m-1">Pending</span>
                                         @endif
                                     </td>
-                                    @if (Auth::user()->is_admin == 1)
+                                    @if (Auth::user()->hasFullAccess())
                                     <td>{{ max(0,12 - $leave->user->leave)  }}</td>
                                     <td>{{ $leave->user->leave  }}</td>
                                     @endif
@@ -188,13 +188,13 @@
                                                 <i class="las la-ellipsis-v font-20 text-muted"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dLabel11">
-                                                @if (($leave->status == 'pending' || $leave->status == 'canceled') && Auth::user()->is_admin == 1)
+                                                @if (($leave->status == 'pending' || $leave->status == 'canceled') && Auth::user()->hasFullAccess())
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-leave.approve', ['id' => $leave->id]) }}">Approve</a>
                                                     <a class="dropdown-item"
                                                         href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
                                                 @endif
-                                                @if (Auth::user()->is_admin == 1)
+                                                @if (Auth::user()->hasFullAccess())
                                                     @if ($leave->status == 'canceled')
                                                     <a class="dropdown-item"
                                                             href="{{ route('user-leave.cancel', ['id' => $leave->id]) }}">Cancel</a>

@@ -22,7 +22,7 @@
                                         <form action="{{ route('user-contract.store') }}" method="post"
                                             enctype="multipart/form-data">
                                             @csrf
-                                            @if (Auth::user()->is_admin == 1)
+                                            @if (Auth::user()->hasFullAccess())
                                                 <div class="mb-3">
                                                     <label>Nama Karyawan</label>
                                                     <select class="form-select" name="user_id" required>
@@ -114,7 +114,7 @@
                                                 <i class="las la-ellipsis-v font-20 text-muted"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dLabel11">
-                                                @if (Auth::user()->is_admin == 1)
+                                                @if (Auth::user()->hasFullAccess())
                                                     @if (in_array($item->status_contract, ['PENDING', 'REVISION']))
                                                         <a class="dropdown-item"
                                                             href="{{ route('user-contract.status', ['id' => $item->id, 'status' => 'APPROVE']) }}">Approve</a>
