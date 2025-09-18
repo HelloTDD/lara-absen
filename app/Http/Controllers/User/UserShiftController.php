@@ -289,7 +289,7 @@ class UserShiftController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $userShift = UserShift::find($id);
+        $userShift = UserShift::with('user_attendance')->find($id);
 
         if (!$userShift) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -299,6 +299,29 @@ class UserShiftController extends Controller
                 ], 404);
             }
             return redirect()->route('user-shift.index')->with('error', 'Shift not found.');
+        }
+
+        // cek hak akses
+        if ($userShift->user_id != Auth::user()->id && !Auth::user()->is_admin) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized action.'
+                ], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        // tambahan validasi: tidak boleh hapus kalau sudah ada user_attendance & sudah lewat hari ini
+        $today = now()->startOfDay();
+        if ($userShift->end_date_shift < $today && $userShift->user_attendance()->exists()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Shift cannot be deleted because it already has attendance records.'
+                ], 400);
+            }
+            return redirect()->back()->with('error', 'Shift cannot be deleted because it already has attendance records.');
         }
 
         DB::beginTransaction();

@@ -178,31 +178,38 @@
                         }
 
                         $.ajax({
-                            url: url,
-                            type: 'DELETE',
-                            data: {
-                                _token: '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                if (response.status === 'success') {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Success',
-                                        text: response.message || 'Event deleted successfully.'
-                                    });
-                                    arg.event.remove();
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error',
-                                        text: response.message || 'Failed to delete the event.'
-                                    });
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error:', error);
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message || 'Event deleted successfully.'
+                                });
+                                arg.event.remove();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to delete the event.'
+                                });
                             }
-                        });
+                        },
+                        error: function (xhr) {
+                            // cek kalau dari backend balikin JSON
+                            let res = xhr.responseJSON;
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Unauthorized',
+                                text: res && res.message ? res.message : 'You are not authorized to perform this action.'
+                            });
+                        }
+                    });
+
                     }
 
                 },
