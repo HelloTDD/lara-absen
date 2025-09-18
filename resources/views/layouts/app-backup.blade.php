@@ -98,61 +98,52 @@
                     class="main-icon-menu-pane tab-pane {{ request()->is(['user-leave*', 'user-salaries*']) ? 'active show' : '' }}"
                     role="tabpanel" aria-labelledby="apps-tab">
                     <div class="title-box">
-                        <h6 class="menu-title">Menu {{ Auth::user()->role->role_name }}</h6>
-
+                        <h6 class="menu-title">Menu User</h6>
                     </div>
 
                     <div class="collapse navbar-collapse" id="sidebarCollapse">
+                        <!-- Navigation -->
                         <ul class="navbar-nav">
-                            @php
-                                $user = Auth::user();
-                                $role = $user->role_name;
-                                $menus = $user->menu_items;
-                            @endphp
+                            <li class="nav-item">
+                                <a href="{{ Auth::user()->is_admin == 1 ? route('user-leave.index') : route('user-leave.user') }}"
+                                    class="nav-link ">Cuti</a>
+                            </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a href="{{ route('attendance.list') }}" class="nav-link ">Absensi</a>
+                            </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a href="{{ route('monthly.salary.index') }}" class="nav-link ">Gaji Bulanan</a>
+                            </li><!--end nav-item-->
 
-                            {{-- Supervisor dapat semua menu --}}
-                            @if(in_array('All', $menus))
-                                <li class="nav-item"><a href="{{ route('user-leave.index') }}" class="nav-link">Cuti</a></li>
-                                <li class="nav-item"><a href="{{ route('attendance.list') }}" class="nav-link">Absensi</a></li>
-                                <li class="nav-item"><a href="{{ route('monthly.salary.index') }}" class="nav-link">Gaji Bulanan</a></li>
-                                <li class="nav-item"><a href="{{ route('user-salaries.index') }}" class="nav-link">Gaji</a></li>
-                                <li class="nav-item"><a href="{{ route('user-shift.index') }}" class="nav-link">Shift Karyawan</a></li>
-                                <li class="nav-item"><a href="{{ route('shift.index') }}" class="nav-link">Shift</a></li>
-                                <li class="nav-item"><a href="{{ route('role.index') }}" class="nav-link">Bagian</a></li>
-                                <li class="nav-item"><a href="{{ route('user-employee.index') }}" class="nav-link">Karyawan</a></li>
-                                <li class="nav-item"><a href="{{ route('config.index') }}" class="nav-link">Configuration</a></li>
-                                <li class="nav-item"><a href="{{ route('user-contract.index') }}" class="nav-link">Kontrak</a></li>
-                                <li class="nav-item"><a href="{{ route('user-references.index') }}" class="nav-link">Surat Referensi</a></li>
-                            @else
-                                {{-- Loop menu sesuai mapping --}}
-                                @if(in_array('Cuti', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-leave.user') }}" class="nav-link">Cuti</a></li>
-                                @endif
-                                @if(in_array('Absensi', $menus))
-                                    <li class="nav-item"><a href="{{ route('attendance.list') }}" class="nav-link">Absensi</a></li>
-                                @endif
-                                @if(in_array('Gaji Bulanan', $menus))
-                                    <li class="nav-item"><a href="{{ route('monthly.salary.index') }}" class="nav-link">Gaji Bulanan</a></li>
-                                @endif
-                                @if(in_array('Gaji', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-salaries.index') }}" class="nav-link">Gaji</a></li>
-                                @endif
-                                @if(in_array('Shift Karyawan', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-shift.index') }}" class="nav-link">Shift Karyawan</a></li>
-                                @endif
-                                @if(in_array('Shift', $menus))
-                                    <li class="nav-item"><a href="{{ route('shift.index') }}" class="nav-link">Shift</a></li>
-                                @endif
-                                @if(in_array('Kontrak', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-contract.index') }}" class="nav-link">Kontrak</a></li>
-                                @endif
-                                @if(in_array('Surat Referensi', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-references.index') }}" class="nav-link">Surat Referensi</a></li>
-                                @endif
+                            @if(Auth::user()->is_admin == 1)
+                                <li class="nav-item">
+                                    <a href="{{ route('user-salaries.index') }}" class="nav-link ">Gaji</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('role.index') }}" class="nav-link ">Bagian</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('user-employee.index') }}" class="nav-link ">Karyawan</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('user-shift.index') }}" class="nav-link ">Shift Karyawan</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('shift.index') }}" class="nav-link ">Shift</a>
+                                </li><!--end nav-item-->
+                                <li class="nav-item">
+                                    <a href="{{ route('config.index') }}" class="nav-link ">Configuration</a>
+                                </li><!--end nav-item-->
                             @endif
-                        </ul>
-                    </div>
 
+                            <li class="nav-item">
+                                <a href="{{ route('user-contract.index') }}" class="nav-link ">Kontrak</a>
+                            </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a href="{{ route('user-references.index') }}" class="nav-link ">Surat Referensi</a>
+                            </li><!--end nav-item-->
+                        </ul><!--end navbar-nav--->
+                    </div><!--end sidebarCollapse-->
                 </div><!-- end Crypto -->
 
 

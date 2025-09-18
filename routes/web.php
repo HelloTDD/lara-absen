@@ -21,6 +21,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\UserEmployeeController;
 use App\Http\Controllers\User\UserReferenceController;
 
+
 Route::get('/version-lara',function(){
     return view('welcome');
 });

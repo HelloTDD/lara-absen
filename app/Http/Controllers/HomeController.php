@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Auth;
 class HomeController extends Controller
 {
     public function index()
-    {   
+    {
+        // $role =  Auth::user()->role_id;
+        // dd($role);
         $datenow = Carbon::now();
         $lastSevenDays = $datenow->copy()->subDays(7);
         $jumlah_data = UserAttendance::count();

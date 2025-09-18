@@ -77,4 +77,31 @@ class User extends Authenticatable
     {
         return $this->belongsTo(UserBank::class, 'id', 'user_id');
     }
+
+    public function getRoleNameAttribute()
+    {
+        return $this->role ? $this->role->role_name : null;
+    }
+
+    public function getMenuItemsAttribute()
+    {
+        $karyawanMenus = ['Absensi','Gaji Bulanan','Kontrak','Surat Referensi'];
+
+        $menus = [
+            'Supervisor' => ['All'],
+            'Finance'    => ['Gaji','Shift','Absensi','Cuti'],
+            'Scheduler'  => ['Cuti','Absensi','Shift Karyawan','Shift'],
+            // kelompok ini sama seperti Karyawan
+            'Karyawan'   => $karyawanMenus,
+            'Staff'      => $karyawanMenus,
+            'IT Support' => $karyawanMenus,
+            'Programmer' => $karyawanMenus,
+            'Front-end Developer' => $karyawanMenus,
+        ];
+
+        return $menus[$this->role->role_name] ?? [];
+    }
+
+
+
 }
