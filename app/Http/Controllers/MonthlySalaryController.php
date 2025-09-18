@@ -26,7 +26,7 @@ class MonthlySalaryController extends Controller
         $type_allowance = TypeAllowance::all();
         $users = User::with(['salary','role'])->get();
         $raw_orm = $monthlySalary->with('user_salary.user.allowances');
-        if(Auth::user()->is_admin == 1){
+        if(in_array(Auth::user()->role_name, ['Finance', 'Supervisor'])){
             $data = $raw_orm->where('status','DRAFT')->get();
         } else {
             $data = $raw_orm->where('status','PUBLISHED')->whereHas('user_salary.user',function($query){
