@@ -28,14 +28,15 @@ class AttendanceController extends Controller
         $date = now()->format('Y-m-d');
         $time = Carbon::now('Asia/Jakarta')->format('H:i:s');
 
+        $cutoff = now()->subHours(24);
+
         // test night time
         // $date = '2025-07-03';
         // $time = '04:00:00';
         // $date = Carbon::parse($date, 'Asia/Jakarta')->format('Y-m-d');
         // $time = Carbon::parse($time, 'Asia/Jakarta')->format('H:i:s');
         $existing = UserAttendance::where('user_id', $user_id)
-                    ->where('date', now()->format('Y-m-d'))
-                    ->where('check_in_time', '!=', null)
+                    ->whereRaw("STR_TO_DATE(CONCAT(`date`, ' ', `check_in_time`), '%Y-%m-%d %H:%i:%s') >= ?", [$cutoff])
                     ->orderBy('created_at', 'desc')
                     ->first();
         if (empty($existing)) {
