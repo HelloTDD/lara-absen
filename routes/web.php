@@ -169,6 +169,9 @@ Route::middleware('auth')->group(function(){
 
 
     Route::put('/ajax/update-shift/{id}',[UserShiftController::class,'update'])->name('user-shift.ajax.update');
+    // route DELETE khusus AJAX (semua user bisa akses)
+    Route::delete('/user-shift/shift/{id}/delete', [UserShiftController::class, 'destroy'])
+        ->name('user-shift.delete-shift');
 
 });
 Route::get('/', function () {
