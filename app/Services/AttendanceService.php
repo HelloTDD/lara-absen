@@ -186,34 +186,30 @@ class AttendanceService
     public function checkOut($userId, Request $request)
     {
         $now = now('Asia/Jakarta');
-        //test time
-        // $now = \Carbon\Carbon::parse('2025-07-03 04:00:00', 'Asia/Jakarta');
-        // Jika masih dini hari, anggap shift kemarin
-        $targetDate = $this->resolveShiftDateForCheckout($now);
-        // Cari absensi hari target yang belum check_out (apapun jenisnya)
+        $timeNow = $now->toTimeString();
+        $today = $now->toDateString();
+        $yesterday = Carbon::parse($today)->subDay()->toDateString();
+
+        // Cari absensi MASUK/LEMBUR yang belum check_out, dari hari ini atau kemarin
         $attendance = UserAttendance::where('user_id', $userId)
-            ->where('date', $targetDate)
             ->whereNull('check_out_time')
+            ->where(function ($q) use ($today, $yesterday) {
+                $q->whereDate('date', $today)
+                ->orWhereDate('date', $yesterday);
+            })
             ->orderByDesc('id')
             ->first();
 
         if (!$attendance) {
-            throw new \Exception('Belum absen MASUK atau LEMBUR hari ini. '.$targetDate);
+            throw new \Exception('Belum absen MASUK atau LEMBUR.');
         }
 
+        // Tentukan desc_attendance untuk check out
         $descAttendance = match ($attendance->desc_attendance) {
             'LEMBUR' => 'LEMBUR',
             'ABSEN DILUAR JAM KERJA' => 'ABSEN PULANG DILUAR JAM KERJA',
             default => 'MASUK',
         };
-
-        if (!$attendance->check_in_time) {
-            throw new \Exception('Belum absen MASUK.');
-        }
-
-        if ($attendance->check_out_time) {
-            throw new \Exception('Sudah absen PULANG.');
-        }
 
         if (!$request->has('image') || !$request->has('lokasi')) {
             throw new \Exception('Data lokasi atau foto tidak lengkap.');
@@ -231,13 +227,15 @@ class AttendanceService
         $latKantor = $config['latitude'];
         $lngKantor = $config['longitude'];
         $radiusMax = $config['radius'];
-        //$distance = 0;
+
         $distance = round($this->validation_radius_presensi($latKantor, $lngKantor, $latUser, $lngUser), 2);
 
+        // Validasi radius kantor (opsional)
         // if ($distance > $radiusMax) {
         //     throw new \Exception("Jarak Anda terlalu jauh dari kantor: {$distance} meter.");
         // }
 
+        // Update absensi
         $attendance->update([
             'check_out_time'  => $now->toTimeString(),
             'latitude_out'    => $latUser,
