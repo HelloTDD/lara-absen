@@ -60,8 +60,22 @@ class AttendanceController extends Controller
     public function store(AttendanceRequest $request, AttendanceService $service)
     {
         $userId = Auth::id() ?? 1;
-
         $action = $request->input('action');
+
+        // --- CSRF ---
+        $sentToken = $request->input('_token') ?? $request->header('X-CSRF-TOKEN');
+        $sessionToken = $request->session()->token();
+
+        if (!$sentToken || $sentToken !== $sessionToken) {
+            return response()->json([
+                'status' => 419,
+                'success' => false,
+                'message' => 'CSRF token mismatch. Please refresh the page and try again.',
+                'sentToken' => $sentToken,
+                'sessionToken' => $sessionToken,
+            ], 419);
+        }
+        // --- End CSRF ---
 
         DB::beginTransaction();
 
@@ -71,10 +85,10 @@ class AttendanceController extends Controller
             } elseif ($action === 'check_out') {
                 Log::info("check_out");
                 $service->checkOut($userId, $request);
-            }elseif ($action === 'overtime') {
+            } elseif ($action === 'overtime') {
                 Log::info("overtime");
                 $service->overTime($userId, $request);
-            }else {
+            } else {
                 return response()->json([
                     'status' => 400,
                     'success' => false,
@@ -85,7 +99,6 @@ class AttendanceController extends Controller
             DB::commit();
             return response()->json([
                 'status' => 200,
-                // 'data' => $data,
                 'success' => true,
                 'message' => "Berhasil presensi",
                 'jenis_presensi' => $action,

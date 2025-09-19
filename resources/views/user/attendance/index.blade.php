@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>TDD Absensi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -166,6 +167,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        $.ajaxSetup({
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
         Webcam.set({
             width: 300,
             height: 380,
@@ -239,16 +243,14 @@
             // close;
             $.ajax({
                 type: "POST",
-                url: "{{ route("attendance.store") }}",
+                url: "{{ route('attendance.store') }}",
                 data: {
-                    _token: "{{ csrf_token() }}",
-                    time : $("#time").val(),
+                    time: $("#time").val(),
                     tanggal: $("#tanggal").val(),
                     image: image,
                     lokasi: lokasi.value,
                     action: $("input[name='action']").val(),
                 },
-
                 cache: false,
                 success: function(res) {
                     console.log(res);
@@ -257,7 +259,7 @@
                             notifikasi_presensi_masuk.play();
                         } else if (res.jenis_presensi == "check_out") {
                             notifikasi_presensi_keluar.play();
-                        }else if (res.jenis_presensi == "overtime") {
+                        } else if (res.jenis_presensi == "overtime") {
                             notifikasi_presensi_masuk.play();
                         }
                         Swal.fire({
@@ -266,9 +268,7 @@
                             icon: "success",
                             confirmButtonText: "OK"
                         });
-                         window.location.href = "{{ url('homes') }}";
-                        // setTimeout("location.href='homes'", 5000);
-
+                        window.location.href = "{{ url('homes') }}";
                     } else if (res.status == 500) {
                         if (res.jenis_error == "radius") {
                             notifikasi_presensi_gagal_radius.play();
@@ -280,8 +280,13 @@
                             confirmButtonText: "OK"
                         });
                     }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    Swal.fire("Error", "Terjadi kesalahan saat absen", "error");
                 }
             });
+
         });
 
 </script>
