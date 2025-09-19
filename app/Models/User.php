@@ -85,7 +85,7 @@ class User extends Authenticatable
 
     public function getMenuItemsAttribute()
     {
-        $karyawanMenus = ['Absensi','Gaji Bulanan','Kontrak','Surat Referensi'];
+        $karyawanMenus = ['Cuti','Absensi','Gaji Bulanan','Kontrak','Surat Referensi'];
 
         $menus = [
             'Supervisor' => ['All'],

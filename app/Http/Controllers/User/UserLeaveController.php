@@ -219,7 +219,7 @@ class UserLeaveController extends Controller implements UserLeaveInterface
         $create_leave = null;
         try {
             $user_id = Auth::check() ? Auth::user()->id : User::where('id', $request->user_id)->first()->id;
-            if(Auth::user()->hasFullAccess()){
+            if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor'])){
                 $user = User::where('id', $request->user_id)->first();
             }else {
                 $user = User::find($user_id);

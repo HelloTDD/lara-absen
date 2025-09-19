@@ -8,7 +8,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="card-title align-items-center">User Shift</h5>
 
-                        @if (Auth::user()->hasFullAccess())
+                        @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
                             <div>
                                 <button class="btn btn-primary btn-sm ms-auto" type="button"
                                     onclick="location.href='{{ route('user-shift.index') }}'">See More</button>

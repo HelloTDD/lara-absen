@@ -125,9 +125,7 @@
                                 <li class="nav-item"><a href="{{ route('user-references.index') }}" class="nav-link">Surat Referensi</a></li>
                             @else
                                 {{-- Loop menu sesuai mapping --}}
-                                @if(in_array('Cuti', $menus))
                                     <li class="nav-item"><a href="{{ route('user-leave.user') }}" class="nav-link">Cuti</a></li>
-                                @endif
                                 @if(in_array('Absensi', $menus))
                                     <li class="nav-item"><a href="{{ route('attendance.list') }}" class="nav-link">Absensi</a></li>
                                 @endif

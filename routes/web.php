@@ -142,7 +142,7 @@ Route::middleware('auth')->group(function () {
      * FINANCE (akses Salary + Contract + Report)
      * ==============================
      */
-    Route::middleware(['checkRole:Finance'])->group(function () {
+    Route::middleware(['checkRole:Supervisor,Finance'])->group(function () {
         // Salary
         Route::controller(UserSalaryController::class)->group(function () {
             Route::get('/user-salaries', 'index')->name('user-salaries.index');
@@ -163,7 +163,7 @@ Route::middleware('auth')->group(function () {
      * SCHEDULER (akses Shift + UserShift)
      * ==============================
      */
-    Route::middleware(['checkRole:Scheduler'])->group(function () {
+    Route::middleware(['checkRole:Supervisor,Scheduler'])->group(function () {
         Route::prefix('user-shift')->controller(UserShiftController::class)->name('scheduler.user-shift.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/save', 'store')->name('store');

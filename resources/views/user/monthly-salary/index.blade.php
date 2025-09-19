@@ -1,96 +1,95 @@
 @extends('layouts.app')
-@section('page-title', Auth::user()->hasFullAccess() ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan')
+@section('page-title', in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']) ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan')
 @section('content')
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                {{-- <div class="align-self-center"> --}}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    {{-- <div class="align-self-center"> --}}
                     <div class="justify-content-between d-flex">
                         {{-- <div class="align-self-center"> --}}
-                            <div>
-                                <h3 class="card-title"> {{ Auth::user()->hasFullAccess() ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan' }} </h3>
-                            </div>
-
-                            @if (Auth::user()->hasFullAccess());
-
-                                <div>
-                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#addDraft"><i data-feather="plus-square"
-                                            class="align-self-center icon-xs me-2"></i>Tambah Draft</button>
-                                </div>
-                            @endif
-
-                            <x-modal id="addDraft" title="Form Tambah Draft">
-                                <form action="{{ route('monthly.salary.store') }}" method="post" class="row">
-                                    @csrf
-                                    <div class="mb-3 col-lg-12">
-                                        <label for="">User</label>
-                                        <select name="salary_ids" class="form-control" id="salary_ids">
-                                            @foreach ($users as $item)
-
-                                                @if(isset($item->salary?->salary_total))
-                                                    <option value="{{ $item->salary?->id }}">
-                                                        {{ $item->name . "-" . $item->role?->role_name . " (Rp " . number_format($item->salary?->salary_total) . ")" }}
-                                                    </option>
-                                                @endif
-
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-lg-12">
-                                        <label for="">Bulan</label>
-                                        <select class="form-control" name="month" id="month">
-                                            @foreach ($month as $key => $item)
-                                                <option value="{{ $key }}">{{ $item }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-lg-12">
-                                        <label for="">Tahun</label>
-                                        <select class="form-control" name="year" id="year">
-                                            @foreach ($year as $item)
-                                                <option value="{{ $item }}">{{ $item }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-success col-lg-3 col-md-12">Buat
-                                        Draft!</button>
-                                </form>
-                            </x-modal>
-
+                        <div>
+                            <h3 class="card-title">
+                                {{ in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']) ? 'Panel Gaji Bulanan Karyawan' : 'Laporan Gaji Bulanan' }}
+                            </h3>
                         </div>
-                    </div>
 
-                    <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
+                        @if (in_array(Auth::user()->role_name, ['Finance', 'Supervisor']))
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#addDraft"><i data-feather="plus-square"
+                                        class="align-self-center icon-xs me-2"></i>Tambah Draft</button>
                             </div>
                         @endif
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="datatable">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama Karyawan</th>
-                                        <th>Gaji Pokok</th>
-                                        <th>Tunjangan</th>
-                                        <th>Bonus</th>
-                                        <th>THR</th>
-                                        <th>Total</th>
-                                        <th>Month</th>
-                                        <th>Year</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php($no = 1)
-                                    @foreach($data as $item)
+
+                        <x-modal id="addDraft" title="Form Tambah Draft">
+                            <form action="{{ route('monthly.salary.store') }}" method="post" class="row">
+                                @csrf
+                                <div class="mb-3 col-lg-12">
+                                    <label for="">User</label>
+                                    <select name="salary_ids" class="form-control" id="salary_ids">
+                                        @foreach ($users as $item)
+                                            @if (isset($item->salary?->salary_total))
+                                                <option value="{{ $item->salary?->id }}">
+                                                    {{ $item->name . '-' . $item->role?->role_name . ' (Rp ' . number_format($item->salary?->salary_total) . ')' }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-lg-12">
+                                    <label for="">Bulan</label>
+                                    <select class="form-control" name="month" id="month">
+                                        @foreach ($month as $key => $item)
+                                            <option value="{{ $key }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-lg-12">
+                                    <label for="">Tahun</label>
+                                    <select class="form-control" name="year" id="year">
+                                        @foreach ($year as $item)
+                                            <option value="{{ $item }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success col-lg-3 col-md-12">Buat
+                                    Draft!</button>
+                            </form>
+                        </x-modal>
+
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="datatable">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Karyawan</th>
+                                    <th>Gaji Pokok</th>
+                                    <th>Tunjangan</th>
+                                    <th>Bonus</th>
+                                    <th>THR</th>
+                                    <th>Total</th>
+                                    <th>Month</th>
+                                    <th>Year</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php($no = 1)
+                                @foreach ($data as $item)
                                     <tr>
                                         <td>{{ $no }}</td>
                                         <td>{{ $item->user_salary?->user?->name }}</td>
@@ -102,7 +101,7 @@
                                         <td> {{ $month[$item->month] }}</td>
                                         <td> {{ $item->year }}</td>
                                         <td class="text-end">
-                                            @if(Auth::user()->hasFullAccess())
+                                            @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
                                                 <div class="dropstart d-inline-block">
                                                     <button class="btn btn-link dropdown-toggle arrow-none p-0"
                                                         type="button" id="dropdownMenuButton{{ $item->id }}"
@@ -135,95 +134,97 @@
                                         </td>
                                     </tr>
                                     @php($no++)
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                @endforeach
+                            </tbody>
+                        </table>
 
-                            @if(Auth::user()->hasFullAccess())
-                                <x-modal id="modalEdits" title="Edit Form Gaji">
-                                    <form action="" method="post">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="row">
-                                            <div class="mb-3">
-                                                <label for="user_id_edit">User</label>
-                                                <select class="form-control" name="user_id" id="user_id_edit" required>
-                                                    @if (count($users) == 0)
-                                                        <option value="">No users available</option>
-                                                    @else
-                                                        @foreach($users as $user)
-                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_basic_edit">Basic Salary</label>
-                                                <input class="form-control" type="number" name="salary_basic"
-                                                    id="salary_basic_edit" value="0" required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_bonus_edit">Bonus</label>
-                                                <input class="form-control" type="number" name="salary_bonus"
-                                                    id="salary_bonus_edit" value="0" required>
-                                            </div>
-                                            <div class="mb-3 col-lg-6">
-                                                <label for="salary_holiday_edit">Holiday</label>
-                                                <input class="form-control" type="number" name="salary_holiday"
-                                                    id="salary_holiday_edit" value="0" required>
-                                            </div>
+                        @if (in_array(Auth::user()->role_name, ['Finance', 'Supervisor'])) <x-modal id="modalEdits"
+                                title="Edit Form Gaji">
+                                <form action="" method="post">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <label for="user_id_edit">User</label>
+                                            <select class="form-control" name="user_id" id="user_id_edit" required>
+                                                @if (count($users) == 0)
+                                                    <option value="">No users available</option>
+                                                @else
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_basic_edit">Basic Salary</label>
+                                            <input class="form-control" type="number" name="salary_basic"
+                                                id="salary_basic_edit" value="0" required>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_bonus_edit">Bonus</label>
+                                            <input class="form-control" type="number" name="salary_bonus"
+                                                id="salary_bonus_edit" value="0" required>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label for="salary_holiday_edit">Holiday</label>
+                                            <input class="form-control" type="number" name="salary_holiday"
+                                                id="salary_holiday_edit" value="0" required>
+                                        </div>
 
-                                            <div class="mb-3 col-lg-12">
-                                                <label>Allowance</label>
-                                                <div id="allowance-container">
-                                                    <!-- Allowance inputs will be dynamically added here -->
-                                                </div>
+                                        <div class="mb-3 col-lg-12">
+                                            <label>Allowance</label>
+                                            <div id="allowance-container">
+                                                <!-- Allowance inputs will be dynamically added here -->
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-success">Update</button>
-                                    </form>
-                                </x-modal>
-                            @endif
-                        </div>
-
-                        @if (Auth::user()->hasFullAccess())
-
-                            <form action="{{ route('monthly.salary.publish') }}" method="post">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="btn btn-success btn-sm">Publish Gaji Bulanan Karyawan</button>
-                            </form>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Update</button>
+                                </form>
+                            </x-modal>
                         @endif
                     </div>
+
+                    @if (in_array(Auth::user()->role_name, ['Finance', 'Supervisor']))
+                        <form action="{{ route('monthly.salary.publish') }}" method="post">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-success btn-sm">Publish Gaji Bulanan Karyawan</button>
+                        </form>
+                    @endif
                 </div>
             </div>
+        </div>
 
-            @endsection
+    @endsection
 
-            @push('scripts')
-                <script>
-                    function openModalEdit(id, user_id, salary_basic, salary_bonus, salary_holiday, month, year, salary_allowances, type_allowance) {
-                        $('#modalEdits').modal('show');
+    @push('scripts')
+        <script>
+            function openModalEdit(id, user_id, salary_basic, salary_bonus, salary_holiday, month, year, salary_allowances,
+                type_allowance) {
+                $('#modalEdits').modal('show');
 
-                        $('#user_id_edit').val(user_id);
-                        $('#salary_basic_edit').val(salary_basic);
-                        $('#salary_bonus_edit').val(salary_bonus);
-                        $('#salary_holiday_edit').val(salary_holiday);
-                        $('form[action]').attr('action', `/user-salaries/update/${id}`);
+                $('#user_id_edit').val(user_id);
+                $('#salary_basic_edit').val(salary_basic);
+                $('#salary_bonus_edit').val(salary_bonus);
+                $('#salary_holiday_edit').val(salary_holiday);
+                $('form[action]').attr('action', `/user-salaries/update/${id}`);
 
-                        // Kosongkan allowance container dulu
-                        const $container = $('#allowance-container');
-                        $container.empty();
+                // Kosongkan allowance container dulu
+                const $container = $('#allowance-container');
+                $container.empty();
 
-                        // Loop allowance dinamis
-                        let isChecked = '';
+                // Loop allowance dinamis
+                let isChecked = '';
 
-                        type_allowance.forEach((allowanceType) => {
-                            const existingAllowance = salary_allowances.find(sa => sa.id === allowanceType.id);
-                            const isChecked = existingAllowance?.pivot?.type_allowance_id === allowanceType.id ? 'checked' : '';
-                            const $wrapper = $('<div>', { class: 'mb-2' });
+                type_allowance.forEach((allowanceType) => {
+                    const existingAllowance = salary_allowances.find(sa => sa.id === allowanceType.id);
+                    const isChecked = existingAllowance?.pivot?.type_allowance_id === allowanceType.id ? 'checked' : '';
+                    const $wrapper = $('<div>', {
+                        class: 'mb-2'
+                    });
 
-                            const checkboxHtml = `
+                    const checkboxHtml = `
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox"
                                                 name="salary_allowance[]" value="${allowanceType.id}"
@@ -233,14 +234,14 @@
                                         </div>
                                     `;
 
-                            const inputHtml = `
+                    const inputHtml = `
                                         <input type="number" name="allowances[${allowanceType.id}]" value="${existingAllowance?.pivot?.amount || ''}" class="form-control">
                                     `;
 
-                            $wrapper.append(checkboxHtml);
-                            $wrapper.append(inputHtml);
-                            $container.append($wrapper);
-                        })
-                    }
-                </script>
-            @endpush
+                    $wrapper.append(checkboxHtml);
+                    $wrapper.append(inputHtml);
+                    $container.append($wrapper);
+                })
+            }
+        </script>
+    @endpush
