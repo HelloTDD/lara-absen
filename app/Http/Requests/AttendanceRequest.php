@@ -23,8 +23,6 @@ class AttendanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tanggal' => 'required|date_format:Y-m-d',
-            'time'    => 'required|date_format:H:i:s',
             'image' => 'required|string',
             'lokasi' => 'required|string',
             'action' => 'required|in:check_in,check_out,overtime',

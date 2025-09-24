@@ -89,7 +89,7 @@ class User extends Authenticatable
 
         $menus = [
             'Supervisor' => ['All'],
-            'Finance'    => ['Gaji','Shift','Absensi','Cuti'],
+            'Finance'    => ['Gaji','Gaji Bulanan','Shift','Absensi','Cuti'],
             'Scheduler'  => ['Cuti','Absensi','Shift Karyawan','Shift'],
             // kelompok ini sama seperti Karyawan
             'Karyawan'   => $karyawanMenus,
