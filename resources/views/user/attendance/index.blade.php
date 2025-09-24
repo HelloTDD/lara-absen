@@ -245,8 +245,6 @@
                 type: "POST",
                 url: "{{ route('attendance.store') }}",
                 data: {
-                    time: $("#time").val(),
-                    tanggal: $("#tanggal").val(),
                     image: image,
                     lokasi: lokasi.value,
                     action: $("input[name='action']").val(),
