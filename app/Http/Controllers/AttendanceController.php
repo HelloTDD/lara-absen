@@ -123,7 +123,7 @@ class AttendanceController extends Controller
     {
         $users = User::all();
         $shift = Shift::all();
-        if(Auth::user()->hasFullAccess()){
+        if(in_array(Auth::user()->role_name, ['Supervisor'])){
             $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                 ->when(session('attendance_filter.user_id'), function ($query) {
                     return $query->where('user_id', session('attendance_filter.user_id'));
@@ -193,7 +193,7 @@ class AttendanceController extends Controller
         try{
             $users = User::all();
             $shift = Shift::all();
-            if(Auth::user()->hasFullAccess()){
+            if(in_array(Auth::user()->role_name, ['Supervisor'])){
             $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                 ->when(session('attendance_filter.user_id'), function ($query) {
                     return $query->where('user_id', session('attendance_filter.user_id'));
@@ -255,7 +255,7 @@ class AttendanceController extends Controller
         try {
             $users = User::all();
             $shift = Shift::all();
-            if(Auth::user()->hasFullAccess()){
+            if(in_array(Auth::user()->role_name, ['Supervisor'])){
             $data = UserAttendance::with('user', 'user_shift', 'user_shift.shift')
                 ->when(session('attendance_filter.user_id'), function ($query) {
                     return $query->where('user_id', session('attendance_filter.user_id'));

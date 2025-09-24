@@ -20,7 +20,7 @@ class UserContractController extends Controller implements UserContractInterface
     public function index()
     {
         $users = User::where('id', '!=', Auth::id())->get();
-        if(Auth::user()->hasFullAccess()){
+        if(in_array(Auth::user()->role_name, ['Supervisor'])){
             $userContracts = StatusContract::with('contracts.user')->get();
         } else {
             $userContracts = StatusContract::with('contracts.user')
