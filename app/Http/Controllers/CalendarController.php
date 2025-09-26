@@ -40,11 +40,11 @@ class CalendarController extends Controller implements CalendarInterface
                 });
 
                 $color = $cek_already_attendance
-                    ? ['backgroundColor' => '#8ce089', 'textColor' => '#22941e']
+                    ? ['backgroundColor' => '#8ce089', 'textColor' => '#22941e'] // sudah absen
                     : (
                         $userShift->desc_shift == 'HOLIDAY'
-                        ? []
-                        : []
+                        ? ['backgroundColor' => '#f87171', 'textColor' => '#7f1d1d'] // libur
+                        : [] // default
                     );
 
                 return array_merge([
@@ -120,41 +120,63 @@ class CalendarController extends Controller implements CalendarInterface
                 if (Carbon::parse($request->start_date)->lt(Carbon::today())) {
                     throw new \Exception("Tanggal shift tidak boleh kurang dari hari ini", 1);
                 }
-                //data request di susun ulang agar sesuai dengan yang diharapkan oleh service
+
                 $title_shift = Shift::where('id', $request->data)->first()->shift_name;
 
-                $cek_shift = UserShift::where('user_id', Auth::user()->id)
-                    ->where('start_date_shift', $request->start_date)
-                    ->when($request->end_date, callback: function ($query) use ($request) {
-                        $query->where('end_date_shift', $request->end_date);
-                    })
-                    ->when($request->overtime == 'LEMBUR' || $request->overtime == 'HOLIDAY', function ($query) use ($request) {
-                        $query->where('desc_shift',$request->overtime);
-                    })
-                    ->count();
+                $start = Carbon::parse($request->start_date);
+                $end = Carbon::parse($request->end_date);
 
-                lg::info($cek_shift);
-                // dd($request->overtime);
-                if ($cek_shift == 0) {
-                    $data = [
-                        'user_id' => Auth::user()->id,
-                        'shift_id' => $request->data,
-                        'start_date_shift' => $request->start_date,
-                        'end_date_shift' => $request->end_date,
-                    ];
+                $records = [];
+                $created = [];
 
-                    if (!empty($request['overtime']) || !empty($request->overtime)) {
-                        $data['overtime'] = $request->overtime;
-                    } else {
-                        $data['holiday'] = !empty($request->holiday) ? $request->holiday : null;
+                while ($start < $end) {
+                    $cek_shift = UserShift::where('user_id', Auth::user()->id)
+                        ->where('start_date_shift', $start->toDateString())
+                        ->where('end_date_shift', $start->copy()->addDay()->toDateString())
+                        ->when($request->overtime == 'LEMBUR' || $request->overtime == 'HOLIDAY', function ($query) use ($request) {
+                            $query->where('desc_shift', $request->overtime);
+                        })
+                        ->count();
+
+                    if ($cek_shift == 0) {
+                        $data = [
+                            'user_id' => Auth::user()->id,
+                            'shift_id' => $request->data,
+                            'start_date_shift' => $start->toDateString(),
+                            'end_date_shift' => $start->copy()->addDay()->toDateString(),
+                        ];
+
+                        if (!empty($request->overtime)) {
+                            $data['overtime'] = $request->overtime;
+                        }
+
+                        $created[] = $service->createUserShift($data);
+
+                        $records[] = [
+                            'id' => 'shift_' . $data['shift_id'] . '_' . $start->format('Ymd'),
+                            'title' => $title_shift . " - " . Auth::user()->name,
+                            'start' => $start->toDateString(),
+                            'end' => $start->copy()->addDay()->toDateString(),
+                            'allDay' => true,
+                            'extendedProps' => [
+                                'type' => 'shift',
+                                'shift_id' => $request->data,
+                                'user' => Auth::user()->id
+                            ]
+                        ];
                     }
-
-
-                    $title = $title_shift . " - " . Auth::user()->name; //title untuk di calendar
-                    $result = $service->createUserShift($data);
-                } else {
-                    throw new \Exception("Shift Sudah Ada", 1);
+                    $start->addDay();
                 }
+
+                if (empty($records)) {
+                    throw new \Exception("Shift sudah ada di range tanggal tersebut", 1);
+                }
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Shift berhasil dibuat',
+                    'data' => $records
+                ]);
             } else {
                 $result = CalendarEvent::create([
                     'title' => $request->data,
