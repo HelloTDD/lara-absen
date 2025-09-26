@@ -117,6 +117,8 @@
                                     let status;
                                     if (e.status === 'success') {
                                         status = e.status;
+
+                                        // kalau tetap mau addEvent manual, boleh dipertahankan
                                         calendar.addEvent({
                                             id: e.data?.id,
                                             title: "{{ Auth::user()->name }}:" + e.data?.title,
@@ -130,10 +132,15 @@
                                     } else {
                                         status = e.status;
                                     }
+
                                     Swal.fire({
                                         icon: status,
                                         title: status == 'success' ? 'Berhasil' : 'Gagal',
                                         text: e.message || 'Success add the event.'
+                                    }).then(() => {
+                                        if (status === 'success') {
+                                            location.reload(); // ⬅ refresh page setelah klik OK
+                                        }
                                     });
                                 },
                                 error: function (xhr, status, error) {
