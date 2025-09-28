@@ -176,7 +176,7 @@
             image_format: 'jpeg',
             jpeg_quality: 90,
             force_flash: false,
-            flip_horiz: false,
+            flip_horiz: true, // <-- mirror
         });
         Webcam.attach('#webcam-capture');
 
