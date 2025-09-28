@@ -12,31 +12,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
+        #map {
+            height: 100px; /* fallback kalau Tailwind override */
+        }
     /* Box webcam fleksibel */
         /* Biar ikut parent flex-auto p-3 */
         #webcam-capture {
-            position: relative;
-            width: 100%;            /* selalu full ke parent */
-            max-width: 100%;        /* jangan lebih lebar dari parent */
-            aspect-ratio: 4 / 3;    /* biar proporsional */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 4 / 3;
             margin: auto;
             border-radius: 16px;
             overflow: hidden;
             background: #000;
         }
 
-        /* Semua elemen di dalam webcam */
+        /* Video tetap full cover tapi tanpa absolute */
         #webcam-capture video,
         #webcam-capture object,
         #webcam-capture embed {
-            position: absolute;
-            inset: 0;               /* full cover */
             width: 100% !important;
             height: 100% !important;
             object-fit: cover;
             border-radius: inherit;
             display: block;
         }
+
 
 
         /* Tablet */
