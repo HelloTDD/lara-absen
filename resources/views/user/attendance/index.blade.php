@@ -12,43 +12,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
-        #map {
-            height: 200px;
+    /* Box webcam fleksibel */
+        /* Biar ikut parent flex-auto p-3 */
+        #webcam-capture {
+            position: relative;
+            width: 100%;            /* selalu full ke parent */
+            max-width: 100%;        /* jangan lebih lebar dari parent */
+            aspect-ratio: 4 / 3;    /* biar proporsional */
+            margin: auto;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
         }
 
-         @media (max-width: 425px) {
-
-            #webcam-capture,
-            #webcam-capture video {
-                width: 360px !important;
-                height: 380px !important;
-                margin auto;
-                border-radius: 33px;
-            }
+        /* Semua elemen di dalam webcam */
+        #webcam-capture video,
+        #webcam-capture object,
+        #webcam-capture embed {
+            position: absolute;
+            inset: 0;               /* full cover */
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            border-radius: inherit;
+            display: block;
         }
 
+
+        /* Tablet */
         @media (min-width: 640px) {
-
-            #webcam-capture,
-            #webcam-capture video {
-                width: 360px !important;
-                height: 380px !important;
-                margin auto;
-                border-radius: 33px;
-            }
+            #webcam-capture { max-width: 360px; border-radius: 20px; }
         }
 
+        /* Desktop */
         @media (min-width: 768px) {
-
-            #webcam-capture,
-            #webcam-capture video {
-                width: 360px !important;
-                height: 380px !important;
-                margin auto;
-                border-radius: 33px;
-            }
+            #webcam-capture { max-width: 380px; border-radius: 24px; }
         }
     </style>
+
+
 </head>
 <body class="min-h-screen bg-gradient-to-br from-white to-gray-100 flex items-center justify-center font-sans">
 
@@ -171,8 +173,8 @@
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
         });
         Webcam.set({
-            width: 300,
-            height: 380,
+            width: 640,
+            height: 480,
             image_format: 'jpeg',
             jpeg_quality: 90,
             force_flash: false,
