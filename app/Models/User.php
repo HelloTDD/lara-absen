@@ -82,7 +82,7 @@ class User extends Authenticatable
     {
         return $this->role ? $this->role->role_name : null;
     }
-
+    
     public function getMenuItemsAttribute()
     {
         $karyawanMenus = ['Cuti','Absensi','Gaji Bulanan','Kontrak','Surat Referensi'];
