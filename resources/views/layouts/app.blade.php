@@ -90,6 +90,20 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/calendar') }}">Calendar</a>
                         </li><!--end nav-item-->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
+                        </li><!--end nav-item-->
+
+                    </ul><!--end nav-->
+
+                    <div class="title-box">
+                        <h6 class="menu-title">Akses Cepat</h6>
+                    </div>
+
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
+                        </li><!--end nav-item-->
 
                     </ul><!--end nav-->
                 </div><!-- end Dashboards -->

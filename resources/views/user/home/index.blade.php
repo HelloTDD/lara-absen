@@ -17,8 +17,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped bg-primary rounded-1">
-                        <thead>
+                    <table class="table table-striped rounded-1">
+                        <thead class="bg-primary ">
                             <tr>
                                 <th class="text-light">ID</th>
                                 <th class="text-light">User Name</th>
@@ -61,8 +61,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped bg-primary rounded-1">
-                        <thead>
+                    <table class="table table-striped rounded-1">
+                        <thead class="bg-primary ">
                             <tr>
                                 <th class="text-light">ID</th>
                                 <th class="text-light">User Name</th>
