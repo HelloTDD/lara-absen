@@ -144,7 +144,7 @@
                                             @if ($item->check_in_photo)
                                                 <img src="{{ asset('storage/absensi/' . $item->check_in_photo) }}"
                                                     onclick="openModal(this.src)"
-                                                    style="max-width: 100%; height: auto; cursor: pointer;"
+                                                    style="cursor: pointer ;aspect-ratio: 1 / 1;object-fit: cover;width: 10rem;"
                                                     class="img-fluid rounded shadow">
                                             @else
                                                 -
@@ -157,7 +157,7 @@
                                             @if ($item->check_out_photo)
                                                 <img src="{{ asset('storage/absensi/' . $item->check_out_photo) }}"
                                                     onclick="openModal(this.src)"
-                                                    style="max-width: 100%; height: auto; cursor: pointer;"
+                                                    style="cursor: pointer;aspect-ratio: 1 / 1;object-fit: cover;width: 10rem;" 
                                                     class="img-fluid rounded shadow">
                                             @else
                                                 -
