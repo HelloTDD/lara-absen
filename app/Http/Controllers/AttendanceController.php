@@ -28,7 +28,7 @@ class AttendanceController extends Controller
         $date = now()->format('Y-m-d');
         $time = Carbon::now('Asia/Jakarta')->format('H:i:s');
 
-        $cutoff = now()->subHours(24);
+        $cutoff = now()->subHours(8);
 
         // test night time
         // $date = '2025-07-03';
