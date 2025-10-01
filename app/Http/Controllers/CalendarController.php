@@ -143,7 +143,8 @@ class CalendarController extends Controller implements CalendarInterface
                             'user_id' => Auth::user()->id,
                             'shift_id' => $request->data,
                             'start_date_shift' => $start->toDateString(),
-                            'end_date_shift' => $start->copy()->addDay()->toDateString(),
+                            // 'end_date_shift' => $start->copy()->addDay()->toDateString(),
+                            'end_date_shift'   => Carbon::parse($request->end_date)->toDateString(),
                         ];
 
                         if (!empty($request->overtime)) {
