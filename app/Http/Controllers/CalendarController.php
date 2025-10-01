@@ -144,7 +144,7 @@ class CalendarController extends Controller implements CalendarInterface
                             'shift_id' => $request->data,
                             'start_date_shift' => $start->toDateString(),
                             // 'end_date_shift' => $start->copy()->addDay()->toDateString(),
-                            'end_date_shift'   => Carbon::parse($request->end_date)->toDateString(),
+                            'end_date_shift'   => Carbon::parse($request->end_date)->subDay()->toDateString(),
                         ];
 
                         if (!empty($request->overtime)) {
@@ -158,7 +158,7 @@ class CalendarController extends Controller implements CalendarInterface
                             'title' => $title_shift . " - " . Auth::user()->name,
                             'start' => $start->toDateString(),
                             // 'end' => $start->copy()->addDay()->toDateString(),
-                            'end' => Carbon::parse($request->end_date)->toDateString(),
+                            'end'   => Carbon::parse($request->end_date)->subDay()->toDateString(),
                             'allDay' => true,
                             'extendedProps' => [
                                 'type' => 'shift',
