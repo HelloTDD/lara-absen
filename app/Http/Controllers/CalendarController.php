@@ -157,7 +157,8 @@ class CalendarController extends Controller implements CalendarInterface
                             'id' => 'shift_' . $data['shift_id'] . '_' . $start->format('Ymd'),
                             'title' => $title_shift . " - " . Auth::user()->name,
                             'start' => $start->toDateString(),
-                            'end' => $start->copy()->addDay()->toDateString(),
+                            // 'end' => $start->copy()->addDay()->toDateString(),
+                            'end' => Carbon::parse($request->end_date)->toDateString(),
                             'allDay' => true,
                             'extendedProps' => [
                                 'type' => 'shift',
