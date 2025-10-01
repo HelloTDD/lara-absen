@@ -124,27 +124,29 @@ class CalendarController extends Controller implements CalendarInterface
                 $title_shift = Shift::where('id', $request->data)->first()->shift_name;
 
                 $start = Carbon::parse($request->start_date);
-                $end = Carbon::parse($request->end_date);
+                $end   = Carbon::parse($request->end_date)->subDay(); // ✅ FIX: FullCalendar exclusive
 
                 $records = [];
                 $created = [];
 
-                while ($start < $end) {
+                while ($start <= $end) {  // ✅ loop sampai end termasuk
                     $cek_shift = UserShift::where('user_id', Auth::user()->id)
                         ->where('start_date_shift', $start->toDateString())
-                        ->where('end_date_shift', $start->copy()->addDay()->toDateString())
-                        ->when($request->overtime == 'LEMBUR' || $request->overtime == 'HOLIDAY', function ($query) use ($request) {
-                            $query->where('desc_shift', $request->overtime);
-                        })
+                        ->where('end_date_shift', $start->toDateString())
+                        ->when(
+                            $request->overtime == 'LEMBUR' || $request->overtime == 'HOLIDAY',
+                            function ($query) use ($request) {
+                                $query->where('desc_shift', $request->overtime);
+                            }
+                        )
                         ->count();
 
                     if ($cek_shift == 0) {
                         $data = [
-                            'user_id' => Auth::user()->id,
-                            'shift_id' => $request->data,
-                            'start_date_shift' => $start->toDateString(),
-                            // 'end_date_shift' => $start->copy()->addDay()->toDateString(),
-                            'end_date_shift'   => Carbon::parse($request->end_date)->subDay()->toDateString(),
+                            'user_id'           => Auth::user()->id,
+                            'shift_id'          => $request->data,
+                            'start_date_shift'  => $start->toDateString(),
+                            'end_date_shift'    => $start->toDateString(),
                         ];
 
                         if (!empty($request->overtime)) {
@@ -154,16 +156,15 @@ class CalendarController extends Controller implements CalendarInterface
                         $created[] = $service->createUserShift($data);
 
                         $records[] = [
-                            'id' => 'shift_' . $data['shift_id'] . '_' . $start->format('Ymd'),
+                            'id'    => 'shift_' . $data['shift_id'] . '_' . $start->format('Ymd'),
                             'title' => $title_shift . " - " . Auth::user()->name,
                             'start' => $start->toDateString(),
-                            // 'end' => $start->copy()->addDay()->toDateString(),
-                            'end'   => Carbon::parse($request->end_date)->subDay()->toDateString(),
+                            'end'   => $start->copy()->addDay()->toDateString(), // ✅ FullCalendar butuh exclusive end
                             'allDay' => true,
                             'extendedProps' => [
-                                'type' => 'shift',
+                                'type'     => 'shift',
                                 'shift_id' => $request->data,
-                                'user' => Auth::user()->id
+                                'user'     => Auth::user()->id,
                             ]
                         ];
                     }
@@ -175,41 +176,42 @@ class CalendarController extends Controller implements CalendarInterface
                 }
 
                 return response()->json([
-                    'status' => 'success',
+                    'status'  => 'success',
                     'message' => 'Shift berhasil dibuat',
-                    'data' => $records
+                    'data'    => $records
                 ]);
             } else {
                 $result = CalendarEvent::create([
-                    'title' => $request->data,
+                    'title'      => $request->data,
                     'start_date' => Carbon::parse($request->start_date),
-                    'end_date' => Carbon::parse($request->end_date),
+                    'end_date'   => Carbon::parse($request->end_date),
                     'created_by' => Auth::user()->id,
                 ]);
-                $title = $request->data; //title untuk di calendar
-                $id = 'event_' . $result->id; //title untuk di calendar
+                $title = $request->data;
+                $id    = 'event_' . $result->id;
             }
         } catch (\Throwable $th) {
             Log::create([
-                'action' => 'create type calendar event',
+                'action'     => 'create type calendar event',
                 'controller' => 'CalendarController',
                 'error_code' => $th->getCode(),
-                'description' => $th->getMessage(),
+                'description'=> $th->getMessage(),
             ]);
 
             $title = $th->getMessage();
         }
+
         if (is_array($result)) {
             $id = 'shift_' . $result['id'];
             $result = $result['return'];
         }
 
         return response()->json([
-            'status' => $result ? 'success' : 'error',
+            'status'  => $result ? 'success' : 'error',
             'message' => $result ? 'Event created successfully.' : 'Failed to create event. Message : ' . $title,
-            'data' => [
-                'title' => $title,
-                'id' => $id ?? NULL
+            'data'    => [
+                'title' => $title ?? null,
+                'id'    => $id ?? null
             ]
         ]);
     }
