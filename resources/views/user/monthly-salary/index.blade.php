@@ -92,14 +92,14 @@
                                 @foreach ($data as $item)
                                     <tr>
                                         <td>{{ $no }}</td>
-                                        <td>{{ $item->user_salary?->user?->name }}</td>
-                                        <td>Rp {{ number_format($item->user_salary?->salary_basic) }}</td>
-                                        <td>Rp {{ number_format($item->user_salary?->salary_allowance) }}</td>
-                                        <td>Rp {{ number_format($item->user_salary?->salary_bonus) }}</td>
-                                        <td>Rp {{ number_format($item->user_salary?->salary_holiday) }}</td>
-                                        <td>Rp {{ number_format($item->user_salary?->salary_total) }}</td>
-                                        <td> {{ $month[$item->month] }}</td>
-                                        <td> {{ $item->year }}</td>
+                                        <td>{{ $item->user?->name }}</td>
+                                        <td>Rp {{ number_format($item->salary_basic) }}</td>
+                                        <td>Rp {{ number_format($item->salary_allowance) }}</td>
+                                        <td>Rp {{ number_format($item->salary_bonus) }}</td>
+                                        <td>Rp {{ number_format($item->salary_holiday) }}</td>
+                                        <td>Rp {{ number_format($item->salary_total) }}</td>
+                                        <td>{{ $month[$item->month] }}</td>
+                                        <td>{{ $item->year }}</td>
                                         <td class="text-end">
                                             @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
                                                 <div class="dropstart d-inline-block">
@@ -112,14 +112,28 @@
                                                         aria-labelledby="dropdownMenuButton{{ $item->id }}">
                                                         <li>
                                                             <button class="dropdown-item" type="button"
-                                                                data-bs-toggle="modal" modal-bs-target="#modalEdits"
-                                                                onclick='openModalEdit(@json($item->user_salary?->id), @json($item->user_salary?->user_id), @json($item->user_salary?->salary_basic), @json($item->user_salary?->salary_bonus), @json($item->user_salary?->salary_holiday), @json($item->user_salary?->month), @json($item->user_salary?->year), @json($item->user_salary?->user->allowances), @json($type_allowance))'>
+                                                                onclick='openModalEdit(
+                                                                    @json($item->id),
+                                                                    @json($item->user_id),
+                                                                    @json($item->salary_basic),
+                                                                    @json($item->salary_bonus),
+                                                                    @json($item->salary_holiday),
+                                                                    @json($item->salary_total),
+                                                                    @json($item->month),
+                                                                    @json($item->year),
+                                                                    @json($item->type_allowances ?? $item->user?->allowances ?? []),
+                                                                    @json($type_allowance)
+                                                                )'>
                                                                 Edit
                                                             </button>
+
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('user-salaries.delete', ['id' => $item->id]) }}">Delete</a>
+                                                            <form action="{{ route('finance.monthly.salary.destroy', $item->id) }}" method="post">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item">Delete</button>
+                                                            </form>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -127,8 +141,9 @@
                                                 <form action="{{ route('profile.slip.gaji') }}" method="post">
                                                     @csrf
                                                     <button type="submit" name="id_salaries" class="btn btn-primary btn-sm"
-                                                        value="{{ $item->user_salary?->id }}"> <i
-                                                            class="ti ti-cloud-download"></i> Download </button>
+                                                        value="{{ $item->id }}">
+                                                        <i class="ti ti-cloud-download"></i> Download
+                                                    </button>
                                                 </form>
                                             @endif
                                         </td>
@@ -138,44 +153,36 @@
                             </tbody>
                         </table>
 
-                        @if (in_array(Auth::user()->role_name, ['Finance', 'Supervisor'])) <x-modal id="modalEdits"
-                                title="Edit Form Gaji">
-                                <form action="" method="post">
+                        @if (in_array(Auth::user()->role_name, ['Finance', 'Supervisor']))
+                            <x-modal id="modalEdits" title="Edit Form Gaji">
+                                <form action="" method="post" id="formEditSalary">
                                     @csrf
                                     @method('PUT')
                                     <div class="row">
                                         <div class="mb-3">
                                             <label for="user_id_edit">User</label>
                                             <select class="form-control" name="user_id" id="user_id_edit" required>
-                                                @if (count($users) == 0)
-                                                    <option value="">No users available</option>
-                                                @else
-                                                    @foreach ($users as $user)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                    @endforeach
-                                                @endif
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label for="salary_basic_edit">Basic Salary</label>
-                                            <input class="form-control" type="number" name="salary_basic"
-                                                id="salary_basic_edit" value="0" required>
+                                            <input class="form-control" type="number" name="salary_basic" id="salary_basic_edit">
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label for="salary_bonus_edit">Bonus</label>
-                                            <input class="form-control" type="number" name="salary_bonus"
-                                                id="salary_bonus_edit" value="0" required>
+                                            <input class="form-control" type="number" name="salary_bonus" id="salary_bonus_edit">
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label for="salary_holiday_edit">Holiday</label>
-                                            <input class="form-control" type="number" name="salary_holiday"
-                                                id="salary_holiday_edit" value="0" required>
+                                            <input class="form-control" type="number" name="salary_holiday" id="salary_holiday_edit">
                                         </div>
-
                                         <div class="mb-3 col-lg-12">
                                             <label>Allowance</label>
                                             <div id="allowance-container">
-                                                <!-- Allowance inputs will be dynamically added here -->
+                                                <!-- Allowance inputs injected by JS -->
                                             </div>
                                         </div>
                                     </div>
@@ -198,50 +205,71 @@
 
     @endsection
 
-    @push('scripts')
-        <script>
-            function openModalEdit(id, user_id, salary_basic, salary_bonus, salary_holiday, month, year, salary_allowances,
-                type_allowance) {
-                $('#modalEdits').modal('show');
+   @push('scripts')
+<script>
+function openModalEdit(
+    id,
+    user_id,
+    salary_basic,
+    salary_bonus,
+    salary_holiday,
+    salary_total,
+    month,
+    year,
+    salary_allowances,
+    type_allowance
+) {
+    $('#modalEdits').modal('show');
 
-                $('#user_id_edit').val(user_id);
-                $('#salary_basic_edit').val(salary_basic);
-                $('#salary_bonus_edit').val(salary_bonus);
-                $('#salary_holiday_edit').val(salary_holiday);
-                $('form[action]').attr('action', `/user-salaries/update/${id}`);
+    // isi field utama
+    $('#user_id_edit').val(user_id);
+    $('#salary_basic_edit').val(salary_basic);
+    $('#salary_bonus_edit').val(salary_bonus);
+    $('#salary_holiday_edit').val(salary_holiday);
 
-                // Kosongkan allowance container dulu
-                const $container = $('#allowance-container');
-                $container.empty();
+    // jika ada field total di modal, isi juga (opsional)
+    if ($('#salary_total_edit').length) {
+        $('#salary_total_edit').val(salary_total);
+    }
 
-                // Loop allowance dinamis
-                let isChecked = '';
+    // set form action ke monthly-salary update (gunakan id form spesifik)
+    $('#formEditSalary').attr('action', `/monthly-salary/${id}`);
 
-                type_allowance.forEach((allowanceType) => {
-                    const existingAllowance = salary_allowances.find(sa => sa.id === allowanceType.id);
-                    const isChecked = existingAllowance?.pivot?.type_allowance_id === allowanceType.id ? 'checked' : '';
-                    const $wrapper = $('<div>', {
-                        class: 'mb-2'
-                    });
+    // Kosongkan allowance container dulu
+    const $container = $('#allowance-container');
+    $container.empty();
 
-                    const checkboxHtml = `
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                name="salary_allowance[]" value="${allowanceType.id}"
-                                                id="allowance_${allowanceType.id}" ${isChecked}>
-                                            <label class="form-check-label"
-                                                for="allowance_${allowanceType.id}">${allowanceType.name_allowance}</label>
-                                        </div>
-                                    `;
+    // Loop allowance dinamis (type_allowance = daftar semua tipe tunjangan)
+    type_allowance.forEach((allowanceType) => {
+        // cari apakah allowanceType ada di salary_allowances (existing)
+        const existingAllowance = (salary_allowances || []).find(sa => sa.id === allowanceType.id);
+        const isChecked = existingAllowance ? 'checked' : '';
+        // gunakan pivot.amount jika ada
+        const amount = existingAllowance?.pivot?.amount ?? existingAllowance?.amount ?? '';
 
-                    const inputHtml = `
-                                        <input type="number" name="allowances[${allowanceType.id}]" value="${existingAllowance?.pivot?.amount || ''}" class="form-control">
-                                    `;
+        const $wrapper = $('<div>', { class: 'mb-2' });
 
-                    $wrapper.append(checkboxHtml);
-                    $wrapper.append(inputHtml);
-                    $container.append($wrapper);
-                })
-            }
-        </script>
-    @endpush
+        const checkboxHtml = `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                    name="salary_allowance[]" value="${allowanceType.id}"
+                    id="allowance_${allowanceType.id}" ${isChecked}>
+                <label class="form-check-label" for="allowance_${allowanceType.id}">
+                    ${allowanceType.name_allowance}
+                </label>
+            </div>
+        `;
+
+        const inputHtml = `
+            <input type="number" name="allowances[${allowanceType.id}]" value="${amount}" class="form-control mt-1">
+        `;
+
+        $wrapper.append(checkboxHtml);
+        $wrapper.append(inputHtml);
+        $container.append($wrapper);
+    });
+}
+</script>
+@endpush
+
+

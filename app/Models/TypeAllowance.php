@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\MonthlySalary;
 use Illuminate\Database\Eloquent\Model;
 
 class TypeAllowance extends Model
@@ -15,5 +16,12 @@ class TypeAllowance extends Model
     public function detailAllowanceUsers()
     {
         return $this->hasMany(DetailAllowanceUser::class, 'type_allowance_id');
+    }
+
+    public function monthly_salaries()
+    {
+        return $this->belongsToMany(MonthlySalary::class, 'monthly_salary_allowance', 'type_allowance_id', 'monthly_salary_id')
+            ->withPivot('amount')
+            ->withTimestamps();
     }
 }

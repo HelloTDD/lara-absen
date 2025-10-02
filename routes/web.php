@@ -155,6 +155,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/monthly-salary', 'index')->name('finance.monthly.salary.index');
             Route::post('/monthly-salary', 'store')->name('finance.monthly.salary.store');
             Route::put('/monthly-salary/publish', 'publish_salary')->name('finance.monthly.salary.publish');
+            Route::put('/monthly-salary/{id}', 'update')->name('finance.monthly.salary.update');
+            Route::delete('/monthly-salary/{id}', 'destroy')->name('finance.monthly.salary.destroy');
         });
     });
 
