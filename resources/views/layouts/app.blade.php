@@ -5,19 +5,40 @@
 
 
     <meta charset="utf-8" />
-    <title>{{env('APP_NAME') }}</title>
+    <title>Dashboard - Transformasi Data Digital</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/img/favicons/fav.ico') }}">
 
     <!-- App css -->
     <link href="{{ asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+    {{-- <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem("themeMode");
+            if (savedTheme) {
+                const { theme } = JSON.parse(savedTheme);
+                const body = document.documentElement;
+
+                if (theme === "dark") {
+                body.setAttribute("data-bs-theme", "dark");
+                body.className = "menuitem-active";
+
+                document.write('<link href="{{ asset('assets/css/app-dark.min.css') }}" rel="stylesheet" type="text/css" />');
+                } else {
+                body.setAttribute("data-bs-theme", "light");
+                document.write('<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />');
+                }
+            } else {
+                document.write('<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />');
+            }
+        })();
+    </script>
     <link href="{{ asset('assets/css/style-custom.css') }}" rel="stylesheet" type="text/css" />
 
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -29,13 +50,13 @@
     @stack('header')
 </head>
 
-<body id="body">
+<body data-bs-theme="light" id="body">
     <!-- leftbar-tab-menu -->
     <div class="leftbar-tab-menu">
         <div class="main-icon-menu">
             <a href="/homes" class="logo logo-metrica d-block text-center">
                 <span>
-                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="logo-small" class="logo-sm">
+                    <img src="{{ asset('assets/img/logos/tdd-second.png') }}" alt="logo-small" class="logo-sm">
                 </span>
             </a>
             <div class="main-icon-menu-body">
@@ -70,13 +91,19 @@
         <div class="main-menu-inner">
             <!-- LOGO -->
             <div class="topbar-left">
-                <a href="/" class="logo">
+                {{-- <a href="/" class="logo">
                     <span>
                         <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large"
                             class="logo-lg logo-dark">
                         <img src="{{ asset('assets/images/logo.png') }}" alt="logo-large" class="logo-lg logo-light">
                     </span>
-                </a><!--end logo-->
+                </a><!--end logo--> --}}
+                <a href="/homes">
+                    <div class="left--menu">
+                        <div class="title-tdd--main">Transformasi</div>
+                        <div class="title-tdd--sub">Data Digital</div>
+                    </div>
+                </a>
             </div><!--end topbar-left-->
             <!--end logo-->
             <div class="menu-body navbar-vertical tab-content" data-simplebar>
@@ -93,22 +120,32 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/calendar') }}">Calendar</a>
                         </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
-                        </li><!--end nav-item-->
-
                     </ul><!--end nav-->
 
                     <div class="title-box">
-                        <h6 class="menu-title">Akses Cepat</h6>
+                        <h6 class="menu-title">{{ Auth::user()->role->role_name }} Area</h6>
                     </div>
 
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
-                        </li><!--end nav-item-->
-
-                    </ul><!--end nav-->
+                    <div class="collapse navbar-collapse">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#Absensi" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="Absensi">
+                                    Absensi
+                                </a>
+                                <div class="collapse " id="Absensi">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                           <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('attendance.list') }}">Riwayat Absensi</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div><!-- end Dashboards -->
 
                 <div id="MetricaApps"
@@ -130,7 +167,7 @@
                             @php
                                 $menuMap = [
                                     'Cuti' => ['all' => 'user-leave.index', 'user' => 'user-leave.user'],
-                                    'Absensi' => ['route' => 'attendance.list'],
+                                    // 'Absensi' => ['route' => 'attendance.list'],
                                     'Gaji Bulanan' => ['route' => 'monthly.salary.index'],
                                     'Draft Gaji Bulanan' => ['route' => 'finance.monthly.salary.draft'],
                                     'Gaji' => ['route' => 'user-salaries.index'],
@@ -164,6 +201,7 @@
                                         <li class="nav-item"><a href="{{ route($meta['route']) }}" class="nav-link">{{ $label }}</a></li>
                                     @endif
                                 @endforeach
+
                             @endif
                         </ul>
                     </div>
@@ -393,8 +431,7 @@
                 &copy;
                 <script>
                     document.write(new Date().getFullYear())
-                </script> Metrica <span class="text-muted d-none d-sm-inline-block float-end">Crafted with <i
-                        class="mdi mdi-heart text-danger"></i> by Mannatthemes</span>
+                </script> Transformasi Data Digital
             </footer>
             <!-- end Footer -->
             <!--end footer-->
@@ -417,6 +454,8 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/tdd.timer.clock.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/tdd.app.mode.js') }}"></script>
     @stack('scripts')
 
     <script>
