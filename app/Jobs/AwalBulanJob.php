@@ -27,6 +27,7 @@ class AwalBulanJob implements ShouldQueue
      */
     public function handle(MonthlySalary $monthlySalary): void
     {
+        lg::error("start");
         $now = Carbon::now();
 
         // if ($now->isStartOfMonth()) {
@@ -46,8 +47,14 @@ class AwalBulanJob implements ShouldQueue
                 $get_data = UserSalary::with('user')->get();
                 foreach ($get_data as $data) {
                     $monthlySalary->create([
-                        'salary_id' => $data->id,
-                        'name' => $data->user?->name,
+                        'user_id'          => $data->user?->id,   // 🔹 tambahkan ini
+                        'name'             => $data->user?->name,
+                        'salary_basic'     => $data->salary_basic ?? 0,
+                        'salary_allowance' => $data->salary_allowance ?? 0,
+                        'salary_bonus'     => $data->salary_bonus ?? 0,
+                        'salary_holiday'   => $data->salary_holiday ?? 0,
+                        'salary_total'     => $data->salary_total ?? 0,
+
                         'year' => $year,
                         'month' => $month,
                         'status' => 'DRAFT'
@@ -55,7 +62,6 @@ class AwalBulanJob implements ShouldQueue
                 }
 
             } catch (\Throwable $th) {
-
                 Log::create([
                     'action' => 'create draft monthly salary',
                     'controller' => '[Job]AwalBulanJob',

@@ -124,43 +124,43 @@
                                 $menus = $user->menu_items;
                             @endphp
 
-                            {{-- Supervisor dapat semua menu --}}
+                            @php
+                                $menuMap = [
+                                    'Cuti' => ['all' => 'user-leave.index', 'user' => 'user-leave.user'],
+                                    'Absensi' => ['route' => 'attendance.list'],
+                                    'Gaji Bulanan' => ['route' => 'monthly.salary.index'],
+                                    'Draft Gaji Bulanan' => ['route' => 'finance.monthly.salary.draft'],
+                                    'Gaji' => ['route' => 'user-salaries.index'],
+                                    'Shift Karyawan' => ['route' => 'user-shift.index'],
+                                    'Shift' => ['route' => 'shift.index'],
+                                    'Bagian' => ['route' => 'role.index'],
+                                    'Karyawan' => ['route' => 'user-employee.index'],
+                                    'Configuration' => ['route' => 'config.index'],
+                                    'Kontrak' => ['route' => 'user-contract.index'],
+                                    'Surat Referensi' => ['route' => 'user-references.index'],
+                                ];
+                            @endphp
+
                             @if(in_array('All', $menus))
-                                <li class="nav-item"><a href="{{ route('user-leave.index') }}" class="nav-link">Cuti</a></li>
-                                <li class="nav-item"><a href="{{ route('attendance.list') }}" class="nav-link">Absensi</a></li>
-                                <li class="nav-item"><a href="{{ route('monthly.salary.index') }}" class="nav-link">Gaji Bulanan</a></li>
-                                <li class="nav-item"><a href="{{ route('user-salaries.index') }}" class="nav-link">Gaji</a></li>
-                                <li class="nav-item"><a href="{{ route('user-shift.index') }}" class="nav-link">Shift Karyawan</a></li>
-                                <li class="nav-item"><a href="{{ route('shift.index') }}" class="nav-link">Shift</a></li>
-                                <li class="nav-item"><a href="{{ route('role.index') }}" class="nav-link">Bagian</a></li>
-                                <li class="nav-item"><a href="{{ route('user-employee.index') }}" class="nav-link">Karyawan</a></li>
-                                <li class="nav-item"><a href="{{ route('config.index') }}" class="nav-link">Configuration</a></li>
-                                <li class="nav-item"><a href="{{ route('user-contract.index') }}" class="nav-link">Kontrak</a></li>
-                                <li class="nav-item"><a href="{{ route('user-references.index') }}" class="nav-link">Surat Referensi</a></li>
+                                {{-- Supervisor: show all mapped menus (uses "all" route when specified) --}}
+                                @foreach($menuMap as $label => $meta)
+                                    @php
+                                        $routeName = $meta['route'] ?? ($meta['all'] ?? ($meta['user'] ?? null));
+                                    @endphp
+                                    @if($routeName)
+                                        <li class="nav-item"><a href="{{ route($routeName) }}" class="nav-link">{{ $label }}</a></li>
+                                    @endif
+                                @endforeach
                             @else
-                                {{-- Loop menu sesuai mapping --}}
-                                    <li class="nav-item"><a href="{{ route('user-leave.user') }}" class="nav-link">Cuti</a></li>
-                                @if(in_array('Absensi', $menus))
-                                    <li class="nav-item"><a href="{{ route('attendance.list') }}" class="nav-link">Absensi</a></li>
-                                @endif
-                                @if(in_array('Gaji Bulanan', $menus))
-                                    <li class="nav-item"><a href="{{ route('monthly.salary.index') }}" class="nav-link">Gaji Bulanan</a></li>
-                                @endif
-                                @if(in_array('Gaji', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-salaries.index') }}" class="nav-link">Gaji</a></li>
-                                @endif
-                                @if(in_array('Shift Karyawan', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-shift.index') }}" class="nav-link">Shift Karyawan</a></li>
-                                @endif
-                                @if(in_array('Shift', $menus))
-                                    <li class="nav-item"><a href="{{ route('shift.index') }}" class="nav-link">Shift</a></li>
-                                @endif
-                                @if(in_array('Kontrak', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-contract.index') }}" class="nav-link">Kontrak</a></li>
-                                @endif
-                                @if(in_array('Surat Referensi', $menus))
-                                    <li class="nav-item"><a href="{{ route('user-references.index') }}" class="nav-link">Surat Referensi</a></li>
-                                @endif
+                                {{-- Non-supervisor: always show Cuti (user-specific), then show other allowed menus --}}
+                                <li class="nav-item"><a href="{{ route($menuMap['Cuti']['user']) }}" class="nav-link">Cuti</a></li>
+
+                                @foreach($menuMap as $label => $meta)
+                                    @continue($label === 'Cuti')
+                                    @if(in_array($label, $menus) && isset($meta['route']))
+                                        <li class="nav-item"><a href="{{ route($meta['route']) }}" class="nav-link">{{ $label }}</a></li>
+                                    @endif
+                                @endforeach
                             @endif
                         </ul>
                     </div>
