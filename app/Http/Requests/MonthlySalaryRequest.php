@@ -21,10 +21,28 @@ class MonthlySalaryRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'salary_ids' => 'required|exists:user_salaries,id',
-            'month' => 'required|numeric',
-            'year' => 'required|numeric'
-        ];
+        if ($this->isMethod('post')) {
+            // saat create (store)
+            return [
+                'salary_ids'      => 'required|exists:user_salaries,id',
+                'month'           => 'required|numeric',
+                'year'            => 'required|numeric',
+            ];
+        }
+
+        if ($this->isMethod('put') || $this->isMethod('patch')) {
+            // saat update
+            return [
+                'user_id'         => 'required|exists:users,id',
+                'salary_basic'    => 'nullable|numeric|min:0',
+                'salary_bonus'    => 'nullable|numeric|min:0',
+                'salary_holiday'  => 'nullable|numeric|min:0',
+                'allowances'      => 'nullable|array',
+                'allowances.*'    => 'nullable|numeric|min:0',
+            ];
+        }
+
+        return [];
     }
+
 }
