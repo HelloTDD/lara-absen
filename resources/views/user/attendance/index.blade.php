@@ -1,298 +1,606 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en" dir="ltr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <meta charset="utf-8" />
+
+    <title>Absen - Transformasi Data Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>TDD Absensi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    {{-- JQuery --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta name="theme-color" content="#092942" />
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <style>
-        #map {
-            height: 100px; /* fallback kalau Tailwind override */
-        }
-    /* Box webcam fleksibel */
-        /* Biar ikut parent flex-auto p-3 */
-        #webcam-capture {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 100%;
-            aspect-ratio: 4 / 3;
-            margin: auto;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #000;
-        }
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{{ asset('assets/img/favicons/fav.ico') }}">
 
-        /* Video tetap full cover tapi tanpa absolute */
-        #webcam-capture video,
-        #webcam-capture object,
-        #webcam-capture embed {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-            border-radius: inherit;
-            display: block;
-        }
+    <link href="{{ asset('assets/libs/vanillajs-datepicker/css/datepicker.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/simple-datatables/style.css') }}" rel="stylesheet" type="text/css" />
 
+    <link href="{{ asset('assets/libs/vanillajs-datepicker/css/datepicker.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/leaflet/leaflet.css') }}" rel="stylesheet">
 
+    <!-- App css -->
+    <link href="{{ asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/attendance.css') }}" rel="stylesheet" type="text/css" />
+    {{-- <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem("themeMode");
+            if (savedTheme) {
+                const { theme } = JSON.parse(savedTheme);
+                const body = document.documentElement;
 
-        /* Tablet */
-        @media (min-width: 640px) {
-            #webcam-capture { max-width: 360px; border-radius: 20px; }
-        }
+                if (theme === "dark") {
+                body.setAttribute("data-bs-theme", "dark");
+                body.className = "menuitem-active";
 
-        /* Desktop */
-        @media (min-width: 768px) {
-            #webcam-capture { max-width: 380px; border-radius: 24px; }
-        }
-    </style>
+                document.write('<link href="{{ asset('assets/css/app-dark.min.css') }}" rel="stylesheet" type="text/css" />');
+                } else {
+                body.setAttribute("data-bs-theme", "light");
+                document.write('<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />');
+                }
+            } else {
+                document.write('<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />');
+            }
+        })();
+    </script>
+    <link href="{{ asset('assets/css/style-custom.css') }}" rel="stylesheet" type="text/css" />
 
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/animate.css/animate.min.css') }}" rel="stylesheet" type="text/css" />
+
+    @stack('header')
 
 </head>
-<body class="min-h-screen bg-gradient-to-br from-white to-gray-100 flex items-center justify-center font-sans">
 
-        <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
+<body data-bs-theme="light" id="body">
+    <!-- leftbar-tab-menu -->
+    <div class="leftbar-tab-menu">
+        <div class="main-icon-menu">
+            <a href="/homes" class="logo logo-metrica d-block text-center">
+                <span>
+                    <img src="{{ asset('assets/img/logos/tdd-second.png') }}" alt="logo-small" class="logo-sm">
+                </span>
+            </a>
+            <div class="main-icon-menu-body">
+                <div class="position-reletive h-100" data-simplebar style="overflow-x: hidden;">
+                    <ul class="nav nav-tabs" role="tablist" id="tab-menu">
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard"
+                            data-bs-trigger="hover">
+                            <a href="#MetricaDashboard" id="dashboard-tab" class="nav-link" data-bs-toggle="tab"
+                                role="tab" aria-selected="true">
+                                <i class="ti ti-smart-home menu-icon"></i>
+                            </a><!--end nav-link-->
+                        </li><!--end nav-item-->
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Apps"
+                            data-bs-trigger="hover">
+                            <a href="#MetricaApps" id="apps-tab"
+                                class="nav-link  {{ request()->is(['user-leave*', 'user-salar*']) ? 'active' : '' }}">
+                                <i class="ti ti-users menu-icon"></i>
+                            </a><!--end nav-link-->
+                        </li><!--end nav-item-->
+                    </ul><!--end nav-->
+                </div><!--end /div-->
+            </div><!--end main-icon-menu-body-->
+            <div class="pro-metrica-end">
+                <a href="" class="profile">
+                    <img src="{{ asset('assets/images/users/user-4.jpg') }}" alt="profile-user"
+                        class="rounded-circle thumb-sm">
+                </a>
+            </div><!--end pro-metrica-end-->
+        </div>
+        <!--end main-icon-menu-->
 
-            <audio id="notifikasi_presensi_masuk">
-            <source src="{{ asset("audio/notifikasi_presensi_masuk.mp3") }}" type="audio/mpeg">
-            </audio>
-            <audio id="notifikasi_presensi_keluar">
-                <source src="{{ asset("audio/notifikasi_presensi_keluar.mp3") }}" type="audio/mpeg">
-            </audio>
-            <audio id="notifikasi_presensi_gagal_radius">
-                <source src="{{ asset("audio/notifikasi_presensi_gagal_radius.mp3") }}" type="audio/mpeg">
-            </audio>
+        <div class="main-menu-inner">
+            <!-- LOGO -->
+            <div class="topbar-left">
+                {{-- <a href="/" class="logo">
+                    <span>
+                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large"
+                            class="logo-lg logo-dark">
+                        <img src="{{ asset('assets/images/logo.png') }}" alt="logo-large" class="logo-lg logo-light">
+                    </span>
+                </a><!--end logo--> --}}
+                <a href="/homes">
+                    <div class="left--menu">
+                        <div class="title-tdd--main">Transformasi</div>
+                        <div class="title-tdd--sub">Data Digital</div>
+                    </div>
+                </a>
+            </div><!--end topbar-left-->
+            <!--end logo-->
+            <div class="menu-body navbar-vertical tab-content" data-simplebar>
+                <div id="MetricaDashboard" class="main-icon-menu-pane tab-pane" role="tabpanel"
+                    aria-labelledby="dasboard-tab">
+                    <div class="title-box">
+                        <h6 class="menu-title">Dashboard</h6>
+                    </div>
 
-            <!-- Alert Section -->
-            @if (session('success'))
-                <div class="mb-4 p-3 bg-green-100 text-green-800 rounded-md border border-green-300">
-                    {{ session('success') }}
-                </div>
-            @endif
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/homes') }}">Home</a>
+                        </li><!--end nav-item-->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/calendar') }}">Calendar</a>
+                        </li><!--end nav-item-->
+                    </ul><!--end nav-->
 
-            @if (session('error'))
-                <div class="mb-4 p-3 bg-red-100 text-red-800 rounded-md border border-red-300">
-                    {{ session('error') }}
-                </div>
-            @endif
+                    <div class="title-box">
+                        <h6 class="menu-title">{{ Auth::user()->role->role_name }} Area</h6>
+                    </div>
 
-            @if ($errors->any())
-                <div class="mb-4 p-3 bg-yellow-100 text-yellow-800 rounded-md border border-yellow-300">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <h1 class="text-2xl font-bold text-center text-[#0b51b7] mb-6">Form Absensi</h1>
+                    <div class="collapse navbar-collapse">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#Absensi" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="Absensi">
+                                    Absensi
+                                </a>
+                                <div class="collapse " id="Absensi">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                           <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('attendance.list') }}">Riwayat Absensi</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- end Dashboards -->
 
-            <div>
-            <div class="flex gap-4">
-                <div class="w-1/2">
-                    <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                    <input type="text" id="tanggal" name="tanggal" value="{{ $date }}" readonly
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100" required/>
-                </div>
+                <div id="MetricaApps"
+                    class="main-icon-menu-pane tab-pane {{ request()->is(['user-leave*', 'user-salaries*']) ? 'active show' : '' }}"
+                    role="tabpanel" aria-labelledby="apps-tab">
+                    <div class="title-box">
+                        <h6 class="menu-title">Menu {{ Auth::user()->role->role_name }}</h6>
 
-                <div class="w-1/2">
-                    <label for="time" class="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                    <input type="text" id="time" name="time" value="{{ $time }}" readonly
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100" required/>
-                </div>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="sidebarCollapse">
+                        <ul class="navbar-nav">
+                            @php
+                                $user = Auth::user();
+                                $role = $user->role_name;
+                                $menus = $user->menu_items;
+                            @endphp
+
+                            @php
+                                $menuMap = [
+                                    'Cuti' => ['all' => 'user-leave.index', 'user' => 'user-leave.user'],
+                                    // 'Absensi' => ['route' => 'attendance.list'],
+                                    'Gaji Bulanan' => ['route' => 'monthly.salary.index'],
+                                    'Draft Gaji Bulanan' => ['route' => 'finance.monthly.salary.draft'],
+                                    'Gaji' => ['route' => 'user-salaries.index'],
+                                    'Shift Karyawan' => ['route' => 'user-shift.index'],
+                                    'Shift' => ['route' => 'shift.index'],
+                                    'Bagian' => ['route' => 'role.index'],
+                                    'Karyawan' => ['route' => 'user-employee.index'],
+                                    'Configuration' => ['route' => 'config.index'],
+                                    'Kontrak' => ['route' => 'user-contract.index'],
+                                    'Surat Referensi' => ['route' => 'user-references.index'],
+                                ];
+                            @endphp
+
+                            @if(in_array('All', $menus))
+                                {{-- Supervisor: show all mapped menus (uses "all" route when specified) --}}
+                                @foreach($menuMap as $label => $meta)
+                                    @php
+                                        $routeName = $meta['route'] ?? ($meta['all'] ?? ($meta['user'] ?? null));
+                                    @endphp
+                                    @if($routeName)
+                                        <li class="nav-item"><a href="{{ route($routeName) }}" class="nav-link">{{ $label }}</a></li>
+                                    @endif
+                                @endforeach
+                            @else
+                                {{-- Non-supervisor: always show Cuti (user-specific), then show other allowed menus --}}
+                                <li class="nav-item"><a href="{{ route($menuMap['Cuti']['user']) }}" class="nav-link">Cuti</a></li>
+
+                                @foreach($menuMap as $label => $meta)
+                                    @continue($label === 'Cuti')
+                                    @if(in_array($label, $menus) && isset($meta['route']))
+                                        <li class="nav-item"><a href="{{ route($meta['route']) }}" class="nav-link">{{ $label }}</a></li>
+                                    @endif
+                                @endforeach
+
+                            @endif
+                        </ul>
+                    </div>
+
+                </div><!-- end Crypto -->
+
+
             </div>
+            <!--end menu-body-->
+        </div><!-- end main-menu-inner-->
+    </div>
+    <!-- end leftbar-tab-menu-->
 
-            <div class="-mx-3 flex flex-wrap">
-                <div class="mb-6 w-full max-w-full px-3 sm:flex-none">
-                    <div class="dark:bg-slate-850 dark:shadow-dark-xl relative mt-3 mb-2 flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border shadow-xl">
-                        <div class="flex-auto p-4">
-                            <div id="map" class="mx-auto h-25 w-full"></div>
+    <!-- Top Bar Start -->
+    <!-- Top Bar Start -->
+    <div class="topbar">
+        <nav class="navbar-custom" id="navbar-custom">
+            <ul class="list-unstyled topbar-nav float-end mb-0">
+                <!-- <li class="dropdown">
+                    <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="false" aria-expanded="false">
+                        <img src="/assets/images/flags/us_flag.jpg" alt="" class="thumb-xxs rounded-circle">
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><img src="/assets/images/flags/us_flag.jpg" alt="" height="15"
+                                class="me-2">English</a>
+                        <a class="dropdown-item" href="#"><img src="/assets/images/flags/spain_flag.jpg" alt=""
+                                height="15" class="me-2">Spanish</a>
+                        <a class="dropdown-item" href="#"><img src="/assets/images/flags/germany_flag.jpg" alt=""
+                                height="15" class="me-2">German</a>
+                        <a class="dropdown-item" href="#"><img src="/assets/images/flags/french_flag.jpg" alt=""
+                                height="15" class="me-2">French</a>
+                    </div>
+                </li> -->
+
+                <li class="dropdown">
+                    <div class="nav-link nav-icon">
+                        <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i id="themeMode" class="mdi mdi-weather-sunny"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item d-flex align-items-center theme-Mode" href="#"
+                                data-icon="mdi-weather-sunny" data-theme="light">
+                                <i class="mdi mdi-weather-sunny me-2"></i>
+                                Light Mode
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center theme-Mode" href="#"
+                                data-icon="mdi-weather-night" data-theme="dark">
+                                <i class="mdi mdi-weather-night me-2"></i>
+                                Dark Mode
+                            </a>
                         </div>
                     </div>
-                    <div class="dark:bg-slate-850 dark:shadow-dark-xl relative flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border shadow-xl">
-                        <div class="flex-auto p-3">
-                            <input type="text" name="lokasi" id="lokasi" class="input input-primary" hidden>
-                            <div id="webcam-capture" class="mx-auto"></div>
-                            <div class="flex justify-center">
+                </li>
+
+                <li class="dropdown notification-list">
+                    <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="false" aria-expanded="false">
+                        <i class="ti ti-mail"></i>
+                        <span class="alert-badge"></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-lg pt-0">
+
+                        <h6
+                            class="dropdown-item-text font-15 m-0 py-3 border-bottom d-flex justify-content-between align-items-center">
+                            Notifications <span class="badge bg-soft-primary badge-pill">2</span>
+                        </h6>
+                        <div class="notification-menu" data-simplebar>
+                            <a href="#" class="dropdown-item py-3">
+                                <small class="float-end text-muted ps-2">2 min ago</small>
+                                <div class="media">
+                                    <div class="avatar-md bg-soft-primary">
+                                        <i class="ti ti-chart-arcs"></i>
+                                    </div>
+                                    <div class="media-body align-self-center ms-2 text-truncate">
+                                        <h6 class="my-0 fw-normal text-dark">Your order is placed</h6>
+                                        <small class="text-muted mb-0">Dummy text of the printing and industry.</small>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="#" class="dropdown-item py-3">
+                                <small class="float-end text-muted ps-2">10 min ago</small>
+                                <div class="media">
+                                    <div class="avatar-md bg-soft-primary">
+                                        <i class="ti ti-device-computer-camera"></i>
+                                    </div>
+                                    <div class="media-body align-self-center ms-2 text-truncate">
+                                        <h6 class="my-0 fw-normal text-dark">Meeting with designers</h6>
+                                        <small class="text-muted mb-0">It is a long established fact that a
+                                            reader.</small>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="#" class="dropdown-item py-3">
+                                <small class="float-end text-muted ps-2">40 min ago</small>
+                                <div class="media">
+                                    <div class="avatar-md bg-soft-primary">
+                                        <i class="ti ti-diamond"></i>
+                                    </div>
+                                    <div class="media-body align-self-center ms-2 text-truncate">
+                                        <h6 class="my-0 fw-normal text-dark">UX 3 Task complete.</h6>
+                                        <small class="text-muted mb-0">Dummy text of the printing.</small>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="#" class="dropdown-item py-3">
+                                <small class="float-end text-muted ps-2">1 hr ago</small>
+                                <div class="media">
+                                    <div class="avatar-md bg-soft-primary">
+                                        <i class="ti ti-drone"></i>
+                                    </div>
+                                    <div class="media-body align-self-center ms-2 text-truncate">
+                                        <h6 class="my-0 fw-normal text-dark">Your order is placed</h6>
+                                        <small class="text-muted mb-0">It is a long established fact that a
+                                            reader.</small>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="#" class="dropdown-item py-3">
+                                <small class="float-end text-muted ps-2">2 hrs ago</small>
+                                <div class="media">
+                                    <div class="avatar-md bg-soft-primary">
+                                        <i class="ti ti-users"></i>
+                                    </div>
+                                    <div class="media-body align-self-center ms-2 text-truncate">
+                                        <h6 class="my-0 fw-normal text-dark">Payment Successfull</h6>
+                                        <small class="text-muted mb-0">Dummy text of the printing.</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <a href="javascript:void(0);" class="dropdown-item text-center text-primary">
+                            View all <i class="fi-arrow-right"></i>
+                        </a>
+                    </div>
+                </li>
+
+                <li class="dropdown">
+                    <a class="nav-link dropdown-toggle nav-user" data-bs-toggle="dropdown" href="#" role="button"
+                        aria-haspopup="false" aria-expanded="false">
+                        <div class="menu-nav--users">
+                            <img src="https://static.dazz2.com/upload/auth/photo/d2e9985df3639586e9fabd281aade533.jpg"
+                                alt="profile-user" class="rounded-circle me-2 thumb-sm" />
+                            <div>
+                                <small class="d-none d-md-block font-11">Role {{ Auth::user()->role->role_name }}</small>
+                                <span class="d-none d-md-block fw-semibold font-12">
+                                    {{ Auth::user()->name }}
+                                    <i class="mdi mdi-chevron-down"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="{{ route('profile.index') }}">
+                            <i class="ti ti-user font-16 me-1 align-text-bottom"></i>
+                            Profile
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="ti ti-settings font-16 me-1 align-text-bottom"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-divider mb-0"></div>
+                        <a class="dropdown-item text-danger" href="{{ route('login.logout') }}">
+                            <i class="ti ti-power font-16 me-1 align-text-bottom"></i>
+                            Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+
+            <ul class="list-unstyled topbar-nav mb-0">
+                <li>
+                    <button class="nav-link button-menu-mobile nav-icon" id="togglemenu">
+                        <i class="ti ti-menu-2"></i>
+                    </button>
+                </li>
+                <li class="hide-phone app-search">
+                    <form role="search" action="#" method="get">
+                        <input type="search" name="search" class="form-control top-search mb-0"
+                            placeholder="Type text...">
+                        <button type="submit"><i class="ti ti-search"></i></button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Top Bar End -->
+    <!-- Top Bar End -->
+
+    <div class="page-wrapper">
+        <div class="page-content-tab">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="page-title-box">
+                            <div class="float-end">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a href="#">TDD</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="#">Staff Area</a>
+                                    </li>
+                                    <li class="breadcrumb-item active">
+                                        Absen
+                                    </li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Absen</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <div class="row">
+                                    <div class="col-4 col-lg-3">Tanggal Shift</div>
+                                    <div class="col-8 col-lg-9">: {{ $date }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 col-lg-3">Shift</div>
+                                    <div class="col-8 col-lg-9">: {{ $checkShift?->shift_name ?? 'Tidak ditemukan' }} - {{ $checkShift?->check_in ?? 'Tidak ditemukan' }} - {{ $checkShift?->check_out ?? 'Tidak ditemukan' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="attr--absen">
+                                    <div>
+                                        <span id="today" class="btn btn-primary"></span>
+                                    </div>
+                                    <div>
+
+                                        <a href="maps.html" class="btn btn-success">
+                                            Lihat Lokasi Saya
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-12 ">
+                        <div class="card" id="absen-masuk">
+                            <div class="card-header">
+                                <h4 class="card-title">Absen</h4>
+                            </div>
+                            <div class="card-body">
+                               <div class="text-center">
+                                <div class="web--cam text-center my-3">
+                                    <div id="camera" class="camera-container mx-auto rounded-4 overflow-hidden shadow-lg">
+                                    <div id="loading-camera" class="loading-camera">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                                        <path class="opacity-75" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M4 12a8 8 0 018-8v8z"></path>
+                                        </svg>
+                                        <p class="text-white text-sm mt-2">Menyiapkan kamera...</p>
+                                    </div>
+                                    <video id="video" autoplay playsinline></video>
+                                    <canvas id="canvas" class="d-none"></canvas>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="card-body w-50 text-center mx-auto">
+                                @if ($existing->check_out_time)
+                                <button id="btnLembur" type="button" class="btn btn-danger btn-lg">Lembur</button>
+                                @elseif ($existing && $existing->check_in_time)
+                                <button id="btnPulang" type="button" class="btn btn-warning btn-lg">Pulang</button>
+                                @elseif ($attendanceCount >= $limitAttendance)
+                                <button type="button" class="btn btn-secondary btn-lg">Lembur</button>
+                                @else
+                                <button id="btnMasuk" type="button" class="btn btn-primary btn-lg">Masuk</button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="modalLocation" tabindex="-1" role="dialog" aria-labelledby="modalLocation"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header modal-header--tdd">
+                                <h6 class="modal-title m-0" id="modalLocation">Lokasi Saya</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div id="V_Simple" class="" style="height: 400px"></div>
+                                <!-- <div id="V_Simple" class="bg-secondary rounded-3" style="height: 400px;"></div> -->
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-de-secondary btn-sm" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="footer text-center text-sm-start">
+                    &copy;
+                    <script>
+                        document.write(new Date().getFullYear())
+                    </script> Transformasi Data Digital
+                    <!-- <span class="text-muted d-none d-sm-inline-block float-end">
+                    Crafted with
+                    <i class="mdi mdi-heart text-danger"></i>
+                    by Mannatthemes
+                </span> -->
+                </footer>
             </div>
         </div>
 
-            <!-- Sudah absen pulang -->
-            @if ($existing->check_out_time)
-                <!-- Tombol Absen Masuk -->
-                <div id="take-presensi" class="text-center">
-                    <input type="text" name="action" id="action" value="overtime" hidden>
-                    <button type="text" class="w-full bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">
-                        LEMBUR
-                    </button>
-                </div>
+        <!-- vendor js -->
 
-            @elseif ($existing && $existing->check_in_time)
-                <!-- Tombol Absen Pulang -->
-                <div id="take-presensi" class="text-center">
-                    <input type="text" name="action" id="action" value="check_out" hidden>
-                    <button type="text" class="w-full bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">
-                        Absen Pulang
-                    </button>
-                </div>
-
-            @elseif ($attendanceCount >= $limitAttendance)
-                <!-- total absen bulan ini -->
-                <div id="take-presensi" class="text-center">
-                    <input type="text" name="action" id="action" value="overtime" hidden>
-                    <button type="text" class="w-full bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">
-                        LEMBUR
-                    </button>
-                </div>
-            @else
-                <!-- Tombol Absen Masuk -->
-                <div id="take-presensi" class="text-center">
-                    <input type="text" name="action" id="action" value="check_in" hidden>
-                    <button type="text" class="w-full bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">
-                        Absen Masuk
-                    </button>
-                </div>
-            @endif
-
-            <button type="button" onclick="window.location.href='{{ url('homes') }}'" class="w-full mt-3 bg-[#0b51b7] text-white font-semibold py-2 rounded-md hover:bg-red-600 transition duration-300">Dashboard</button>
-
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js" integrity="sha512-dQIiHSl2hr3NWKKLycPndtpbh5iaHLo6MwrXm7F0FM5e+kL2U16oE9uIwPHUl6fQBeCthiEuV/rzP3MiAB8Vfw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $.ajaxSetup({
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
-        });
-        Webcam.set({
-            width: 640,
-            height: 480,
-            image_format: 'jpeg',
-            jpeg_quality: 90,
-            force_flash: false,
-            flip_horiz: true, // <-- mirror
-        });
-        Webcam.attach('#webcam-capture');
-
-        let lokasi = document.getElementById('lokasi');
+        <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
 
 
-        // Lokasi kantor dari config Laravel
-        const kantor = {
-            latitude: {{ config('officeLocation.latitude') }},
-            longitude: {{ config('officeLocation.longitude') }},
-            radius: {{ config('officeLocation.radius') }}
-        };
+        <script src="{{ asset('assets/libs/simple-datatables/umd/simple-datatables.js') }}"></script>
+        <script src="{{ asset('assets/libs/vanillajs-datepicker/js/datepicker-full.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/leaflet/leaflet.js') }}"></script>
+        {{-- <!-- <script src="{{ asset('/assets/js/pages/leaflet-map.init.js') }}"></script> --> --}}
+        <script src="{{ asset('assets/js/custom/tdd.timer.clock.min.js') }}"></script>
+        <script src="{{ asset('assets/js/custom/tdd.app.mode.js') }}"></script>
 
-        //NOTE -  Tunggu hingga browser dapatkan lokasi pengguna
-        if (navigator.geolocation) {
-            // console.log(navigator.geolocation);
-            navigator.geolocation.getCurrentPosition(showMap, showError);
-        } else {
-            alert("Geolocation tidak didukung oleh browser Anda.");
-        }
+        {{-- <!-- <script src="{{ asset('/assets/libs/apexcharts/apexcharts.min.js') }}"></script> --}}
+        {{-- <script src="{{ asset('/assets/js/pages/analytics-index.init.js') }}"></script> --> --}}
+        <!-- App js -->
+        <script src="{{ asset('assets/js/app.js') }}"></script>
 
-        function showMap(position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-            lokasi.value = `${userLat}, ${userLng}`;
+        <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
-            const map = L.map('map').setView([userLat, userLng], 17);
+        <script>
+            window.attendanceConfig = {
+                routeStore: "{{ route('attendance.store') }}",
+                redirectHome: "{{ url('homes') }}",
+                office: {
+                    latitude: {{ config('officeLocation.latitude') }},
+                    longitude: {{ config('officeLocation.longitude') }},
+                    radius: {{ config('officeLocation.radius') }}
+                }
+            };
+        </script>
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap'
+        <!-- Tambahkan ini sebelum attendance.js -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- Library webcam harus tetap sebelum attendance.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+
+        <!-- Baru file JS kamu -->
+        <script src="{{ asset('js/attendance.js') }}"></script>
+
+        <script>
+            var map = L.map("V_Simple").setView([-7.575179429449874, 110.8956172421839], 15);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 18,
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
 
-            //*NOTE - Marker lokasi user
-            const userMarker = L.marker([userLat, userLng]).addTo(map)
-                .bindPopup("Anda berada di sini").openPopup();
+            var marker = L.marker([-7.576394411230164, 110.89619972878383])
+                .addTo(map)
+                .bindTooltip("<b>Lokasi Anda!</b>", { permanent: true })
+                .openTooltip();
 
-            //NOTE -  Lingkaran lokasi kantor
-            const kantorCircle = L.circle([kantor.latitude, kantor.longitude], {
-                color: 'transparant',
-                fillColor: 'transparant',
+            var circle = L.circle([-7.575179429449874, 110.8956172421839], {
+                radius: 100,
+                color: "#f03",
+                opacity: 0.7,
                 fillOpacity: 0.5,
-                radius: kantor.radius
-            }).addTo(map).bindPopup("Radius kantor");
+            })
+                .addTo(map)
+                .bindTooltip("Area sekitar perusahaan", { permanent: true, direction: "top" })
+                .openTooltip();
+        </script>
 
-            //NOTE -  Tambahkan marker kantor (opsional)
-            L.marker([kantor.latitude, kantor.longitude]).addTo(map)
-                .bindPopup("Lokasi Kantor");
-        }
-
-        function showError(error) {
-            alert("Gagal mendapatkan lokasi Anda.");
-        }
-
-
-        let notifikasi_presensi_masuk = document.getElementById('notifikasi_presensi_masuk');
-        let notifikasi_presensi_keluar = document.getElementById('notifikasi_presensi_keluar');
-        let notifikasi_presensi_gagal_radius = document.getElementById('notifikasi_presensi_gagal_radius');
-        $("#take-presensi").click(function() {
-            Webcam.snap(function(uri) {
-                image = uri;
-            });
-            // console.log(Webcam);
-            // close;
-            $.ajax({
-                type: "POST",
-                url: "{{ route('attendance.store') }}",
-                data: {
-                    image: image,
-                    lokasi: lokasi.value,
-                    action: $("input[name='action']").val(),
-                },
-                cache: false,
-                success: function(res) {
-                    console.log(res);
-                    if (res.status == 200) {
-                        if (res.jenis_presensi == "check_in") {
-                            notifikasi_presensi_masuk.play();
-                        } else if (res.jenis_presensi == "check_out") {
-                            notifikasi_presensi_keluar.play();
-                        } else if (res.jenis_presensi == "overtime") {
-                            notifikasi_presensi_masuk.play();
-                        }
-                        Swal.fire({
-                            title: "Presensi",
-                            text: res.message,
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        });
-                        window.location.href = "{{ url('homes') }}";
-                    } else if (res.status == 500) {
-                        if (res.jenis_error == "radius") {
-                            notifikasi_presensi_gagal_radius.play();
-                        }
-                        Swal.fire({
-                            title: "Presensi",
-                            text: res.message,
-                            icon: "error",
-                            confirmButtonText: "OK"
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText);
-                    Swal.fire("Error", "Terjadi kesalahan saat absen", "error");
-                }
-            });
-
-        });
-
-</script>
 </body>
+
 </html>
