@@ -20,16 +20,7 @@ class ProfileController extends Controller implements ProfileInterface
      */
     public function index()
     {
-        $data = UserSalary::with(['monthly_salary'])->where('user_id', Auth::user()->id)
-        ->whereHas('monthly_salary', function($query) {
-            $query->where('status', 'PUBLISHED');
-        })
-        ->whereHas('monthly_salary', function($query) {
-            $query->where('month', Carbon::now()->format('m'));
-        })
-        ->whereHas('monthly_salary', function($query) {
-            $query->where('year', Carbon::now()->format('Y'));
-        })
+        $data = UserSalary::where('user_id', Auth::user()->id)
         ->orderBy('created_at', 'desc')
         ->first();
         $userBank = UserBank::where('user_id', Auth::user()->id)->first();

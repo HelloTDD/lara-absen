@@ -13,14 +13,18 @@ return new class extends Migration
     {
         Schema::create('monthly_salaries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('salary_id')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('on null');
+            $table->integer('salary_basic')->default(0);
+            $table->integer('salary_allowance')->default(0);
+            $table->integer('salary_bonus')->default(0);
+            $table->integer('salary_holiday')->default(0);
+            $table->integer('salary_total')->default(0);
+            
             $table->string('name',75);
             $table->integer('year');
             $table->integer('month');
             $table->enum('status',['DRAFT','PUBLISHED']);
             $table->timestamps();
-
-            $table->foreign('salary_id')->references('id')->on('user_salaries')->onDelete('set null');
         });
     }
 

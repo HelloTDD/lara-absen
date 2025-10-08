@@ -22,6 +22,9 @@
                                         <p class="mb-0 met-user-name-post">Demo</p>
                                         <p class="mb-0 met-user-name-post">Salary : Rp {{ empty($data->salary_basic) ?
                                             0 : number_format($data->salary_basic) }} </p>
+                                        <p class="mb-0 met-user-name-post">Allowance : Rp {{ empty($data->salary_allowance) ?
+                                            0 : number_format($data->salary_allowance) }} </p>
+                                        <p class="mb-0 met-user-name-post">Allowance Reveive : Rp {{ number_format($data->salary_basic + $data->salary_allowance) }}</p>
                                     </div>
                                 </div>
                             </div><!--end col-->

@@ -10,10 +10,10 @@ class MonthlySalary extends Model
     protected $table = 'monthly_salaries';
     protected $guarded = [];
 
-    public function user_salary()
-    {
-        return $this->belongsTo(UserSalary::class,'salary_id');
-    }
+    // public function user_salary()
+    // {
+    //     return $this->belongsTo(UserSalary::class,'salary_id');
+    // }
 
     // relasi langsung ke user_id baru
     public function user()

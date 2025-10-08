@@ -154,6 +154,7 @@ Route::middleware('auth')->group(function () {
         Route::controller(MonthlySalaryController::class)->group(function () {
             Route::get('/monthly-salary', 'index')->name('finance.monthly.salary.index');
             Route::post('/monthly-salary', 'store')->name('finance.monthly.salary.store');
+            Route::get('/monthly-salary/draft', 'draft')->name('finance.monthly.salary.draft');
             Route::put('/monthly-salary/publish', 'publish_salary')->name('finance.monthly.salary.publish');
             Route::put('/monthly-salary/{id}', 'update')->name('finance.monthly.salary.update');
             Route::delete('/monthly-salary/{id}', 'destroy')->name('finance.monthly.salary.destroy');
@@ -202,8 +203,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/homes', [HomeController::class, 'index'])->name('homes');
     Route::controller(MonthlySalaryController::class)->group(function () {
         Route::get('/monthly-salary', 'index')->name('monthly.salary.index');
-        Route::post('/monthly-salary', 'store')->name('monthly.salary.store');
-        Route::put('/monthly-salary/publish', 'publish_salary')->name('monthly.salary.publish');
     });
     Route::controller(UserReferenceController::class)->group(function () {
         Route::get('/user-references', 'index')->name('user-references.index');
