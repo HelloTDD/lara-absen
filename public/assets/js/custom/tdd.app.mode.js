@@ -11,11 +11,27 @@ function applyTheme(selectedIcon, selectedTheme) {
   if (selectedTheme === "light") {
     body.removeAttribute("class");
     body.setAttribute("data-bs-theme", "light");
+    const isMobileOrTablet =
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.innerWidth <= 1024;
 
+    if (isMobileOrTablet) {
+      console.log("Mobile or tablet detected");
+      // Tambahkan class tanpa menimpa yang sudah ada
+      body.classList.add("enlarge-menu", "enlarge-menu-all");
+    }
     if (appCss) appCss.setAttribute("href", "/assets/css/app.min.css");
   } else if (selectedTheme === "dark") {
     body.setAttribute("data-bs-theme", "dark");
+    const isMobileOrTablet =
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.innerWidth <= 1024;
 
+    if (isMobileOrTablet) {
+      console.log("Mobile or tablet detected");
+      // Tambahkan class tanpa menimpa yang sudah ada
+      body.classList.add("enlarge-menu", "enlarge-menu-all");
+    }
     // Jangan overwrite class lain, cukup tambah
     body.classList.add("menuitem-active");
 
@@ -37,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (isMobileOrTablet) {
     console.log("Mobile or tablet detected");
     // Tambahkan class tanpa menimpa yang sudah ada
-    body.classList.add("enlarge-menu-all", "enlarge-menu");
+    body.classList.add("enlarge-menu", "enlarge-menu-all");
   }
 });
 document.querySelectorAll(".theme-Mode").forEach((item) => {

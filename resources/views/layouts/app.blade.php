@@ -458,20 +458,21 @@
     <!-- Javascript  -->
     <!-- vendor js -->
 
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/simple-datatables/umd/simple-datatables.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/datatable.init.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+<script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
+<script src="{{ asset('assets/libs/simple-datatables/umd/simple-datatables.js') }}"></script>
+<script src="{{ asset('assets/libs/vanillajs-datepicker/js/datepicker-full.min.js') }}"></script>
+<script src="{{ asset('assets/libs/leaflet/leaflet.js') }}"></script>
+<script src="{{ asset('assets/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
 
+<script src="{{ asset('assets/js/custom/tdd.timer.clock.min.js') }}"></script>
+<script src="{{ asset('assets/js/custom/tdd.app.mode.js') }}"></script>
+<script src="{{ asset('assets/js/pages/datatable.init.js') }}"></script>
 
-   
-    <!-- App js -->
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/tdd.timer.clock.min.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/tdd.app.mode.js') }}"></script>
+<script src="{{ asset('assets/js/app.js') }}"></script>
+
     @stack('scripts')
 
     <script>

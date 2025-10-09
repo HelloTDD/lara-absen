@@ -7,18 +7,46 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="card">
                         <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+
+                                <p class=" mb-0 fw-semibold">Jumlah Kehadiran Bulan Ini</p>
+                                <div>
+                                    <button class="btn btn-primary fw-bold rounded-pill blink-btn" type="button"
+                                        onclick="location.href='{{ route('attendance.index') }}'">
+                                        Absen
+                                    </button>
+                                    <style>
+                                        .blink-btn {
+                                            animation: blink 1.2s infinite;
+                                            box-shadow: 0 0 10px rgba(13, 110, 253, 0.7);
+                                        }
+
+                                        @keyframes blink {
+
+                                            0%,
+                                            100% {
+                                                opacity: 1;
+                                                box-shadow: 0 0 10px rgba(13, 110, 253, 0.7);
+                                            }
+
+                                            50% {
+                                                opacity: 0.6;
+                                                box-shadow: 0 0 20px rgba(13, 110, 253, 1);
+                                            }
+                                        }
+                                    </style>
+                                </div>
+
+                            </div>
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
-                                    <p class=" mb-0 fw-semibold">Jumlah Kehadiran Bulan Ini</p>
+
                                     <h3 class="my-1 font-20 fw-bold">{{ $user_attendance_month->count() }}</h3>
 
                                     <p class="mb-0 text-muted">Periode
                                         {{ \Carbon\Carbon::now()->startOfMonth()->format('d M') }} -
                                         {{ \Carbon\Carbon::now()->endOfMonth()->format('d M') }}</p>
-                                    <button class="btn btn-outline-primary btn-sm rounded-pill ms-auto" type="button"
-                                        onclick="location.href='{{ route('attendance.index') }}'">
-                                        Absen
-                                    </button>       
+
                                 </div>
                                 <div class="col-3 align-self-center">
                                     <div
