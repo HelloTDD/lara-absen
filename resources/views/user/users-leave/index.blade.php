@@ -149,88 +149,96 @@
 
                     <div class="table-responsive">
 
-             <table class="table table-striped table-hover" id="datatable_1">
-    <thead class="thead-light">
-        <tr>
-            <th class="text-center">No.</th>
-            <th class="text-center">Nama Karyawan</th>
-            <th class="text-center" data-type="date" data-format="YYYY/MM/DD">Tanggal</th>
-            <th class="text-center">Status</th>
-            @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                <th class="text-center">Cuti Terpakai</th>
-                <th class="text-center">Sisa Cuti</th>
-            @endif
-            <th class="text-center">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @php($no = 1)
-        @foreach ($leaves as $leave)
-            <tr>
-                <td class="text-center">{{ $no }}</td>
-                <td class="text-center">{{ $leave->user?->name }}</td>
-                <td class="text-center">{{ $leave->leave_date_start }} ~ {{ $leave->leave_date_end }}</td>
-                <td class="text-center">
-                    @if ($leave->status == 'approved')
-                        <span class="badge bg-soft-success">DISETUJUI</span>
-                    @elseif ($leave->status == 'rejected')
-                        <span class="badge bg-soft-danger">DITOLAK</span>
-                    @elseif ($leave->status == 'pending')
-                        <span class="badge bg-soft-warning">MENUNGGU</span>
-                    @elseif ($leave->status == 'cancel')
-                        <span class="badge bg-soft-secondary">DIBATALKAN</span>
-                    @else
-                        <span class="badge bg-soft-warning">MENUNGGU</span>
-                    @endif
-                </td>
+                        <table class="table table-striped table-hover" id="datatable_1">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-center">No.</th>
+                                    <th class="text-center">Nama Karyawan</th>
+                                    <th class="text-center" data-type="date" data-format="YYYY/MM/DD">Tanggal</th>
+                                    <th class="text-center">Status</th>
+                                    @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
+                                        <th class="text-center">Cuti Terpakai</th>
+                                        <th class="text-center">Sisa Cuti</th>
+                                    @endif
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php($no = 1)
+                                @foreach ($leaves as $leave)
+                                    <tr>
+                                        <td class="text-center">{{ $no }}</td>
+                                        <td class="text-center">{{ $leave->user?->name }}</td>
+                                        <td class="text-center">{{ $leave->leave_date_start }} ~
+                                            {{ $leave->leave_date_end }}</td>
+                                        <td class="text-center">
+                                            @if ($leave->status == 'approved')
+                                                <span class="badge bg-soft-success">DISETUJUI</span>
+                                            @elseif ($leave->status == 'rejected')
+                                                <span class="badge bg-soft-danger">DITOLAK</span>
+                                            @elseif ($leave->status == 'pending')
+                                                <span class="badge bg-soft-warning">MENUNGGU</span>
+                                            @elseif ($leave->status == 'cancel')
+                                                <span class="badge bg-soft-secondary">DIBATALKAN</span>
+                                            @else
+                                                <span class="badge bg-soft-warning">MENUNGGU</span>
+                                            @endif
+                                        </td>
 
-                @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                    <td class="text-center">{{ max(0, 12 - ($leave->user->leave ?? 0)) }}</td>
-                    <td class="text-center">{{ $leave->user->leave ?? 0 }}</td>
-                @endif
+                                        @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
+                                            <td class="text-center">{{ max(0, 12 - ($leave->user->leave ?? 0)) }}</td>
+                                            <td class="text-center">{{ $leave->user->leave ?? 0 }}</td>
+                                        @endif
 
-                <td class="text-center">
-                    <div class="dropdown d-inline-block">
-                        <a class="dropdown-toggle arrow-none" id="dropdownMenu{{ $leave->id }}"
-                           data-bs-toggle="dropdown" href="#" role="button"
-                           aria-haspopup="true" aria-expanded="false">
-                            <i class="las la-ellipsis-v font-20 text-muted"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu{{ $leave->id }}">
-                            @if (($leave->status == 'pending' || $leave->status == 'canceled') && in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                                <a class="dropdown-item"
-                                   href="{{ route('user-leave.approve', ['id' => $leave->id]) }}">Approve</a>
-                                <a class="dropdown-item"
-                                   href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
-                            @endif
+                                        <td class="text-center">
+                                            <div class="dropdown d-inline-block">
+                                                <a class="dropdown-toggle arrow-none"
+                                                    id="dropdownMenu{{ $leave->id }}" data-bs-toggle="dropdown"
+                                                    href="#" role="button" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <i class="las la-ellipsis-v font-20 text-muted"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="dropdownMenu{{ $leave->id }}">
+                                                    @if (
+                                                        ($leave->status == 'pending' || $leave->status == 'canceled') &&
+                                                            in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-leave.approve', ['id' => $leave->id]) }}">Approve</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
+                                                    @endif
 
-                            @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                                <button class="dropdown-item" type="button"
-                                    data-bs-toggle="modal"
-                                    onclick='openModalEdit("{{ $leave->id }}", "{{ $leave->leave_date_start }}", "{{ $leave->leave_date_end }}", "{{ $leave->desc_leave }}")'>
-                                    Edit
-                                </button>
-                            @endif
+                                                    @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
+                                                        <button class="dropdown-item" type="button"
+                                                            data-bs-toggle="modal"
+                                                            onclick='openModalEdit("{{ $leave->id }}", "{{ $leave->leave_date_start }}", "{{ $leave->leave_date_end }}", "{{ $leave->desc_leave }}")'>
+                                                            Edit
+                                                        </button>
+                                                    @endif
 
-                            @if ($leave->status == 'approved')
-                                <a class="dropdown-item"
-                                   href="{{ route('user-leave.cancel-request', ['id' => $leave->id]) }}">Batal</a>
-                            @endif
+                                                    @if ($leave->status == 'approved')
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user-leave.cancel-request', ['id' => $leave->id]) }}">Batal</a>
+                                                    @endif
 
-                            <form action="{{ route('user-leave.delete', $leave->id) }}" method="POST"
-                                  onsubmit="return confirm('Yakin ingin menghapus data ini?');" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="dropdown-item text-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            @php($no++)
-        @endforeach
-    </tbody>
-</table>
+                                                    <form action="{{ route('user-leave.delete', $leave->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Yakin ingin menghapus data ini?');"
+                                                        class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="dropdown-item text-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @php($no++)
+                                @endforeach
+                            </tbody>
+                        </table>
 
 
                         <x-modal id="modalEdits" title="Form Cuti" size="lg">

@@ -26,34 +26,34 @@
                                 </div>
                             @endif
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped" id="datatable">
-                                    <thead>
+                                <table class="table table-striped table-hover" id="datatable_1">
+                                    <thead class="thead-light">
                                         <tr>
-                                            <th>No</th>
-                                            <th>Nama Karyawan</th>
-                                            <th>Gaji Pokok</th>
-                                            <th>Tunjangan</th>
-                                            <th>Bonus</th>
-                                            <th>THR</th>
-                                            <th>Total</th>
-                                            <th>Month</th>
-                                            <th>Year</th>
-                                            <th></th>
+                                            <th class="text-center">No</th>
+                                            <th class="text-center">Nama Karyawan</th>
+                                            <th class="text-center">Gaji Pokok</th>
+                                            <th class="text-center">Tunjangan</th>
+                                            <th class="text-center">Bonus</th>
+                                            <th class="text-center">THR</th>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center">Month</th>
+                                            <th class="text-center">Year</th>
+                                            <th class="text-center"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @php($no = 1)
                                         @foreach ($data as $item)
                                         <tr>
-                                            <td>{{ $no }}</td>
-                                            <td>{{ $item->user?->name }}</td>
-                                            <td>Rp {{ number_format($item->salary_basic) }}</td>
-                                            <td>Rp {{ number_format($item->salary_allowance) }}</td>
-                                            <td>Rp {{ number_format($item->salary_bonus) }}</td>
-                                            <td>Rp {{ number_format($item->salary_holiday) }}</td>
-                                            <td>Rp {{ number_format($item->salary_total) }}</td>
-                                            <td>{{ $month[$item->month] }}</td>
-                                            <td>{{ $item->year }}</td>
+                                            <td class="text-center">{{ $no }}</td>
+                                            <td class="text-center">{{ $item->user?->name }}</td>
+                                            <td class="text-center">Rp {{ number_format($item->salary_basic) }}</td>
+                                            <td class="text-center">Rp {{ number_format($item->salary_allowance) }}</td>
+                                            <td class="text-center">Rp {{ number_format($item->salary_bonus) }}</td>
+                                            <td class="text-center">Rp {{ number_format($item->salary_holiday) }}</td>
+                                            <td class="text-center">Rp {{ number_format($item->salary_total) }}</td>
+                                            <td class="text-center">{{ $month[$item->month] }}</td>
+                                            <td class="text-center">{{ $item->year }}</td>
                                             <td class="text-end">
                                                 <form action="{{ route('profile.slip.gaji') }}" method="post">
                                                     @csrf

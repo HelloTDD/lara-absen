@@ -6,26 +6,40 @@ function applyTheme(selectedIcon, selectedTheme) {
   const appCss = document.querySelector(
     'link[href*="app.min.css"], link[href*="app-dark.min.css"]'
   );
-
+  const isMobileOrTablet = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    || window.innerWidth <= 1024;
   if (selectedTheme === "light") {
     body.removeAttribute("class");
     body.setAttribute("data-bs-theme", "light");
 
     if (appCss) appCss.setAttribute("href", "/assets/css/app.min.css");
   } else if (selectedTheme === "dark") {
-    body.removeAttribute("data-bs-theme");
     body.setAttribute("data-bs-theme", "dark");
-    body.className = "menuitem-active";
+
+    // Jangan overwrite class lain, cukup tambah
+    body.classList.add("menuitem-active");
 
     if (appCss) appCss.setAttribute("href", "/assets/css/app-dark.min.css");
   }
+
 
   localStorage.setItem(
     "themeMode",
     JSON.stringify({ icon: selectedIcon, theme: selectedTheme })
   );
-}
 
+}
+document.addEventListener("DOMContentLoaded", function () {
+  const isMobileOrTablet =
+    /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    window.innerWidth <= 1024;
+
+  if (isMobileOrTablet) {
+    console.log("Mobile or tablet detected");
+    // Tambahkan class tanpa menimpa yang sudah ada
+    body.classList.add("enlarge-menu-all", "enlarge-menu");
+  }
+});
 document.querySelectorAll(".theme-Mode").forEach((item) => {
   item.addEventListener("click", function (e) {
     e.preventDefault();

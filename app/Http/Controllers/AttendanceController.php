@@ -483,4 +483,16 @@ class AttendanceController extends Controller
         }
     }
 
+    public function maps()
+    {
+        $user_id = Auth::id() ?? 1;
+        $date = now()->format('Y-m-d');
+
+        $attendance = UserAttendance::where('user_id', $user_id)
+                        ->where('date', $date)
+                        ->first();
+
+        return view('user.attendance.maps', compact('attendance'));
+    }
+
 }

@@ -450,7 +450,7 @@
                                     </div>
                                     <div>
 
-                                        <a href="maps.html" class="btn btn-success">
+                                        <a href="{{ 'attendance/maps' }}" class="btn btn-success">
                                             Lihat Lokasi Saya
                                         </a>
                                     </div>

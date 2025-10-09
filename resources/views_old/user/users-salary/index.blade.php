@@ -140,7 +140,7 @@
                         </div>
                     @endif
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="datatable">
+                        <table class="table table-bordered table-striped" id="datatable_1">
                             <thead>
                                 <tr>
                                     <th>No</th>

@@ -9,7 +9,7 @@
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
-                                    <p class="text-dark mb-0 fw-semibold">Absen Bulan Ini</p>
+                                    <p class=" mb-0 fw-semibold">Jumlah Kehadiran Bulan Ini</p>
                                     <h3 class="my-1 font-20 fw-bold">{{ $user_attendance_month->count() }}</h3>
 
                                     <p class="mb-0 text-muted">Periode
@@ -18,7 +18,7 @@
                                     <button class="btn btn-outline-primary btn-sm rounded-pill ms-auto" type="button"
                                         onclick="location.href='{{ route('attendance.index') }}'">
                                         Absen
-                                    </button>   
+                                    </button>       
                                 </div>
                                 <div class="col-3 align-self-center">
                                     <div
@@ -37,7 +37,7 @@
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
-                                    <p class="text-dark mb-0 fw-semibold">Next Shift (7 Hari ke Depan)</p>
+                                    <p class=" mb-0 fw-semibold">Next Shift (7 Hari ke Depan)</p>
 
                                     @if ($next_shift)
                                         @php
@@ -87,7 +87,7 @@
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
-                                    <p class="text-dark mb-0 fw-semibold">Absensi Hari Ini</p>
+                                    <p class=" mb-0 fw-semibold">Absensi Hari Ini</p>
                                     <h3 class="my-1 font-20 fw-bold">
                                         {{ $attendance_today_count }}/{{ $total_shift_today }}
                                     </h3>
@@ -119,7 +119,7 @@
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
-                                    <p class="text-dark mb-0 fw-semibold">Absen 7 Hari Terakhir</p>
+                                    <p class=" mb-0 fw-semibold">Jumlah Kehadiran 7 Hari Terakhir</p>
                                     <h3 class="my-1 font-20 fw-bold">{{ $user_attendance->count() }}</h3>
 
                                 </div>
@@ -139,7 +139,7 @@
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
-                                    <p class="text-dark mb-0 fw-semibold">Goal Completions</p>
+                                    <p class=" mb-0 fw-semibold">Goal Completions</p>
                                     <h3 class="my-1 font-20 fw-bold">85000</h3>
                                     <p class="mb-0 text-truncate text-muted"><span class="text-success"><i
                                                 class="mdi mdi-trending-up"></i>10.5%</span> Completions

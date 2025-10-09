@@ -2,53 +2,63 @@
 <html lang="en" dir="ltr">
 
 <head>
-
-
     <meta charset="utf-8" />
-    <title>Dashboard - Transformasi Data Digital</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="" name="author" />
+
+    <title>@yield('page-title', 'Dashboard') - Transformasi Data Digital</title>
 
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/img/favicons/fav.ico') }}">
 
-    <!-- App css -->
-    <link href="{{ asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
+    <!-- ===== Base CSS ===== -->
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    {{-- <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+
+    <!-- ===== Theme (default: light) ===== -->
+    <link id="theme-style" href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- ===== Theme Switch JS ===== -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem("themeMode");
+            const link = document.getElementById("theme-style");
+            const html = document.documentElement;
+
             if (savedTheme) {
                 const { theme } = JSON.parse(savedTheme);
-                const body = document.documentElement;
-
                 if (theme === "dark") {
-                body.setAttribute("data-bs-theme", "dark");
-                body.className = "menuitem-active";
-
-                document.write('<link href="{{ asset('assets/css/app-dark.min.css') }}" rel="stylesheet" type="text/css" />');
+                    html.setAttribute("data-bs-theme", "dark");
+                    link.href = "{{ asset('assets/css/app-dark.min.css') }}";
                 } else {
-                body.setAttribute("data-bs-theme", "light");
-                document.write('<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />');
+                    html.setAttribute("data-bs-theme", "light");
+                    link.href = "{{ asset('assets/css/app.min.css') }}";
                 }
             } else {
-                document.write('<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />');
+                // fallback ke preferensi sistem user
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                html.setAttribute("data-bs-theme", prefersDark ? "dark" : "light");
+                link.href = prefersDark
+                    ? "{{ asset('assets/css/app-dark.min.css') }}"
+                    : "{{ asset('assets/css/app.min.css') }}";
             }
         })();
     </script>
+
+    <!-- ===== Custom CSS ===== -->
     <link href="{{ asset('assets/css/style-custom.css') }}" rel="stylesheet" type="text/css" />
 
+    <!-- ===== Vendor CSS ===== -->
+    <link href="{{ asset('assets/libs/simple-datatables/style.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/vanillajs-datepicker/css/datepicker.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/animate.css/animate.min.css') }}" rel="stylesheet" type="text/css" />
 
-
-
-
     @stack('header')
 </head>
+
 
 <body data-bs-theme="light" id="body">
     <!-- leftbar-tab-menu -->
@@ -136,10 +146,11 @@
                                 <div class="collapse " id="Absensi">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                           <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
+                                            <a class="nav-link" href="{{ route('attendance.index') }}">Absensi</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('attendance.list') }}">Riwayat Absensi</a>
+                                            <a class="nav-link" href="{{ route('attendance.list') }}">Riwayat
+                                                Absensi</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -181,24 +192,27 @@
                                 ];
                             @endphp
 
-                            @if(in_array('All', $menus))
+                            @if (in_array('All', $menus))
                                 {{-- Supervisor: show all mapped menus (uses "all" route when specified) --}}
-                                @foreach($menuMap as $label => $meta)
+                                @foreach ($menuMap as $label => $meta)
                                     @php
                                         $routeName = $meta['route'] ?? ($meta['all'] ?? ($meta['user'] ?? null));
                                     @endphp
-                                    @if($routeName)
-                                        <li class="nav-item"><a href="{{ route($routeName) }}" class="nav-link">{{ $label }}</a></li>
+                                    @if ($routeName)
+                                        <li class="nav-item"><a href="{{ route($routeName) }}"
+                                                class="nav-link">{{ $label }}</a></li>
                                     @endif
                                 @endforeach
                             @else
                                 {{-- Non-supervisor: always show Cuti (user-specific), then show other allowed menus --}}
-                                <li class="nav-item"><a href="{{ route($menuMap['Cuti']['user']) }}" class="nav-link">Cuti</a></li>
+                                <li class="nav-item"><a href="{{ route($menuMap['Cuti']['user']) }}"
+                                        class="nav-link">Cuti</a></li>
 
-                                @foreach($menuMap as $label => $meta)
+                                @foreach ($menuMap as $label => $meta)
                                     @continue($label === 'Cuti')
-                                    @if(in_array($label, $menus) && isset($meta['route']))
-                                        <li class="nav-item"><a href="{{ route($meta['route']) }}" class="nav-link">{{ $label }}</a></li>
+                                    @if (in_array($label, $menus) && isset($meta['route']))
+                                        <li class="nav-item"><a href="{{ route($meta['route']) }}"
+                                                class="nav-link">{{ $label }}</a></li>
                                     @endif
                                 @endforeach
 
@@ -346,13 +360,14 @@
                 </li>
 
                 <li class="dropdown">
-                    <a class="nav-link dropdown-toggle nav-user" data-bs-toggle="dropdown" href="#" role="button"
-                        aria-haspopup="false" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle nav-user" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="false" aria-expanded="false">
                         <div class="menu-nav--users">
                             <img src="https://static.dazz2.com/upload/auth/photo/d2e9985df3639586e9fabd281aade533.jpg"
                                 alt="profile-user" class="rounded-circle me-2 thumb-sm" />
                             <div>
-                                <small class="d-none d-md-block font-11">Role {{ Auth::user()->role->role_name }}</small>
+                                <small class="d-none d-md-block font-11">Role
+                                    {{ Auth::user()->role->role_name }}</small>
                                 <span class="d-none d-md-block fw-semibold font-12">
                                     {{ Auth::user()->name }}
                                     <i class="mdi mdi-chevron-down"></i>
@@ -448,10 +463,11 @@
     <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/simple-datatables/umd/simple-datatables.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/datatable.init.js') }}"></script>
 
-    {{-- datatables --}}
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+   
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
     <script src="{{ asset('assets/js/custom/tdd.timer.clock.min.js') }}"></script>
@@ -473,8 +489,8 @@
                     }
                 },
                 "columnDefs": [{
-                "targets": [ 0 ],
-                "className": "dt-body-left",
+                    "targets": [0],
+                    "className": "dt-body-left",
                 }]
             });
         });
