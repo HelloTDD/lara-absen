@@ -194,12 +194,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/print', 'print')->name('print');
         Route::get('/export', 'export')->name('export');
     });
-     Route::prefix('shift')->controller(ShiftController::class)->name('shift.')->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::post('/save', 'store')->name('store');
-            Route::put('/update/{id}', 'update')->name('update');
-            Route::get('/shift/{id}/delete', 'destroy')->name('delete');
-        });
+    Route::prefix('shift')->controller(ShiftController::class)->name('shift.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/save', 'store')->name('store');
+        Route::put('/update/{id}', 'update')->name('update');
+        Route::get('/shift/{id}/delete', 'destroy')->name('delete');
+    });
     Route::get('/homes', [HomeController::class, 'index'])->name('homes');
     Route::controller(MonthlySalaryController::class)->group(function () {
         Route::get('/monthly-salary', 'index')->name('monthly.salary.index');
@@ -241,6 +241,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/absensi/{id}/delete', 'destroy')->name('destroy');
         Route::get('/print', 'print')->name('print');
         Route::get('/export', 'export')->name('export');
+        Route::get('/maps', 'maps')->name('maps');
     });
 
     Route::put('/ajax/update-shift/{id}', [UserShiftController::class, 'update'])->name('user-shift.ajax.update');

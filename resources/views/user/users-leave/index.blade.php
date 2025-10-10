@@ -149,72 +149,74 @@
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped" id="datatable">
-                            <thead>
+                        <table class="table table-striped table-hover" id="datatable_1">
+                            <thead class="thead-light">
                                 <tr>
-                                    <th>No</th>
-                                    <th>Nama Karyawan</th>
-                                    <th>Tanggal</th>
-                                    <th>Status</th>
+                                    <th class="text-center">No.</th>
+                                    <th class="text-center">Nama Karyawan</th>
+                                    <th class="text-center" data-type="date" data-format="YYYY/MM/DD">Tanggal</th>
+                                    <th class="text-center">Status</th>
                                     @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                                        <th>Cuti Terpakai</th>
-                                        <th>Sisa Cuti</th>
+                                        <th class="text-center">Cuti Terpakai</th>
+                                        <th class="text-center">Sisa Cuti</th>
                                     @endif
-                                    <th></th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php($no = 1)
                                 @foreach ($leaves as $leave)
                                     <tr>
-                                        <td>{{ $no }}</td>
-                                        <td>{{ $leave->user?->name }}</td>
-                                        <td>{{ $leave->leave_date_start }} ~ {{ $leave->leave_date_end }}</td>
-                                        <td>
+                                        <td class="text-center">{{ $no }}</td>
+                                        <td class="text-center">{{ $leave->user?->name }}</td>
+                                        <td class="text-center">{{ $leave->leave_date_start }} ~
+                                            {{ $leave->leave_date_end }}</td>
+                                        <td class="text-center">
                                             @if ($leave->status == 'approved')
-                                                <span class="badge rounded-4 bg-success fs-6 m-1">Approve</span>
+                                                <span class="badge bg-soft-success">DISETUJUI</span>
                                             @elseif ($leave->status == 'rejected')
-                                                <span class="badge rounded-4 bg-danger fs-6 m-1">Reject</span>
+                                                <span class="badge bg-soft-danger">DITOLAK</span>
                                             @elseif ($leave->status == 'pending')
-                                                <span class="badge rounded-4 bg-warning fs-6 m-1">Pending</span>
+                                                <span class="badge bg-soft-warning">MENUNGGU</span>
                                             @elseif ($leave->status == 'cancel')
-                                                <span class="badge rounded-4 bg-secondary fs-6 m-1">Cancel</span>
+                                                <span class="badge bg-soft-secondary">DIBATALKAN</span>
                                             @else
-                                                <span class="badge rounded-4 bg-warning fs-6 m-1">Pending</span>
+                                                <span class="badge bg-soft-warning">MENUNGGU</span>
                                             @endif
                                         </td>
+
                                         @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                                            <td>{{ max(0, 12 - $leave->user->leave) }}</td>
-                                            <td>{{ $leave->user->leave }}</td>
+                                            <td class="text-center">{{ max(0, 12 - ($leave->user->leave ?? 0)) }}</td>
+                                            <td class="text-center">{{ $leave->user->leave ?? 0 }}</td>
                                         @endif
 
-                                        <td class="text-end">
+                                        <td class="text-center">
                                             <div class="dropdown d-inline-block">
-                                                <a class="dropdown-toggle arrow-none" id="dLabel11"
-                                                    data-bs-toggle="dropdown" href="#" role="button"
-                                                    aria-haspopup="false" aria-expanded="false">
+                                                <a class="dropdown-toggle arrow-none"
+                                                    id="dropdownMenu{{ $leave->id }}" data-bs-toggle="dropdown"
+                                                    href="#" role="button" aria-haspopup="true"
+                                                    aria-expanded="false">
                                                     <i class="las la-ellipsis-v font-20 text-muted"></i>
                                                 </a>
-                                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dLabel11">
-                                                    @if (($leave->status == 'pending' || $leave->status == 'canceled') && in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
+                                                <div class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="dropdownMenu{{ $leave->id }}">
+                                                    @if (
+                                                        ($leave->status == 'pending' || $leave->status == 'canceled') &&
+                                                            in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
                                                         <a class="dropdown-item"
-                                                            href="{{ route('user-leave.approve', ['id' => $leave->id]) }}">Approve</a>    
-
+                                                            href="{{ route('user-leave.approve', ['id' => $leave->id]) }}">Approve</a>
                                                         <a class="dropdown-item"
                                                             href="{{ route('user-leave.reject', ['id' => $leave->id]) }}">Reject</a>
                                                     @endif
+
                                                     @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                                                        @if ($leave->status == 'canceled')
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('user-leave.cancel', ['id' => $leave->id]) }}">Cancel</a>
-                                                        @endif
                                                         <button class="dropdown-item" type="button"
                                                             data-bs-toggle="modal"
-                                                            onclick='openModalEdit("{{ $leave->id }}", "{{ $leave->leave_date_start }}", "{{ $leave->leave_date_end }}", "{{ $leave->desc_leave }}")'>Edit</button>
+                                                            onclick='openModalEdit("{{ $leave->id }}", "{{ $leave->leave_date_start }}", "{{ $leave->leave_date_end }}", "{{ $leave->desc_leave }}")'>
+                                                            Edit
+                                                        </button>
                                                     @endif
-                                                    {{-- <a class="dropdown-item"
-                                                    href="{{ route('user-leave.edit', ['id' => $leave->id]) }}">Edit</a>
-                                                --}}
+
                                                     @if ($leave->status == 'approved')
                                                         <a class="dropdown-item"
                                                             href="{{ route('user-leave.cancel-request', ['id' => $leave->id]) }}">Batal</a>
@@ -226,9 +228,8 @@
                                                         class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="dropdown-item">
-                                                            Delete
-                                                        </button>
+                                                        <button type="submit"
+                                                            class="dropdown-item text-danger">Delete</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -238,6 +239,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+
 
                         <x-modal id="modalEdits" title="Form Cuti" size="lg">
                             <form action="" method="post">

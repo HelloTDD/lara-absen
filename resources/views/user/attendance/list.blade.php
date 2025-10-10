@@ -82,27 +82,26 @@
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="datatable">
-                            <thead>
-                                <tr class="bg-gray-200 text-gray-700">
-                                    <th>#</th>
-                                    <th>Nama</th>
-                                    <th>Tanggal</th>
-                                    <th>Shift</th>
-                                    <th>Jam Masuk</th>
-                                    <th>Foto Masuk</th>
-                                    <th>Jam Pulang</th>
-                                    <th>Foto Pulang</th>
-                                    <th>Status</th>
-                                    <th>Keterangan Terlambat</th>
-                                    <th>Aksi</th>
+                        <table class="table table-striped table-hover" id="datatable_1">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-center">No.</th>
+                                    <th class="text-center">Nama Pegawai</th>
+                                    <th class="text-center">Shift</th>
+                                    <th class="text-center" data-type="date" data-format="YYYY/MM/DD">Tanggal</th>
+                                    <th class="text-center">Jam Masuk</th>
+                                    <th class="text-center">Jam Keluar</th>
+                                    <th class="text-center">Foto Masuk</th>
+                                    <th class="text-center">Foto Keluar</th>
+                                    <th class="text-center">Keterangan Masuk</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($data as $index => $item)
                                     @php
+                                        // Hitung keterlambatan
                                         $item->late_reason = null;
-
                                         if ($item->check_in_time && $item->shift) {
                                             $shiftStart = \Carbon\Carbon::parse(
                                                 $item->date . ' ' . $item->shift->check_in,
@@ -119,93 +118,117 @@
                                                 $minutes = $lateMinutes % 60;
 
                                                 if ($hours > 0 && $minutes > 0) {
-                                                    $item->late_reason = "Terlambat {$hours} jam {$minutes} menit";
+                                                    $item->late_reason = "{$hours} Jam {$minutes} Menit";
                                                 } elseif ($hours > 0) {
-                                                    $item->late_reason = "Terlambat {$hours} jam";
+                                                    $item->late_reason = "{$hours} Jam";
                                                 } else {
-                                                    $item->late_reason = "Terlambat {$minutes} menit";
+                                                    $item->late_reason = "{$minutes} Menit";
                                                 }
-                                            } else {
-                                                $item->late_reason = null;
                                             }
                                         }
                                     @endphp
 
-                                    <tr class="text-center border-t hover:bg-gray-50">
-                                        <td class="py-2 px-4">{{ $index + 1 }}</td>
-                                        <td class="py-2 px-4">{{ $item->user->name ?? '-' }}</td>
-                                        <td class="py-2 px-4">
-                                            {{ \Carbon\Carbon::parse($item->date)->translatedFormat('d F Y') }}</td>
-                                        <td class="py-2 px-4">{{ $item->user_shift->shift->shift_name ?? '-' }}</td>
-                                        <td class="py-2 px-4 text-green-600 font-semibold">
+                                    <tr>
+                                        <td class="text-center">{{ $index + 1 }}</td>
+                                        <td class="text-center">{{ $item->user->name ?? '-' }}</td>
+
+                                        <td class="text-center">
+                                            {{ $item->user_shift->shift->shift_name ?? '-' }}
+                                            @if ($item->shift)
+                                                ({{ $item->shift->check_in }} - {{ $item->shift->check_out }})
+                                            @endif
+                                        </td>
+
+                                        <td class="text-center">
+                                            {{ \Carbon\Carbon::parse($item->date)->format('Y/m/d') }}
+                                        </td>
+
+                                        <td class="text-center text-success fw-bold">
                                             {{ $item->check_in_time ?? '-' }}
                                         </td>
-                                        <td class="py-2 px-4">
-                                            @if ($item->check_in_photo)
-                                                <img src="{{ asset('storage/absensi/' . $item->check_in_photo) }}"
-                                                    onclick="openModal(this.src)"
-                                                    style="cursor: pointer ;aspect-ratio: 1 / 1;object-fit: cover;width: 10rem;"
-                                                    class="img-fluid rounded shadow">
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="py-2 px-4 text-red-600 font-semibold">
+                                        <td class="text-center text-success fw-bold">
                                             {{ $item->check_out_time ?? '-' }}
                                         </td>
-                                        <td class="py-2 px-4">
+                                        {{-- <td class="text-center text-danger fw-semibold">
+                                            {{ $item->late_reason ? 'Terlambat ' . $item->late_reason : '-' }}
+                                        </td> --}}
+
+                                        {{-- <td class="text-center">
+                                            @if ($item->check_in_location)
+                                                <a href="https://www.google.com/maps?q={{ $item->check_in_location }}"
+                                                    class="btn btn-primary btn-sm" target="_blank"
+                                                    rel="noopener noreferrer">
+                                                    Lihat
+                                                </a>
+                                                <br>
+                                                <small class="text-muted">{{ $item->check_in_distance ?? '0' }}
+                                                    Meter</small>
+                                            @else
+                                                -
+                                            @endif
+                                        </td> --}}
+
+                                        <td class="text-center">
+                                            @if ($item->check_in_photo)
+                                                <img src="{{ asset('storage/absensi/' . $item->check_in_photo) }}"
+                                                    alt="Foto Masuk" class="img--absen rounded shadow-sm"
+                                                    style="cursor:pointer;aspect-ratio:1/1;object-fit:cover;width:6rem;"
+                                                    onclick="openModal(this.src)">
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
                                             @if ($item->check_out_photo)
                                                 <img src="{{ asset('storage/absensi/' . $item->check_out_photo) }}"
-                                                    onclick="openModal(this.src)"
-                                                    style="cursor: pointer;aspect-ratio: 1 / 1;object-fit: cover;width: 10rem;" 
-                                                    class="img-fluid rounded shadow">
+                                                    alt="Foto Masuk" class="img--absen rounded shadow-sm"
+                                                    style="cursor:pointer;aspect-ratio:1/1;object-fit:cover;width:6rem;"
+                                                    onclick="openModal(this.src)">
                                             @else
                                                 -
                                             @endif
                                         </td>
-                                        <td class="py-2 px-4">
+                                        <td class="text-center">
                                             @if ($item->desc_attendance == 'MASUK')
-                                                <span class="badge rounded-4 text-white bg-success">MASUK</span>
+                                                <span class="badge bg-success text-white">Masuk</span>
                                             @elseif ($item->desc_attendance == 'LEMBUR')
-                                                <span class="badge rounded-4 text-white bg-danger">LEMBUR</span>
+                                                <span class="badge bg-danger text-white">Lembur</span>
                                             @else
-                                                <span class="badge rounded-4 text-white bg-success">MASUK</span>
+                                                <span class="badge bg-secondary text-white">-</span>
                                             @endif
                                         </td>
-                                        <td class="py-2 px-4">
-                                            @if ($item->late_reason)
-                                                <span
-                                                    class="badge rounded-4 bg-{{ isset($item->late_reason) ? 'danger' : 'success' }} text-white">
-                                                    {{ isset($item->late_reason) ? $item->late_reason : 'Tepat Waktu' }}
-                                                </span>
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="py-2 px-4">
+
+                                        <td class="text-center">
                                             @if (in_array(Auth::user()->role_name, ['Finance', 'Scheduler', 'Supervisor']))
-                                                <a href="{{ route('attendance.edit', $item->id) }}"
-                                                    class="btn btn-warning mb-2" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
+                                                <button type="button" class="btn btn-warning btn-icon-square-sm"
+                                                    onclick="location.href='{{ route('attendance.edit', $item->id) }}'"
+                                                    title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+
                                                 <form action="{{ route('attendance.destroy', $item->id) }}" method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus data ini?');"
-                                                    class="d-inline">
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('Yakin ingin menghapus data ini?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger">
+                                                    <button type="submit" class="btn btn-danger btn-icon-square-sm"
+                                                        title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
                                             @else
-                                                <span class="text-gray-500"> - </span>
+                                                <span class="text-muted"> - </span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted py-3">Belum ada data absensi</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
+
                     </div>
                 </div>
             </div>

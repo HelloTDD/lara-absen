@@ -53,8 +53,23 @@ class AttendanceController extends Controller
             ->where('desc_attendance', 'MASUK')
             ->count();
 
+        if ($time >= '04:00:00' && $time < '08:30:00') {
+            $checkShift = Shift::where('shift_name', 'Pagi')->first();
+        } else {
+           $checkShift = Shift::where(function ($q1) use ($time) {
+                $q1->where('check_in', '<=', $time)
+                    ->where('check_out', '>=', $time);
+            })->orWhere(function ($q2) use ($time) {
+                $q2->whereColumn('check_in', '>', 'check_out')
+                    ->where(function ($q3) use ($time) {
+                        $q3->where('check_in', '<=', $time)
+                            ->orWhere('check_out', '>=', $time);
+                    });
+            })
+            ->first();
+        }
 
-        return view('user.attendance.index',compact('date', 'time', 'existing', 'user_id', 'attendanceCount','limitAttendance'));
+        return view('user.attendance.index',compact('checkShift','date', 'time', 'existing', 'user_id', 'attendanceCount','limitAttendance'));
     }
 
     public function store(AttendanceRequest $request, AttendanceService $service)
@@ -466,6 +481,18 @@ class AttendanceController extends Controller
             ]);
             return redirect()->back()->withErrors(['error' => 'Gagal menghapus data absensi: ' . $e->getMessage()]);
         }
+    }
+
+    public function maps()
+    {
+        $user_id = Auth::id() ?? 1;
+        $date = now()->format('Y-m-d');
+
+        $attendance = UserAttendance::where('user_id', $user_id)
+                        ->where('date', $date)
+                        ->first();
+
+        return view('user.attendance.maps', compact('attendance'));
     }
 
 }
