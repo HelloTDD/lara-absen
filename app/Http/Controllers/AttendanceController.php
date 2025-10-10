@@ -55,7 +55,9 @@ class AttendanceController extends Controller
 
         if ($time >= '04:00:00' && $time < '08:30:00') {
             $checkShift = Shift::where('shift_name', 'Pagi')->first();
-        } else {
+        }elseif( $time >= '16:30:00' && $time < '19:00:00' && Auth::user()->role->id == 2 ){
+            $checkShift = Shift::where('id', '4')->first();
+        }else {
            $checkShift = Shift::where(function ($q1) use ($time) {
                 $q1->where('check_in', '<=', $time)
                     ->where('check_out', '>=', $time);

@@ -45,7 +45,7 @@ class AttendanceService
             $checkShift = Shift::where('shift_name', 'Pagi')->first();
         }
         //ketika jam 5 sore absen masuk malam untuk shift malam support
-        elseif( $checkInTime >= '16:40:00' && $checkInTime < '19:00:00' && Auth::user()->role->id == 2 ){
+        elseif( $checkInTime >= '16:30:00' && $checkInTime < '19:00:00' && Auth::user()->role->id == 2 ){
             $checkShift = Shift::where('id', '4')->first();
         }else {
            $checkShift = Shift::where(function ($q1) use ($checkInTime) {
