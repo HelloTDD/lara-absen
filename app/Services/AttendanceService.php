@@ -40,10 +40,14 @@ class AttendanceService
         Log::info("Time : ", [$checkInTime]);
 
         // Cari shift yang aktif pada jam sekarang, exclude "Overtime"
-
+        //all pagi
         if ($checkInTime >= '04:00:00' && $checkInTime < '08:30:00') {
             $checkShift = Shift::where('shift_name', 'Pagi')->first();
-        } else {
+        }
+        //ketika jam 5 sore absen masuk malam untuk shift malam support
+        elseif( $checkInTime >= '16:40:00' && $checkInTime < '19:00:00' && Auth::user()->role->id == 2 ){
+            $checkShift = Shift::where('id', '4')->first();
+        }else {
            $checkShift = Shift::where(function ($q1) use ($checkInTime) {
                 $q1->where('check_in', '<=', $checkInTime)
                     ->where('check_out', '>=', $checkInTime);
