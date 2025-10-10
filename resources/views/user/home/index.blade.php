@@ -4,8 +4,8 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
+                <div class="col-md-6 col-lg-3 pb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between mb-3">
 
@@ -17,7 +17,7 @@
                                     </button>
                                     <style>
                                         .blink-btn {
-                                            animation: blink 1.2s infinite;
+                                            animation: blink 1.2s infinite;Jumlah Kehadiran Bulan Ini
                                             box-shadow: 0 0 10px rgba(13, 110, 253, 0.7);
                                         }
 
@@ -60,8 +60,8 @@
                 </div>
 
 
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
+                <div class="col-md-6 col-lg-3 pb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
@@ -110,8 +110,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
+                <div class="col-md-6 col-lg-3 pb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
@@ -142,8 +142,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
+                <div class="col-md-6 col-lg-3 pb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-9">
