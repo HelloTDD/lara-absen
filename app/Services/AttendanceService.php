@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\UserAttendance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AttendanceService
